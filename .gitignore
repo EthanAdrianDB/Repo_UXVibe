@@ -1,0 +1,13 @@
+# Project exclude paths
+/target/
+/.idea/
+/*.iml
+/EjemploIntegradorBasico5/
+
+# Sensitive files and database wallet credentials
+src/main/resources/credentials.properties
+src/main/resources/wallet/
+*.sso
+*.p12
+*.pem
+*.jks

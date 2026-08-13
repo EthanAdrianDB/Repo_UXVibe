@@ -1,0 +1,211 @@
+:root {
+    --uxv-primario: #173E45;
+    --uxv-hover: #308391;
+    --uxv-activo: #24606B;
+    --uxv-link: #3DA5B8;
+    --uxv-secundario: #778D8B;
+    --uxv-fondo-registro: #E6DECB;
+    --uxv-placeholder: #CCCCCC;
+    --uxv-texto: #0E0A07;
+    --uxv-fondo: #F7F8F9;
+    --uxv-error: #B3261E;
+}
+
+body {
+    background-color: var(--uxv-fondo);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: var(--uxv-texto);
+}
+
+/* ---------- Layout con sidebar (páginas internas) ---------- */
+.uxv-layout { display: flex; min-height: 100vh; }
+
+.uxv-sidebar {
+    width: 80px;
+    background-color: var(--uxv-primario);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0;
+    gap: 30px;
+    flex-shrink: 0;
+}
+.uxv-sidebar .logo { color: #fff; font-weight: bold; font-size: 22px; margin-bottom: 10px; }
+.uxv-sidebar a {
+    color: #cfe3e6;
+    font-size: 22px;
+    text-decoration: none;
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+}
+.uxv-sidebar a:hover, .uxv-sidebar a.activo { background-color: var(--uxv-activo); color: #fff; }
+.uxv-sidebar .spacer { flex-grow: 1; }
+
+.uxv-contenido { flex-grow: 1; padding: 32px 40px; }
+
+/* ---------- Tarjetas ---------- */
+.uxv-tarjeta {
+    background: #fff;
+    border: 1px solid #E6EAEA;
+    border-radius: 10px;
+    padding: 20px;
+}
+.uxv-tarjeta .valor { font-size: 28px; font-weight: bold; }
+.uxv-tarjeta .titulo { font-weight: 600; margin-top: 6px; }
+.uxv-tarjeta .subtitulo { color: var(--uxv-secundario); font-size: 13px; margin: 0; }
+
+/* ---------- Tabs de una prueba ---------- */
+.uxv-tabs { display: flex; gap: 24px; border-bottom: 1px solid #E6EAEA; margin-bottom: 24px; }
+.uxv-tabs a {
+    padding: 10px 4px; text-decoration: none; color: var(--uxv-secundario); font-weight: 500;
+}
+.uxv-tabs a.activo { color: var(--uxv-primario); border-bottom: 3px solid var(--uxv-primario); }
+
+/* ---------- Tablas ---------- */
+.uxv-tabla { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; }
+.uxv-tabla th {
+    background-color: var(--uxv-primario); color: #fff; text-align: left;
+    padding: 12px 14px; font-size: 13px;
+}
+.uxv-tabla td { padding: 12px 14px; border-bottom: 1px solid #F0F2F2; font-size: 14px; }
+.uxv-tabla tr:hover td { background-color: #F7FCFC; }
+
+/* ---------- Botones ---------- */
+.uxv-btn-primario {
+    background-color: var(--uxv-primario); color: #fff; border: none;
+    padding: 10px 18px; border-radius: 6px; font-weight: 500; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+}
+.uxv-btn-primario:hover { background-color: var(--uxv-hover); color: #fff; }
+
+.uxv-btn-secundario {
+    background: #fff; color: var(--uxv-primario); border: 1px solid var(--uxv-primario);
+    padding: 10px 18px; border-radius: 6px; font-weight: 500; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+}
+.uxv-btn-secundario:hover { background: #F7FCFC; }
+
+.uxv-btn-icono {
+    color: var(--uxv-secundario); text-decoration: none; font-size: 16px; margin-right: 8px;
+}
+.uxv-btn-icono:hover { color: var(--uxv-primario); }
+
+/* ---------- Overrides para que los componentes de Bootstrap
+   (usados en preguntas/participantes/resultados/perfil) respeten
+   la paleta de UXVibe sin tener que reescribir cada vista ---------- */
+.table-dark { --bs-table-bg: var(--uxv-primario); }
+.btn-primary {
+    --bs-btn-bg: var(--uxv-primario);
+    --bs-btn-border-color: var(--uxv-primario);
+    --bs-btn-hover-bg: var(--uxv-hover);
+    --bs-btn-hover-border-color: var(--uxv-hover);
+    --bs-btn-active-bg: var(--uxv-activo);
+}
+.btn-outline-primary {
+    --bs-btn-color: var(--uxv-primario);
+    --bs-btn-border-color: var(--uxv-primario);
+    --bs-btn-hover-bg: var(--uxv-primario);
+    --bs-btn-hover-border-color: var(--uxv-primario);
+}
+.text-primary { color: var(--uxv-primario) !important; }
+.nav-tabs .nav-link.active-tab { color: var(--uxv-primario) !important; border-bottom-color: var(--uxv-primario) !important; }
+.card { border-color: #E6EAEA; }
+a { color: var(--uxv-link); }
+.btn-dark {
+    --bs-btn-bg: var(--uxv-primario);
+    --bs-btn-border-color: var(--uxv-primario);
+    --bs-btn-hover-bg: var(--uxv-hover);
+    --bs-btn-hover-border-color: var(--uxv-hover);
+}
+
+/* ---------- Botones personalizados de Figma ---------- */
+.uxv-btn-guardar, .uxv-btn-crear {
+    background-color: var(--uxv-primario) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+.uxv-btn-guardar:hover, .uxv-btn-crear:hover {
+    background-color: var(--uxv-hover) !important;
+    color: #ffffff !important;
+}
+
+.uxv-btn-cancelar {
+    background-color: #ffffff !important;
+    color: var(--uxv-primario) !important;
+    border: 1px solid var(--uxv-primario) !important;
+    border-radius: 6px !important;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+.uxv-btn-cancelar:hover {
+    background-color: #F7FCFC !important;
+    color: var(--uxv-primario) !important;
+}
+
+.uxv-input {
+    border: 1px solid #D0D5DD;
+    border-radius: 6px;
+    font-size: 14px;
+    padding: 10px 14px;
+}
+.uxv-input:focus {
+    border-color: var(--uxv-primario);
+    box-shadow: 0 0 0 3px rgba(23, 62, 69, 0.15);
+}
+
+/* ---------- Buscador ---------- */
+.uxv-search-group {
+    position: relative;
+    max-width: 320px;
+}
+.uxv-search-group i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--uxv-secundario);
+    font-size: 14px;
+}
+.uxv-search-group input {
+    padding-left: 36px;
+    border-radius: 6px;
+    border: 1px solid #E0E0E0;
+    font-size: 14px;
+}
+
+/* ---------- Paginación ---------- */
+.uxv-pagination {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+}
+.uxv-pagination .page-btn {
+    width: 28px; height: 28px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 4px; text-decoration: none; color: var(--uxv-texto);
+}
+.uxv-pagination .page-btn.active {
+    background-color: var(--uxv-primario);
+    color: #fff;
+}
+
+/* ---------- Estado Vacío (Empty State) ---------- */
+.uxv-empty-box {
+    padding: 40px 20px;
+    text-align: center;
+    background-color: #fff;
+    border: 1px dashed #D0D5DD;
+    border-radius: 10px;
+}
+.uxv-empty-box i {
+    font-size: 42px;
+    color: var(--uxv-secundario);
+    margin-bottom: 12px;
+    display: block;
+}
+
