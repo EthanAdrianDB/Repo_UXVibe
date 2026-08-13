@@ -243,7 +243,7 @@
     <!-- Right Brand Panel -->
     <div class="panel-marca">
         <div class="brand-header">
-            <img src="${pageContext.request.contextPath}/assets/images/logo-ux.svg" alt="UX Logo" class="brand-logo-img">
+            <img src="${pageContext.request.contextPath}/assets/images/logo-ux.png" alt="UX Logo" class="brand-logo-img">
             <span class="brand-title">UXVibe</span>
         </div>
         <p class="brand-subtitle">Plataforma para la evaluación de experiencia de usuario</p>

@@ -93,7 +93,8 @@
                                         <div class="d-inline-flex gap-2">
                                             <!-- Ejecutar prueba (Abre Modal de Términos) -->
                                             <button type="button" class="btn btn-sm btn-light border text-dark" title="Ejecutar prueba"
-                                               onclick="openTerminosModal(${prueba.idPrueba}, '<c:out value="${prueba.urlDestino}"/>')">
+                                               data-tarea="<c:out value="${prueba.tarea}"/>"
+                                               onclick="openTerminosModal(${prueba.idPrueba}, this)">
                                                 <i class="bi bi-play-fill"></i>
                                             </button>
                                             <!-- Ver resultados -->
@@ -148,22 +149,21 @@ function filtrarPruebas() {
 }
 
 let currentPruebaId = null;
-let currentUrlDestino = '';
+let currentTareaText = '';
 
-function openTerminosModal(idPrueba, urlDestino) {
+function openTerminosModal(idPrueba, btnElement) {
     currentPruebaId = idPrueba;
-    currentUrlDestino = urlDestino || '';
-    const modal = new bootstrap.Modal(document.getElementById('modalTerminos'));
+    currentTareaText = btnElement.getAttribute('data-tarea') || 'No hay descripción para esta tarea.';
+    
+    const modalTerminos = new bootstrap.Modal(document.getElementById('modalTerminos'));
     const checkTerminos = document.getElementById('checkAceptoTerminos');
     const btnAceptar = document.getElementById('btnAceptarTerminos');
     
     if (checkTerminos) checkTerminos.checked = false;
     if (btnAceptar) {
         btnAceptar.classList.add('disabled');
-        btnAceptar.href = '#';
-        btnAceptar.removeAttribute('target');
     }
-    modal.show();
+    modalTerminos.show();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -173,38 +173,38 @@ document.addEventListener('DOMContentLoaded', function() {
             const btn = document.getElementById('btnAceptarTerminos');
             if(this.checked) {
                 btn.classList.remove('disabled');
-                let targetUrl = currentUrlDestino ? currentUrlDestino.trim() : '#';
-                if (targetUrl !== '#' && !targetUrl.match(/^https?:\/\//i)) {
-                    targetUrl = 'https://' + targetUrl;
-                }
-                btn.href = targetUrl;
-                btn.target = '_blank';
             } else {
                 btn.classList.add('disabled');
-                btn.href = '#';
-                btn.removeAttribute('target');
             }
         });
     }
-    
-    // Al hacer click en acepto se cierra el modal y redirige la pantalla actual
+
     const btnAceptar = document.getElementById('btnAceptarTerminos');
     if(btnAceptar) {
         btnAceptar.addEventListener('click', function(e) {
+            e.preventDefault();
             if(!this.classList.contains('disabled')) {
-                const modalEl = document.getElementById('modalTerminos');
-                const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                if (modalInstance) {
-                    modalInstance.hide();
+                const modalTerminosEl = document.getElementById('modalTerminos');
+                const modalTerminosInstance = bootstrap.Modal.getInstance(modalTerminosEl);
+                if (modalTerminosInstance) {
+                    modalTerminosInstance.hide();
                 }
                 
-                // Redirigir la ventana actual a la pantalla de evaluación
+                // Set text and open Tarea modal after a short delay for smooth transition
+                document.getElementById('modalTareaContent').innerText = currentTareaText;
                 setTimeout(() => {
-                    window.location.href = "${pageContext.request.contextPath}/evaluacion-investigador.jsp?idPrueba=" + currentPruebaId;
-                }, 300);
-            } else {
-                e.preventDefault();
+                    const modalTarea = new bootstrap.Modal(document.getElementById('modalTarea'));
+                    modalTarea.show();
+                }, 400);
             }
+        });
+    }
+
+    const btnEntendido = document.getElementById('btnEntendidoTarea');
+    if(btnEntendido) {
+        btnEntendido.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = "${pageContext.request.contextPath}/evaluacion-investigador.jsp?idPrueba=" + currentPruebaId;
         });
     }
 });
@@ -231,6 +231,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="d-flex justify-content-center gap-3">
                     <button type="button" class="btn btn-outline-secondary px-5 py-2" data-bs-dismiss="modal">No acepto</button>
                     <a href="#" id="btnAceptarTerminos" class="btn text-white px-5 py-2 disabled" style="background-color: #0f3f4a;">Acepto</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Tarea -->
+<div class="modal fade" id="modalTarea" tabindex="-1" aria-labelledby="modalTareaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow" style="border-radius: 4px;">
+            <div class="modal-body p-5">
+                <h4 class="text-center fw-bold mb-4">TAREA A REALIZAR</h4>
+                <div class="border border-dark p-4 mb-4 bg-white" id="modalTareaContent" style="height: 200px; overflow-y: auto; font-size: 0.9rem;">
+                    <!-- La tarea se inyecta por JS -->
+                </div>
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <button type="button" class="btn btn-outline-secondary px-5 py-2" data-bs-dismiss="modal">Cancelar</button>
+                    <a href="#" id="btnEntendidoTarea" class="btn text-white px-5 py-2" style="background-color: #0f3f4a;">Entendido</a>
                 </div>
             </div>
         </div>

@@ -89,7 +89,7 @@
                 <hr class="my-4 text-muted">
                 
                 <div class="d-flex justify-content-end">
-                    <button class="btn text-white px-4 py-2" style="background-color: #1a4a5b;" onclick="nextStep(2)">
+                    <button id="btnSiguienteAudio" class="btn text-white px-4 py-2 disabled" style="background-color: #1a4a5b;" onclick="nextStep(2)">
                         Siguiente <i class="bi bi-arrow-right ms-2"></i>
                     </button>
                 </div>
@@ -203,6 +203,7 @@
         const btn = document.getElementById('btnRecord');
         const icon = document.getElementById('iconRecord');
         const status = document.getElementById('recordStatus');
+        const btnSiguiente = document.getElementById('btnSiguienteAudio');
         
         isRecording = !isRecording;
         
@@ -210,6 +211,10 @@
             btn.classList.add('recording');
             icon.classList.replace('bi-mic-fill', 'bi-stop-fill');
             status.classList.remove('d-none');
+            
+            if (btnSiguiente) {
+                btnSiguiente.classList.remove('disabled');
+            }
         } else {
             btn.classList.remove('recording');
             icon.classList.replace('bi-stop-fill', 'bi-mic-fill');
