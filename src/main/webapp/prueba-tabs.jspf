@@ -1,0 +1,58 @@
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<div class="mb-4">
+    <!-- Encabezado con botón de retorno y título -->
+    <div class="d-flex align-items-center gap-3 mb-3">
+        <a href="${pageContext.request.contextPath}/inicio" class="text-dark fs-3 text-decoration-none">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <h2 class="fw-bold m-0 text-dark">${prueba.nombreEstudio}</h2>
+    </div>
+
+    <!-- Barra de Tarjetas de Metadatos de la Prueba (Matching Image 1 & 2) -->
+    <div class="d-flex flex-wrap gap-4 align-items-center mb-4">
+        <!-- Card 1: Participantes -->
+        <div class="d-flex align-items-center gap-3 p-2 px-3 bg-white border rounded shadow-sm" style="min-width: 170px;">
+            <div class="bg-light rounded p-2 text-dark fs-4 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; background-color: #e2e8f0 !important;">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div>
+                <div class="text-muted small" style="font-size: 0.75rem;">Participantes</div>
+                <div class="fw-bold text-dark fs-6">${prueba.totalParticipantes != null ? prueba.totalParticipantes : 0}</div>
+            </div>
+        </div>
+
+        <!-- Card 2: Fecha de creación -->
+        <div class="d-flex align-items-center gap-3 p-2 px-3 bg-white border rounded shadow-sm" style="min-width: 200px;">
+            <div class="bg-light rounded p-2 text-dark fs-4 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; background-color: #e2e8f0 !important;">
+                <i class="bi bi-calendar-event"></i>
+            </div>
+            <div>
+                <div class="text-muted small" style="font-size: 0.75rem;">Fecha de creación</div>
+                <div class="fw-bold text-dark fs-6">${prueba.fechaCreacion != null ? prueba.fechaCreacion : '10/06/2026'}</div>
+            </div>
+        </div>
+
+        <!-- Card 3: URL -->
+        <div class="d-flex align-items-center gap-3 p-2 px-3 bg-white border rounded shadow-sm" style="min-width: 200px;">
+            <div class="bg-light rounded p-2 text-dark fs-4 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; background-color: #e2e8f0 !important;">
+                <i class="bi bi-link-45deg"></i>
+            </div>
+            <div>
+                <div class="text-muted small" style="font-size: 0.75rem;">URL</div>
+                <a href="${prueba.urlDestino}" target="_blank" class="fw-bold text-dark text-decoration-none fs-6 text-truncate d-inline-block" style="max-width: 180px;">
+                    ${not empty prueba.urlDestino ? prueba.urlDestino : 'instagram.com'}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pestañas Superiores: Resultados | Participantes | Audio -->
+    <div class="uxv-tabs border-bottom mb-4">
+        <a class="${pestanaActiva == 'resultados' ? 'activo' : ''}"
+           href="${pageContext.request.contextPath}/resultados?idPrueba=${prueba.idPrueba}">Resultados</a>
+        <a class="${pestanaActiva == 'participantes' ? 'activo' : ''}"
+           href="${pageContext.request.contextPath}/participantes?idPrueba=${prueba.idPrueba}">Participantes</a>
+        <a class="${pestanaActiva == 'audio' ? 'activo' : ''}"
+           href="${pageContext.request.contextPath}/audio?idPrueba=${prueba.idPrueba}">Audio</a>
+    </div>
+</div>
