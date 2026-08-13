@@ -76,6 +76,11 @@
     <div class="card shadow-sm border-0 rounded">
         <div class="card-body p-5">
             
+            <!-- FORMULARIO GENERAL -->
+            <form action="${pageContext.request.contextPath}/participantes" method="post" id="formFinalizar">
+                <input type="hidden" name="action" value="create">
+                <input type="hidden" name="idPrueba" value="${not empty param.idPrueba ? param.idPrueba : '0'}">
+                
             <!-- PASO 1: Grabar Audio -->
             <div id="step1" class="step-container active text-center">
                 <h4 class="fw-bold mb-4">Paso 1: Grabación de Audio</h4>
@@ -89,7 +94,7 @@
                 <hr class="my-4 text-muted">
                 
                 <div class="d-flex justify-content-end">
-                    <button id="btnSiguienteAudio" class="btn text-white px-4 py-2 disabled" style="background-color: #1a4a5b;" onclick="nextStep(2)">
+                    <button type="button" id="btnSiguienteAudio" class="btn text-white px-4 py-2 disabled" style="background-color: #1a4a5b;" onclick="nextStep(2)">
                         Siguiente <i class="bi bi-arrow-right ms-2"></i>
                     </button>
                 </div>
@@ -98,20 +103,63 @@
             <!-- PASO 2: SAM -->
             <div id="step2" class="step-container text-center">
                 <h4 class="fw-bold mb-4">Paso 2: SAM (Self-Assessment Manikin)</h4>
-                <p class="text-muted mb-4">Selecciona el nivel de emoción o sentimiento del participante.</p>
+                <p class="text-muted mb-4">Selecciona el nivel de emoción o sentimiento del participante en una escala del 1 al 9.</p>
                 
-                <div class="sam-placeholder mb-5">
-                    <i class="bi bi-emoji-smile fs-1 d-block mb-3"></i>
-                    <p class="mb-0">[ Aquí se colocará el componente o imagen del SAM ]</p>
+                <div class="mb-4 text-start">
+                    <label class="form-label fw-bold">Valencia: ¿Cómo te sientes después de haber interactuado con la página/sistema Web?</label>
+                    <div class="d-flex justify-content-between align-items-center mt-2 px-3 py-3 bg-white border rounded">
+                        <span class="small text-muted fw-bold me-2 text-center" style="width: 80px;">1<br>(Muy mal)</span>
+                        <div class="d-flex gap-1 flex-wrap justify-content-center flex-grow-1">
+                            <% for(int i=1; i<=5; i++) { %>
+                                <div class="form-check form-check-inline m-0 text-center" style="width: 30px;">
+                                    <input class="form-check-input float-none mx-auto d-block mb-1" type="radio" name="sam_valencia" id="sam_val_<%= i %>" value="<%= i %>">
+                                    <label class="form-check-label small" for="sam_val_<%= i %>"><%= i %></label>
+                                </div>
+                            <% } %>
+                        </div>
+                        <span class="small text-muted fw-bold ms-2 text-center" style="width: 80px;">5<br>(Muy bien)</span>
+                    </div>
+                </div>
+
+                <div class="mb-4 text-start">
+                    <label class="form-label fw-bold">Activación: ¿Qué tan impactante fue tu experiencia?</label>
+                    <div class="d-flex justify-content-between align-items-center mt-2 px-3 py-3 bg-white border rounded">
+                        <span class="small text-muted fw-bold me-2 text-center" style="width: 80px;">1<br>(Muy calmado)</span>
+                        <div class="d-flex gap-1 flex-wrap justify-content-center flex-grow-1">
+                            <% for(int i=1; i<=5; i++) { %>
+                                <div class="form-check form-check-inline m-0 text-center" style="width: 30px;">
+                                    <input class="form-check-input float-none mx-auto d-block mb-1" type="radio" name="sam_activacion" id="sam_act_<%= i %>" value="<%= i %>">
+                                    <label class="form-check-label small" for="sam_act_<%= i %>"><%= i %></label>
+                                </div>
+                            <% } %>
+                        </div>
+                        <span class="small text-muted fw-bold ms-2 text-center" style="width: 80px;">5<br>(Muy alterado)</span>
+                    </div>
+                </div>
+
+                <div class="mb-5 text-start">
+                    <label class="form-label fw-bold">Dominio: ¿Qué tanto dominio tuviste sobre tus emociones y sentimientos?</label>
+                    <div class="d-flex justify-content-between align-items-center mt-2 px-3 py-3 bg-white border rounded">
+                        <span class="small text-muted fw-bold me-2 text-center" style="width: 90px;">1<br>(Muy influenciado)</span>
+                        <div class="d-flex gap-1 flex-wrap justify-content-center flex-grow-1">
+                            <% for(int i=1; i<=5; i++) { %>
+                                <div class="form-check form-check-inline m-0 text-center" style="width: 30px;">
+                                    <input class="form-check-input float-none mx-auto d-block mb-1" type="radio" name="sam_dominio" id="sam_dom_<%= i %>" value="<%= i %>">
+                                    <label class="form-check-label small" for="sam_dom_<%= i %>"><%= i %></label>
+                                </div>
+                            <% } %>
+                        </div>
+                        <span class="small text-muted fw-bold ms-2 text-center" style="width: 90px;">5<br>(Muy dominante)</span>
+                    </div>
                 </div>
                 
                 <hr class="my-4 text-muted">
                 
                 <div class="d-flex justify-content-between">
-                    <button class="btn btn-outline-secondary px-4 py-2" onclick="nextStep(1)">
+                    <button type="button" class="btn btn-outline-secondary px-4 py-2" onclick="nextStep(1)">
                         <i class="bi bi-arrow-left me-2"></i> Atrás
                     </button>
-                    <button class="btn text-white px-4 py-2" style="background-color: #1a4a5b;" onclick="nextStep(3)">
+                    <button type="button" class="btn text-white px-4 py-2" style="background-color: #1a4a5b;" onclick="nextStep(3)">
                         Siguiente <i class="bi bi-arrow-right ms-2"></i>
                     </button>
                 </div>
@@ -120,30 +168,77 @@
             <!-- PASO 3: Preguntas -->
             <div id="step3" class="step-container">
                 <h4 class="fw-bold mb-4 text-center">Paso 3: Cuestionario Final</h4>
-                <p class="text-muted text-center mb-5">Por favor, responde las siguientes preguntas de evaluación.</p>
+                <p class="text-muted text-center mb-4">Por favor, evalúa las siguientes afirmaciones respecto a tu experiencia (1 = Totalmente en desacuerdo, 5 = Totalmente de acuerdo).</p>
                 
-                <div class="mb-4">
-                    <label class="form-label fw-bold">1. Lorem ipsum dolor sit amet?</label>
-                    <textarea class="form-control" rows="3" placeholder="Respuesta..."></textarea>
-                </div>
-                
-                <div class="mb-5">
-                    <label class="form-label fw-bold">2. Consectetur adipiscing elit, sed do eiusmod tempor incididunt?</label>
-                    <select class="form-select">
-                        <option>Seleccionar opción</option>
-                        <option>Opción A</option>
-                        <option>Opción B</option>
-                        <option>Opción C</option>
-                    </select>
+                <div style="max-height: 50vh; overflow-y: auto; padding-right: 10px;" class="mb-4">
+                    <!-- UX Questions 1 to 15 -->
+                    <% 
+                        String[] uxQuestions = {
+                            "1. Me resultó fácil aprender a navegar por esta página/sistema web.",
+                            "2. La estructura del menú y los enlaces es intuitiva y sé dónde encontrar la información.",
+                            "3. Creo que el sistema web es innecesariamente complejo o difícil de entender.",
+                            "4. Las funciones y herramientas de la página cubren completamente mis necesidades.",
+                            "5. Este sistema web me permite realizar mis tareas de forma más rápida y eficiente.",
+                            "6. La información, textos y contenidos que ofrece la plataforma son claros y valiosos.",
+                            "7. El diseño visual de la página web es atractivo, limpio y moderno.",
+                            "8. El tamaño de la letra, los contrastes y los colores facilitan una lectura cómoda.",
+                            "9. La interfaz se siente saturada, desordenada o visualmente confusa.",
+                            "10. La página web carga rápidamente y las secciones responden sin retrasos.",
+                            "11. El sistema funciona correctamente en mi navegador y no experimenté errores técnicos.",
+                            "12. La plataforma se adapta bien y es fácil de usar si accedo desde el teléfono móvil.",
+                            "13. Me siento satisfecho con mi experiencia general utilizando este sitio/sistema web.",
+                            "14. Recomendaría este sitio o sistema web a otros colegas o usuarios.",
+                            "15. Si tuviera otra alternativa que haga lo mismo, preferiría no usar esta web."
+                        };
+                        for(int i=0; i<uxQuestions.length; i++) {
+                    %>
+                    <div class="mb-4 p-3 bg-white border rounded">
+                        <label class="form-label fw-bold mb-3"><%= uxQuestions[i] %></label>
+                        <div class="d-flex justify-content-between px-3">
+                            <% for(int j=1; j<=5; j++) { %>
+                            <div class="form-check form-check-inline m-0 text-center">
+                                <input class="form-check-input float-none mb-1 mx-auto d-block" type="radio" name="ux_q<%= (i+1) %>" id="ux_q<%= (i+1) %>_v<%= j %>" value="<%= j %>">
+                                <label class="form-check-label small" for="ux_q<%= (i+1) %>_v<%= j %>"><%= j %></label>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                    <% } %>
+
+                    <h5 class="fw-bold mt-5 mb-3">Frecuencia de Estados de Ánimo</h5>
+                    
+                    <div class="mb-4 p-3 bg-white border rounded">
+                        <label class="form-label fw-bold mb-3">5. En una semana típica ¿con que frecuencia se siente estresado/a?</label>
+                        <select class="form-select" name="estado_estresado">
+                            <option value="">Selecciona una opción</option>
+                            <option value="Nunca">Nunca</option>
+                            <option value="De vez en cuando">De vez en cuando</option>
+                            <option value="Cerca de la mitad del tiempo">Cerca de la mitad del tiempo</option>
+                            <option value="La mayor parte del tiempo">La mayor parte del tiempo</option>
+                            <option value="Siempre">Siempre</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4 p-3 bg-white border rounded">
+                        <label class="form-label fw-bold mb-3">6. En una semana típica ¿con que frecuencia se siente Relajado/a?</label>
+                        <select class="form-select" name="estado_relajado">
+                            <option value="">Selecciona una opción</option>
+                            <option value="Nunca">Nunca</option>
+                            <option value="De vez en cuando">De vez en cuando</option>
+                            <option value="Cerca de la mitad del tiempo">Cerca de la mitad del tiempo</option>
+                            <option value="La mayor parte del tiempo">La mayor parte del tiempo</option>
+                            <option value="Siempre">Siempre</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <hr class="my-4 text-muted">
                 
                 <div class="d-flex justify-content-between">
-                    <button class="btn btn-outline-secondary px-4 py-2" onclick="nextStep(2)">
+                    <button type="button" class="btn btn-outline-secondary px-4 py-2" onclick="nextStep(2)">
                         <i class="bi bi-arrow-left me-2"></i> Atrás
                     </button>
-                    <button class="btn text-white px-4 py-2" style="background-color: #1a4a5b;" onclick="nextStep(4)">
+                    <button type="button" class="btn text-white px-4 py-2" style="background-color: #1a4a5b;" onclick="nextStep(4)">
                         Siguiente <i class="bi bi-arrow-right ms-2"></i>
                     </button>
                 </div>
@@ -154,11 +249,6 @@
                 <h4 class="fw-bold mb-4 text-center">Paso 4: Datos del Participante</h4>
                 <p class="text-muted text-center mb-5">Ingresa los datos del participante para guardar y finalizar la evaluación.</p>
                 
-                <form action="${pageContext.request.contextPath}/participantes" method="post" id="formFinalizar">
-                    <!-- Suponiendo que recibe el idPrueba por parámetro en la url, lo tomamos por getParameter en un entorno JSP. -->
-                    <input type="hidden" name="action" value="create">
-                    <input type="hidden" name="idPrueba" value="${not empty param.idPrueba ? param.idPrueba : '0'}">
-                    
                     <div class="mb-3">
                         <label class="form-label fw-medium">Nombre completo: <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" name="nombre" placeholder="Ej. Juan Pérez" required>
@@ -189,8 +279,9 @@
                             <i class="bi bi-check-circle me-2"></i> Finalizar y Guardar
                         </button>
                     </div>
-                </form>
             </div>
+            
+            </form>
             
         </div>
     </div>
@@ -198,6 +289,8 @@
 
 <script>
     let isRecording = false;
+    let mediaRecorder;
+    let audioChunks = [];
     
     function toggleRecording() {
         const btn = document.getElementById('btnRecord');
@@ -215,10 +308,92 @@
             if (btnSiguiente) {
                 btnSiguiente.classList.remove('disabled');
             }
+            
+            startRecording();
         } else {
             btn.classList.remove('recording');
             icon.classList.replace('bi-stop-fill', 'bi-mic-fill');
             status.classList.add('d-none');
+            
+            stopRecording();
+        }
+    }
+
+    // 1. Request microphone access and start recording
+    async function startRecording() {
+        audioChunks = []; // Clear previous data
+        
+        try {
+            // Request mic stream
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+            // Initialize MediaRecorder
+            mediaRecorder = new MediaRecorder(stream);
+            
+            // Capture data chunks as they become available
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunks.push(event.data);
+                }
+            };
+
+            // Define what happens when recording stops
+            mediaRecorder.onstop = async () => {
+                // Combine chunks into a single Blob (typically webm or ogg depending on browser)
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                
+                // Send the file to your server
+                await uploadAudio(audioBlob);
+                
+                // Stop all audio tracks to release the microphone hardware
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            // Start recording
+            mediaRecorder.start();
+            console.log("Recording started...");
+        } catch (err) {
+            console.error("Microphone access denied or error occurred:", err);
+            // Optionally, handle error UI here
+        }
+    }
+
+    // 2. Stop the recording triggering the 'onstop' event
+    function stopRecording() {
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+            mediaRecorder.stop();
+            console.log("Recording stopped.");
+        }
+    }
+
+    // 3. Package the Blob into FormData and send via Fetch API
+    async function uploadAudio(blob) {
+        const formData = new FormData();
+
+        // Append the blob file: field name, blob object, and destination file name
+        formData.append('audio_file', blob, 'recording.webm');
+        
+        // Let's add idPrueba in case it's needed for the backend
+        const idPrueba = document.querySelector('input[name="idPrueba"]').value;
+        if (idPrueba) {
+            formData.append('idPrueba', idPrueba);
+        }
+        
+        try {
+            console.log("Uploading audio...");
+            const response = await fetch('${pageContext.request.contextPath}/audio', {
+                method: 'POST',
+                body: formData // Fetch sets the 'multipart/form-data' header automatically
+            });
+
+            if (response.ok) {
+                // const result = await response.json();
+                console.log("Upload successful");
+            } else {
+                console.error("Upload failed with status:", response.status);
+            }
+        } catch (error) {
+            console.error("Error uploading file:", error);
         }
     }
 
@@ -234,7 +409,7 @@
 
     function detenerGrabacion() {
         if (isRecording) {
-            toggleRecording(); // Detiene la simulación
+            toggleRecording(); // Detiene la simulación y grabacion real
         }
     }
 </script>

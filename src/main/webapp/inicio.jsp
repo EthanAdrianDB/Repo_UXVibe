@@ -94,6 +94,7 @@
                                             <!-- Ejecutar prueba (Abre Modal de Términos) -->
                                             <button type="button" class="btn btn-sm btn-light border text-dark" title="Ejecutar prueba"
                                                data-tarea="<c:out value="${prueba.tarea}"/>"
+                                               data-url="<c:out value="${prueba.urlDestino}"/>"
                                                onclick="openTerminosModal(${prueba.idPrueba}, this)">
                                                 <i class="bi bi-play-fill"></i>
                                             </button>
@@ -150,10 +151,12 @@ function filtrarPruebas() {
 
 let currentPruebaId = null;
 let currentTareaText = '';
+let currentUrlDestino = '';
 
 function openTerminosModal(idPrueba, btnElement) {
     currentPruebaId = idPrueba;
     currentTareaText = btnElement.getAttribute('data-tarea') || 'No hay descripción para esta tarea.';
+    currentUrlDestino = btnElement.getAttribute('data-url') || '';
     
     const modalTerminos = new bootstrap.Modal(document.getElementById('modalTerminos'));
     const checkTerminos = document.getElementById('checkAceptoTerminos');
@@ -164,6 +167,18 @@ function openTerminosModal(idPrueba, btnElement) {
         btnAceptar.classList.add('disabled');
     }
     modalTerminos.show();
+}
+
+function redirigirEvaluacion(e) {
+    e.preventDefault();
+    if (currentPruebaId) {
+        // Abrir la URL evaluada en una nueva pestaña
+        if (currentUrlDestino) {
+            window.open(currentUrlDestino, '_blank');
+        }
+        // Redirigir esta pestaña a la página de evaluación
+        window.location.href = "${pageContext.request.contextPath}/evaluacion-investigador.jsp?idPrueba=" + currentPruebaId;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -197,14 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     modalTarea.show();
                 }, 400);
             }
-        });
-    }
-
-    const btnEntendido = document.getElementById('btnEntendidoTarea');
-    if(btnEntendido) {
-        btnEntendido.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.location.href = "${pageContext.request.contextPath}/evaluacion-investigador.jsp?idPrueba=" + currentPruebaId;
         });
     }
 });
@@ -248,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="d-flex justify-content-center gap-3 mt-4">
                     <button type="button" class="btn btn-outline-secondary px-5 py-2" data-bs-dismiss="modal">Cancelar</button>
-                    <a href="#" id="btnEntendidoTarea" class="btn text-white px-5 py-2" style="background-color: #0f3f4a;">Entendido</a>
+                    <button type="button" id="btnEntendidoTarea" class="btn text-white px-5 py-2" style="background-color: #0f3f4a;" onclick="redirigirEvaluacion(event)">Entendido</button>
                 </div>
             </div>
         </div>
