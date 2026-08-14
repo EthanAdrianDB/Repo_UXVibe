@@ -72,7 +72,7 @@
                                 <th style="width: 50px;" class="ps-4">#</th>
                                 <th>Nombre</th>
                                 <th>URL evaluada</th>
-                                <th>Fecha de creación</th>
+                                <th>Fecha de creacion</th>
                                 <th>Participantes</th>
                                 <th class="text-end pe-4">Acciones</th>
                             </tr>
@@ -172,12 +172,8 @@ function openTerminosModal(idPrueba, btnElement) {
 function redirigirEvaluacion(e) {
     e.preventDefault();
     if (currentPruebaId) {
-        // Abrir la URL evaluada en una nueva pestaña
-        if (currentUrlDestino) {
-            window.open(currentUrlDestino, '_blank');
-        }
-        // Redirigir esta pestaña a la página de evaluación
-        window.location.href = "${pageContext.request.contextPath}/evaluacion-investigador.jsp?idPrueba=" + currentPruebaId;
+        // Ya NO se abre la URL aqui. Se abrira en la pagina de evaluacion al dar Siguiente despues de grabar.
+        window.location.href = "${pageContext.request.contextPath}/evaluacion-investigador.jsp?idPrueba=" + currentPruebaId + "&url=" + encodeURIComponent(currentUrlDestino);
     }
 }
 

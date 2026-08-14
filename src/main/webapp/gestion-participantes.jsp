@@ -42,9 +42,9 @@
                                     <td class="fw-semibold text-dark">
                                         ${not empty p.nombre ? p.nombre.concat(' ').concat(p.apellidoP) : 'Participante #'.concat(p.idParticipante)}
                                     </td>
-                                    <td>N/A</td>
+                                    <td>${p.edad > 0 ? p.edad : 'N/A'}</td>
                                     <td>${p.sexo == 0 ? 'Femenino' : 'Masculino'}</td>
-                                    <td class="text-muted">N/A</td>
+                                    <td class="text-muted">${not empty p.fechaRealizacion ? p.fechaRealizacion : 'N/A'}</td>
                                     <td class="text-end pe-4">
                                         <div class="d-inline-flex gap-2">
                                             <!-- Ver detalle -->

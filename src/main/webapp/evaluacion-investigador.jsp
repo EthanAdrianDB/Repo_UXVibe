@@ -80,6 +80,7 @@
             <form action="${pageContext.request.contextPath}/participantes" method="post" id="formFinalizar">
                 <input type="hidden" name="action" value="create">
                 <input type="hidden" name="idPrueba" value="${not empty param.idPrueba ? param.idPrueba : '0'}">
+                <input type="hidden" id="hiddenUrlDestino" value="${not empty prueba.urlSistema ? prueba.urlSistema : param.url}">
                 
             <!-- PASO 1: Grabar Audio -->
             <div id="step1" class="step-container active text-center">
@@ -265,6 +266,11 @@
                     </div>
 
                     <div class="mb-3">
+                        <label class="form-label fw-medium">Edad: <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" name="edad" placeholder="Ej. 25" min="1" max="120" required>
+                    </div>
+
+                    <div class="mb-3">
                         <label class="form-label fw-medium">Sexo / Género: <span class="text-danger">*</span></label>
                         <select class="form-select" name="sexo" required>
                             <option value="">Selecciona una opción</option>
@@ -279,7 +285,7 @@
                         <button type="button" class="btn btn-outline-secondary px-4 py-2" onclick="nextStep(3)">
                             <i class="bi bi-arrow-left me-2"></i> Atrás
                         </button>
-                        <button type="submit" class="btn text-white px-4 py-2" style="background-color: #3b8285;" onclick="detenerGrabacion()">
+                        <button type="submit" id="btnFinalizar" class="btn text-white px-4 py-2" style="background-color: #3b8285;">
                             <i class="bi bi-check-circle me-2"></i> Finalizar y Guardar
                         </button>
                     </div>
@@ -295,6 +301,8 @@
     let isRecording = false;
     let mediaRecorder;
     let audioChunks = [];
+    let audioBlob = null;
+    let streamRef = null;
     
     function toggleRecording() {
         const btn = document.getElementById('btnRecord');
@@ -323,46 +331,35 @@
         }
     }
 
-    // 1. Request microphone access and start recording
     async function startRecording() {
-        audioChunks = []; // Clear previous data
+        audioChunks = [];
         
         try {
-            // Request mic stream
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-            // Initialize MediaRecorder
+            streamRef = stream;
             mediaRecorder = new MediaRecorder(stream);
             
-            // Capture data chunks as they become available
             mediaRecorder.ondataavailable = (event) => {
                 if (event.data.size > 0) {
                     audioChunks.push(event.data);
                 }
             };
 
-            // Define what happens when recording stops
-            mediaRecorder.onstop = async () => {
-                // Combine chunks into a single Blob (typically webm or ogg depending on browser)
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                
-                // Send the file to your server
-                await uploadAudio(audioBlob);
-                
-                // Stop all audio tracks to release the microphone hardware
-                stream.getTracks().forEach(track => track.stop());
+            mediaRecorder.onstop = () => {
+                audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                if (streamRef) {
+                    streamRef.getTracks().forEach(track => track.stop());
+                }
             };
 
-            // Start recording
             mediaRecorder.start();
             console.log("Recording started...");
         } catch (err) {
-            console.error("Microphone access denied or error occurred:", err);
-            // Optionally, handle error UI here
+            console.error("Error accessing microphone:", err);
+            alert("No se pudo acceder al micrófono. Por favor, concede los permisos.");
         }
     }
 
-    // 2. Stop the recording triggering the 'onstop' event
     function stopRecording() {
         if (mediaRecorder && mediaRecorder.state !== "inactive") {
             mediaRecorder.stop();
@@ -370,52 +367,67 @@
         }
     }
 
-    // 3. Package the Blob into FormData and send via Fetch API
-    async function uploadAudio(blob) {
-        const formData = new FormData();
-
-        // Append the blob file: field name, blob object, and destination file name
-        formData.append('audio_file', blob, 'recording.webm');
-        
-        // Let's add idPrueba in case it's needed for the backend
-        const idPrueba = document.querySelector('input[name="idPrueba"]').value;
-        if (idPrueba) {
-            formData.append('idPrueba', idPrueba);
-        }
-        
-        try {
-            console.log("Uploading audio...");
-            const response = await fetch('${pageContext.request.contextPath}/audio', {
-                method: 'POST',
-                body: formData // Fetch sets the 'multipart/form-data' header automatically
-            });
-
-            if (response.ok) {
-                // const result = await response.json();
-                console.log("Upload successful");
-            } else {
-                console.error("Upload failed with status:", response.status);
-            }
-        } catch (error) {
-            console.error("Error uploading file:", error);
-        }
-    }
+    let urlAbierta = false;
 
     function nextStep(stepNumber) {
-        // Ocultar todos los pasos
+        if (stepNumber === 2 && !urlAbierta) {
+            const url = document.getElementById('hiddenUrlDestino').value;
+            if (url && url.trim() !== '') {
+                window.open(url.trim(), '_blank');
+                urlAbierta = true;
+            }
+        }
+
         document.querySelectorAll('.step-container').forEach(el => {
             el.classList.remove('active');
         });
         
-        // Mostrar el paso solicitado
         document.getElementById('step' + stepNumber).classList.add('active');
     }
 
-    function detenerGrabacion() {
+    // Intercept form submission
+    document.getElementById('formFinalizar').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const btnFinalizar = document.getElementById('btnFinalizar');
+        btnFinalizar.disabled = true;
+        btnFinalizar.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Guardando...';
+
+        // Ensure recording is stopped before submitting
         if (isRecording) {
-            toggleRecording(); // Detiene la simulación y grabacion real
+            toggleRecording(); // This calls stopRecording()
+            // Wait a brief moment for the onstop event to fire and create the Blob
+            await new Promise(resolve => setTimeout(resolve, 500)); 
         }
-    }
+
+        const formData = new FormData(this);
+        
+        if (audioBlob) {
+            formData.append('audio_file', audioBlob, 'recording.webm');
+        }
+
+        try {
+            const response = await fetch(this.action, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                // If the servlet returns a redirect or ok status
+                const idPrueba = document.querySelector('input[name="idPrueba"]').value;
+                window.location.href = '${pageContext.request.contextPath}/participantes?idPrueba=' + idPrueba;
+            } else {
+                alert("Error al guardar la evaluación. Status: " + response.status);
+                btnFinalizar.disabled = false;
+                btnFinalizar.innerHTML = '<i class="bi bi-check-circle me-2"></i> Finalizar y Guardar';
+            }
+        } catch (error) {
+            console.error("Error submitting form:", error);
+            alert("Error de conexión al guardar la evaluación.");
+            btnFinalizar.disabled = false;
+            btnFinalizar.innerHTML = '<i class="bi bi-check-circle me-2"></i> Finalizar y Guardar';
+        }
+    });
 </script>
 
 </body>

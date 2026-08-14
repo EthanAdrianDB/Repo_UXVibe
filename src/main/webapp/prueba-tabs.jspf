@@ -28,7 +28,7 @@
                 <i class="bi bi-calendar-event"></i>
             </div>
             <div>
-                <div class="text-muted small" style="font-size: 0.75rem;">Fecha de creación</div>
+                <div class="text-muted small" style="font-size: 0.75rem;">Fecha de creacion</div>
                 <div class="fw-bold text-dark fs-6"><jsp:useBean id="now" class="java.util.Date"/><fmt:formatDate value="${now}" pattern="dd/MM/yyyy" /></div>
             </div>
         </div>

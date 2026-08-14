@@ -32,7 +32,7 @@
                 <div class="mb-3">
                     <label for="plataforma" class="form-label fw-medium">Nombre de la plataforma: <span class="text-danger">*</span></label>
                     <input type="text" class="form-control form-control-lg uxv-input" id="plataforma" name="plataforma" 
-                           value="${not empty pruebaEditar ? 'UXVibe' : 'UXVibe'}" placeholder="Ej. UXVibe" required>
+                           value="${not empty pruebaEditar ? pruebaEditar.descripcion : ''}" placeholder="Ej. Gmail, Facebook, etc." required>
                 </div>
 
                 <div class="mb-3">

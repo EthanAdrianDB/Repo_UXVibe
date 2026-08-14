@@ -21,7 +21,29 @@ public class AudioServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        String action = request.getParameter("action");
         int idPrueba = Integer.parseInt(request.getParameter("idPrueba"));
+
+        if ("play".equals(action)) {
+            int idParticipante = Integer.parseInt(request.getParameter("idParticipante"));
+            java.io.InputStream is = new mx.edu.utez.uxvibe.model.dao.ArchivoAudioDao().getAudioStream(idParticipante, idPrueba);
+            
+            if (is != null) {
+                response.setContentType("audio/webm"); // Default type used by MediaRecorder
+                java.io.OutputStream os = response.getOutputStream();
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+                is.close();
+                os.flush();
+            } else {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
+            return;
+        }
+
         Prueba prueba = pruebaDao.getById(idPrueba);
 
         request.setAttribute("prueba", prueba);

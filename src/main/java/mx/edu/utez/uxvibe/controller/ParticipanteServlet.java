@@ -10,10 +10,16 @@ import mx.edu.utez.uxvibe.model.Prueba;
 import mx.edu.utez.uxvibe.model.dao.ParticipanteDao;
 import mx.edu.utez.uxvibe.model.dao.PruebaDao;
 
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.http.Part;
+import mx.edu.utez.uxvibe.model.ArchivoAudio;
+import mx.edu.utez.uxvibe.model.dao.ArchivoAudioDao;
+
 import java.io.IOException;
 import java.util.List;
 
 @WebServlet(name = "ParticipanteServlet", value = "/participantes")
+@MultipartConfig(maxFileSize = 1024 * 1024 * 50) // 50MB max file size
 public class ParticipanteServlet extends HttpServlet {
 
     private final ParticipanteDao participanteDao = new ParticipanteDao();
@@ -61,6 +67,8 @@ public class ParticipanteServlet extends HttpServlet {
             String sexoStr = request.getParameter("sexo");
             p.setSexo(parseSexo(sexoStr));
             
+            String edadStr = request.getParameter("edad");
+            p.setEdad(edadStr != null && !edadStr.trim().isEmpty() ? Integer.parseInt(edadStr.trim()) : 0);
             if (participanteDao.create(p)) {
                 // Guardar la respuesta asociada
                 mx.edu.utez.uxvibe.model.Respuesta r = new mx.edu.utez.uxvibe.model.Respuesta();
@@ -94,7 +102,24 @@ public class ParticipanteServlet extends HttpServlet {
                 r.setFrecuenciaEstadoAnimo2(parseFrecuencia(request.getParameter("estado_relajado")));
                 
                 new mx.edu.utez.uxvibe.model.dao.RespuestaDao().create(r);
+
+                // Save audio
+                Part audioPart = request.getPart("audio_file");
+                if (audioPart != null && audioPart.getSize() > 0) {
+                    ArchivoAudio audio = new ArchivoAudio();
+                    audio.setIdParticipante(p.getIdParticipante());
+                    audio.setIdPrueba(idPrueba);
+                    audio.setAudio(audioPart.getInputStream());
+                    new ArchivoAudioDao().create(audio);
+                }
             }
+        }
+
+        // Si es una petición fetch (AJAX), podemos devolver un simple OK. 
+        // Si no, redireccionamos. EvaluacionInvestigador usa fetch.
+        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With")) || request.getContentType() != null && request.getContentType().startsWith("multipart/form-data")) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
         }
 
         response.sendRedirect(request.getContextPath() + "/participantes?idPrueba=" + idPrueba);

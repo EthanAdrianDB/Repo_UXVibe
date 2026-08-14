@@ -12,9 +12,10 @@ public class Participante implements Serializable {
     private String apellidoP;
     private int sexo; // 0 o 1
     private int idPrueba;
-    
-    // Campo transitorio si se requiere para vistas antiguas
+    private int edad;
     private String fechaRealizacion;
+    private String duracionFormateada;
+    private String audioPath;
 
     public Participante() {
     }
@@ -46,8 +47,17 @@ public class Participante implements Serializable {
     public int getIdPrueba() { return idPrueba; }
     public void setIdPrueba(int idPrueba) { this.idPrueba = idPrueba; }
 
+    public int getEdad() { return edad; }
+    public void setEdad(int edad) { this.edad = edad; }
+
     public String getFechaRealizacion() { return fechaRealizacion; }
     public void setFechaRealizacion(String fechaRealizacion) { this.fechaRealizacion = fechaRealizacion; }
+
+    public String getDuracionFormateada() { return duracionFormateada; }
+    public void setDuracionFormateada(String duracionFormateada) { this.duracionFormateada = duracionFormateada; }
+
+    public String getAudioPath() { return audioPath; }
+    public void setAudioPath(String audioPath) { this.audioPath = audioPath; }
 
     // Compatibilidad temporal para evitar errores en vistas antes de la fase 2
     public int getIdColaborador() { return idParticipante; }

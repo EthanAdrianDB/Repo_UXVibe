@@ -17,7 +17,7 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
 
     @Override
     public boolean create(Participante entidad) {
-        String sql = "INSERT INTO Participante (nombre, apellido_m, apellido_p, sexo, id_prueba) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Participante (nombre, apellido_m, apellido_p, sexo, id_prueba, edad, fecha_realizacion) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -26,6 +26,10 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
             ps.setString(3, entidad.getApellidoP());
             ps.setInt(4, entidad.getSexo());
             ps.setInt(5, entidad.getIdPrueba());
+            ps.setInt(6, entidad.getEdad());
+            // Guardar la fecha actual como fecha de realización
+            String fechaActual = new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date());
+            ps.setString(7, entidad.getFechaRealizacion() != null ? entidad.getFechaRealizacion() : fechaActual);
 
             int rows = ps.executeUpdate();
             if (rows > 0) {
@@ -110,7 +114,7 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
 
     @Override
     public boolean update(Participante entidad) {
-        String sql = "UPDATE Participante SET nombre = ?, apellido_m = ?, apellido_p = ?, sexo = ?, id_prueba = ? WHERE id_participante = ?";
+        String sql = "UPDATE Participante SET nombre = ?, apellido_m = ?, apellido_p = ?, sexo = ?, id_prueba = ?, edad = ?, fecha_realizacion = ? WHERE id_participante = ?";
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, entidad.getNombre());
@@ -118,7 +122,9 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
             ps.setString(3, entidad.getApellidoP());
             ps.setInt(4, entidad.getSexo());
             ps.setInt(5, entidad.getIdPrueba());
-            ps.setInt(6, entidad.getIdParticipante());
+            ps.setInt(6, entidad.getEdad());
+            ps.setString(7, entidad.getFechaRealizacion());
+            ps.setInt(8, entidad.getIdParticipante());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -178,7 +184,7 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
     // Eliminado edadPromedio porque ya no hay campo de edad en la BD
 
     private Participante aParticipante(ResultSet rs) throws SQLException {
-        return new Participante(
+        Participante p = new Participante(
                 rs.getInt("id_participante"),
                 rs.getString("nombre"),
                 rs.getString("apellido_m"),
@@ -186,5 +192,9 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
                 rs.getInt("sexo"),
                 rs.getInt("id_prueba")
         );
+        // Leer campos opcionales que pueden no existir aún en la BD
+        try { p.setEdad(rs.getInt("edad")); } catch (SQLException ignored) {}
+        try { p.setFechaRealizacion(rs.getString("fecha_realizacion")); } catch (SQLException ignored) {}
+        return p;
     }
 }

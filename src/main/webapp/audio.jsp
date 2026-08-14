@@ -47,7 +47,7 @@
                                             </td>
                                             <td class="text-center pe-4">
                                                 <button type="button" class="btn btn-sm text-dark p-1 rounded-circle play-row-btn" 
-                                                        onclick="reproducirAudio('${not empty p.nombre ? p.nombre.concat(' ').concat(p.apellidoP) : 'Participante #'.concat(p.idParticipante)}', '${not empty p.duracionFormateada && p.duracionFormateada != '0:00' ? p.duracionFormateada : '10:12'}', '${p.audioPath}', ${p.idParticipante})" 
+                                                        onclick="reproducirAudio('${not empty p.nombre ? p.nombre.concat(' ').concat(p.apellidoP) : 'Participante #'.concat(p.idParticipante)}', '${not empty p.duracionFormateada && p.duracionFormateada != '0:00' ? p.duracionFormateada : '10:12'}', '${pageContext.request.contextPath}/audio?action=play&idPrueba=${prueba.idPrueba}&idParticipante=${p.idParticipante}', ${p.idParticipante})" 
                                                         title="Reproducir audio">
                                                     <i class="bi bi-caret-right-fill fs-5"></i>
                                                 </button>
