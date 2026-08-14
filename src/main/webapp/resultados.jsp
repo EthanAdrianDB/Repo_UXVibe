@@ -14,19 +14,19 @@
         </div>
         <div class="col-6 col-md-3">
             <div class="uxv-tarjeta text-center">
-                <div class="valor text-dark">${edadPromedio != null && edadPromedio > 0 ? edadPromedio : 0}</div>
+                <div class="valor text-dark">N/A</div>
                 <div class="subtitulo text-muted fw-medium">Edad promedio</div>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="uxv-tarjeta text-center">
-                <div class="valor text-dark">${satisfaccionPromedio != null && satisfaccionPromedio > 0 ? satisfaccionPromedio : '0.0'} / 5</div>
+                <div class="valor text-dark">N/A</div>
                 <div class="subtitulo text-muted fw-medium">Satisfacción promedio</div>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="uxv-tarjeta text-center">
-                <div class="valor text-dark">${porcentajeRecomiendan != null ? porcentajeRecomiendan : '0'}%</div>
+                <div class="valor text-dark">N/A</div>
                 <div class="subtitulo text-muted fw-medium">Recomendarían</div>
             </div>
         </div>
@@ -48,7 +48,7 @@
                     <c:otherwise>
                         <c:forEach items="${promedioPorPregunta}" var="entry">
                             <div class="d-flex align-items-center gap-3 mb-2">
-                                <span class="small fw-semibold text-muted" style="width:30px;">${entry.key}</span>
+                                <span class="small fw-semibold text-muted" style="width:100px;">${entry.key}</span>
                                 <div class="flex-grow-1 bg-light rounded overflow-hidden" style="height:14px;">
                                     <div class="rounded" style="height:14px; width:${(entry.value / 5.0) * 100}%; background-color: var(--uxv-secundario);"></div>
                                 </div>
@@ -101,7 +101,7 @@
                     <i class="bi bi-emoji-frown fs-3 text-secondary"></i>
                 </div>
                 <div class="subtitulo text-muted">Promedio</div>
-                <div class="fs-4 fw-bold text-dark">${promedioSam['SAM_VALENCIA'] != null ? promedioSam['SAM_VALENCIA'] : '0.0'}</div>
+                <div class="fs-4 fw-bold text-dark">${promedioPorPregunta['SAM_1'] != null ? promedioPorPregunta['SAM_1'] : '0.0'}</div>
             </div>
         </div>
 
@@ -116,7 +116,7 @@
                     <i class="bi bi-dash-circle fs-3 text-secondary"></i>
                 </div>
                 <div class="subtitulo text-muted">Promedio</div>
-                <div class="fs-4 fw-bold text-dark">${promedioSam['SAM_ACTIVACION'] != null ? promedioSam['SAM_ACTIVACION'] : '0.0'}</div>
+                <div class="fs-4 fw-bold text-dark">${promedioPorPregunta['SAM_2'] != null ? promedioPorPregunta['SAM_2'] : '0.0'}</div>
             </div>
         </div>
 
@@ -131,7 +131,7 @@
                     <i class="bi bi-controller fs-3 text-secondary"></i>
                 </div>
                 <div class="subtitulo text-muted">Promedio</div>
-                <div class="fs-4 fw-bold text-dark">${promedioSam['SAM_DOMINANCIA'] != null ? promedioSam['SAM_DOMINANCIA'] : '0.0'}</div>
+                <div class="fs-4 fw-bold text-dark">${promedioPorPregunta['SAM_3'] != null ? promedioPorPregunta['SAM_3'] : '0.0'}</div>
             </div>
         </div>
     </div>

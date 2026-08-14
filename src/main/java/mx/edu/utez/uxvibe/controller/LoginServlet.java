@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import mx.edu.utez.uxvibe.model.Investigador;
-import mx.edu.utez.uxvibe.model.dao.InvestigadorDao;
+import mx.edu.utez.uxvibe.model.Evaluador;
+import mx.edu.utez.uxvibe.model.dao.EvaluadorDao;
 import mx.edu.utez.uxvibe.utils.PasswordUtil;
 
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.io.IOException;
 @WebServlet(name = "LoginServlet", value = "/login")
 public class LoginServlet extends HttpServlet {
 
-    private final InvestigadorDao investigadorDao = new InvestigadorDao();
+    private final EvaluadorDao evaluadorDao = new EvaluadorDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,14 +30,14 @@ public class LoginServlet extends HttpServlet {
         String correo = request.getParameter("correo");
         String password = request.getParameter("password");
 
-        Investigador investigador = (correo != null) ? investigadorDao.buscarPorCorreo(correo.trim()) : null;
+        Evaluador evaluador = (correo != null) ? evaluadorDao.buscarPorCorreo(correo.trim()) : null;
 
-        if (investigador != null) {
+        if (evaluador != null) {
             String hashIngresado = PasswordUtil.hashPassword(password, "");
-            if (hashIngresado.equals(investigador.getContrasenaHash())) {
+            if (hashIngresado.equals(evaluador.getContrasena())) {
                 HttpSession session = request.getSession(true);
                 session.setMaxInactiveInterval(60 * 30);
-                session.setAttribute("evaluador", investigador);
+                session.setAttribute("evaluador", evaluador);
                 response.sendRedirect(request.getContextPath() + "/inicio");
                 return;
             }

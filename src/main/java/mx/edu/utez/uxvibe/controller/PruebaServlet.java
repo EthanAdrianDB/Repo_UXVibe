@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import mx.edu.utez.uxvibe.model.Investigador;
+import mx.edu.utez.uxvibe.model.Evaluador;
 import mx.edu.utez.uxvibe.model.Prueba;
 import mx.edu.utez.uxvibe.model.dao.PruebaDao;
 
@@ -46,7 +46,7 @@ public class PruebaServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         HttpSession session = request.getSession(false);
-        Investigador investigador = (Investigador) session.getAttribute("evaluador");
+        Evaluador evaluador = (Evaluador) session.getAttribute("evaluador");
 
         String action = request.getParameter("action");
 
@@ -60,10 +60,10 @@ public class PruebaServlet extends HttpServlet {
             String tarea = request.getParameter("tarea");
 
             Prueba prueba = new Prueba();
-            prueba.setIdInvestigador(investigador.getId());
-            prueba.setNombreEstudio(nombre);
-            prueba.setUrlDestino(url);
-            prueba.setTareaDescripcion(tarea);
+            prueba.setIdEvaluador(evaluador.getIdEvaluador());
+            prueba.setNombre(nombre);
+            prueba.setUrlSistema(url);
+            prueba.setDescripcion(tarea);
 
             if ("create".equals(action)) {
                 pruebaDao.create(prueba);

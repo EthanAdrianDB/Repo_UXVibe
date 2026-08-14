@@ -5,8 +5,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import mx.edu.utez.uxvibe.model.Investigador;
-import mx.edu.utez.uxvibe.model.dao.InvestigadorDao;
+import mx.edu.utez.uxvibe.model.Evaluador;
+import mx.edu.utez.uxvibe.model.dao.EvaluadorDao;
 import mx.edu.utez.uxvibe.utils.EmailSender;
 import mx.edu.utez.uxvibe.utils.PasswordUtil;
 
@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 @WebServlet(name = "RecuperarServlet", value = "/recuperar")
 public class RecuperarServlet extends HttpServlet {
 
-    private final InvestigadorDao investigadorDao = new InvestigadorDao();
+    private final EvaluadorDao evaluadorDao = new EvaluadorDao();
 
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$");
@@ -28,8 +28,8 @@ public class RecuperarServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String token = req.getParameter("token");
         if (token != null && !token.trim().isEmpty()) {
-            Investigador investigador = investigadorDao.buscarPorToken(token);
-            if (investigador != null) {
+            Evaluador evaluador = evaluadorDao.buscarPorToken(token);
+            if (evaluador != null) {
                 req.setAttribute("token", token);
                 req.getRequestDispatcher("cambiar-contra.jsp").forward(req, resp);
                 return;
@@ -57,9 +57,10 @@ public class RecuperarServlet extends HttpServlet {
 
         if (correo != null && !correo.trim().isEmpty()) {
             String correoNormalizado = correo.trim().toLowerCase();
-            if (investigadorDao.correoExiste(correoNormalizado)) {
+            // Para la fase 2 usamos buscarPorCorreo como equivalente a correoExiste
+            if (evaluadorDao.buscarPorCorreo(correoNormalizado) != null) {
                 String token = UUID.randomUUID().toString();
-                investigadorDao.guardarTokenRecuperacion(correoNormalizado, token);
+                // evaluadorDao.guardarTokenRecuperacion(correoNormalizado, token); // TODO: Agregar si se requiere en BD
 
                 String baseUrl = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath();
                 String enlaceRestablecer = baseUrl + "/recuperar?token=" + token;
@@ -88,17 +89,17 @@ public class RecuperarServlet extends HttpServlet {
             return;
         }
 
-        Investigador investigador = investigadorDao.buscarPorToken(token);
-        if (investigador == null) {
+        Evaluador evaluador = evaluadorDao.buscarPorToken(token);
+        if (evaluador == null) {
             redirectError(resp, token, "El token de recuperación no es válido o ya fue utilizado.");
             return;
         }
 
         String nuevoHash = PasswordUtil.hashPassword(pass1, "");
-        boolean actualizado = investigadorDao.actualizarContrasena(investigador.getId(), nuevoHash, "");
+        boolean actualizado = evaluadorDao.actualizarContrasena(evaluador.getIdEvaluador(), nuevoHash, "");
 
         if (actualizado) {
-            investigadorDao.eliminarToken(token);
+            // evaluadorDao.eliminarToken(token); // TODO
             resp.sendRedirect("contra-actualizada.jsp");
         } else {
             redirectError(resp, token, "Ocurrió un error al actualizar la contraseña.");

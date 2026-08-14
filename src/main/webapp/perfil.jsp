@@ -55,8 +55,16 @@
                     <form action="${pageContext.request.contextPath}/perfil" method="post">
                         <input type="hidden" name="action" value="editarInfo">
                         <div class="mb-3">
-                            <label class="form-label small text-muted mb-0">Nombre completo</label>
-                            <input type="text" class="form-control" name="nombres" value="${sessionScope.evaluador.nombre}" required>
+                            <label class="form-label small text-muted mb-0">Nombre(s)</label>
+                            <input type="text" class="form-control" name="nombre" value="${sessionScope.evaluador.nombre}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted mb-0">Apellido Paterno</label>
+                            <input type="text" class="form-control" name="apellidoPaterno" value="${sessionScope.evaluador.apellidoP}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted mb-0">Apellido Materno</label>
+                            <input type="text" class="form-control" name="apellidoMaterno" value="${sessionScope.evaluador.apellidoM}">
                         </div>
                         <div class="mb-3">
                             <label class="form-label small text-muted mb-0">Correo electrónico</label>

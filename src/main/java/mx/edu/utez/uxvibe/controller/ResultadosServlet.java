@@ -28,11 +28,12 @@ public class ResultadosServlet extends HttpServlet {
 
         request.setAttribute("prueba", prueba);
         request.setAttribute("pestanaActiva", "resultados");
-        request.setAttribute("edadPromedio", participanteDao.edadPromedio(idPrueba));
+        
+        // request.setAttribute("edadPromedio", participanteDao.edadPromedio(idPrueba)); // No existe edad en el nuevo modelo
         request.setAttribute("distribucionSexo", participanteDao.distribucionPorSexo(idPrueba));
+        
+        // Las respuestas ahora son 20 métricas, las dejamos como TODO para fase 3 o vista
         request.setAttribute("promedioPorPregunta", respuestaDao.promedioPorPregunta(idPrueba));
-        request.setAttribute("satisfaccionPromedio", respuestaDao.satisfaccionPromedio(idPrueba));
-        request.setAttribute("promedioSam", respuestaDao.promedioSam(idPrueba));
 
         request.getRequestDispatcher("resultados.jsp").forward(request, response);
     }

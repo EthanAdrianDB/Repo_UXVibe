@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import mx.edu.utez.uxvibe.model.Investigador;
+import mx.edu.utez.uxvibe.model.Evaluador;
 import mx.edu.utez.uxvibe.model.Prueba;
 import mx.edu.utez.uxvibe.model.dao.ParticipanteDao;
 import mx.edu.utez.uxvibe.model.dao.PruebaDao;
@@ -25,9 +25,9 @@ public class InicioServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
-        Investigador investigador = (Investigador) session.getAttribute("evaluador");
+        Evaluador evaluador = (Evaluador) session.getAttribute("evaluador");
 
-        List<Prueba> pruebas = pruebaDao.getPorEvaluador(investigador.getId());
+        List<Prueba> pruebas = pruebaDao.getPorEvaluador(evaluador.getIdEvaluador());
 
         int totalParticipantes = 0;
         for (Prueba p : pruebas) {

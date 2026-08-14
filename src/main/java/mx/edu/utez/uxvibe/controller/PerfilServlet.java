@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import mx.edu.utez.uxvibe.model.Investigador;
-import mx.edu.utez.uxvibe.model.dao.InvestigadorDao;
+import mx.edu.utez.uxvibe.model.Evaluador;
+import mx.edu.utez.uxvibe.model.dao.EvaluadorDao;
 import mx.edu.utez.uxvibe.utils.PasswordUtil;
 
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.io.IOException;
 @WebServlet(name = "PerfilServlet", value = "/perfil")
 public class PerfilServlet extends HttpServlet {
 
-    private final InvestigadorDao investigadorDao = new InvestigadorDao();
+    private final EvaluadorDao evaluadorDao = new EvaluadorDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,13 +30,15 @@ public class PerfilServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         HttpSession session = request.getSession(false);
-        Investigador investigador = (Investigador) session.getAttribute("evaluador");
+        Evaluador evaluador = (Evaluador) session.getAttribute("evaluador");
         String action = request.getParameter("action");
 
         if ("editarInfo".equals(action)) {
-            investigador.setNombre(request.getParameter("nombres"));
-            investigadorDao.update(investigador);
-            session.setAttribute("evaluador", investigador);
+            evaluador.setNombre(request.getParameter("nombre"));
+            evaluador.setApellidoP(request.getParameter("apellidoPaterno"));
+            evaluador.setApellidoM(request.getParameter("apellidoMaterno"));
+            evaluadorDao.update(evaluador);
+            session.setAttribute("evaluador", evaluador);
 
             response.sendRedirect(request.getContextPath() + "/perfil?actualizado=info");
             return;
@@ -47,7 +49,9 @@ public class PerfilServlet extends HttpServlet {
 
             if (password != null && password.equals(confirmarPassword)) {
                 String nuevoHash = PasswordUtil.hashPassword(password, "");
-                investigadorDao.actualizarContrasena(investigador.getId(), nuevoHash, "");
+                evaluadorDao.actualizarContrasena(evaluador.getIdEvaluador(), nuevoHash, "");
+                evaluador.setContrasena(nuevoHash);
+                session.setAttribute("evaluador", evaluador);
                 response.sendRedirect(request.getContextPath() + "/perfil?actualizado=password");
                 return;
             }

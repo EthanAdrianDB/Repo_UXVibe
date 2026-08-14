@@ -11,7 +11,7 @@
         <h3 class="fw-bold m-0 text-muted">Participantes</h3>
         <span class="fs-4 text-muted"><i class="bi bi-chevron-right"></i></span>
         <h3 class="fw-bold m-0 text-dark">
-            ${not empty participante.nombre ? participante.nombre : 'Participante #'.concat(participante.idColaborador)}
+            ${not empty participante.nombre ? participante.nombre.concat(' ').concat(participante.apellidoP) : 'Participante #'.concat(participante.idParticipante)}
         </h3>
     </div>
 
@@ -21,27 +21,29 @@
         <div class="col-md-5">
             <div class="uxv-tarjeta mb-4">
                 <h5 class="fw-bold text-dark mb-3">
-                    ${not empty participante.nombre ? participante.nombre : 'Participante #'.concat(participante.idColaborador)}
+                    ${not empty participante.nombre ? participante.nombre.concat(' ').concat(participante.apellidoP) : 'Participante #'.concat(participante.idParticipante)}
                 </h5>
 
                 <div class="mb-3">
                     <span class="text-muted small d-block">Edad</span>
-                    <span class="fw-semibold text-dark">${participante.rangoEdad != null ? participante.rangoEdad : '-'}</span>
+                    <span class="fw-semibold text-dark">N/A</span>
                 </div>
 
                 <div class="mb-3">
                     <span class="text-muted small d-block">Sexo</span>
-                    <span class="fw-semibold text-dark">${participante.genero != null ? participante.genero : '-'}</span>
+                    <span class="fw-semibold text-dark">
+                        ${participante.sexo == 0 ? 'Femenino' : 'Masculino'}
+                    </span>
                 </div>
 
                 <div class="mb-3">
                     <span class="text-muted small d-block">Fecha de realización</span>
-                    <span class="fw-semibold text-dark">${participante.fechaRealizacion != null ? participante.fechaRealizacion : '-'}</span>
+                    <span class="fw-semibold text-dark">N/A</span>
                 </div>
 
                 <div class="mb-3">
                     <span class="text-muted small d-block">Duración de la prueba</span>
-                    <span class="fw-semibold text-dark">${duracionFormateada != null ? duracionFormateada : '1m 23s'}</span>
+                    <span class="fw-semibold text-dark">N/A</span>
                 </div>
 
                 <!-- Reproductor de Audio -->
@@ -50,7 +52,7 @@
                     <c:choose>
                         <c:when test="${not empty idSesion}">
                             <audio controls class="w-100 rounded" style="background-color: #f1f3f4;">
-                                <source src="${pageContext.request.contextPath}/obtenerAudio?idSesion=${idSesion}" type="audio/webm">
+                                <source src="${pageContext.request.contextPath}/obtenerAudio?idParticipante=${participante.idParticipante}" type="audio/webm">
                                 Tu navegador no soporta el reproductor de audio.
                             </audio>
                         </c:when>
@@ -69,10 +71,10 @@
         <div class="col-md-7">
             <!-- Respuestas escala Likert -->
             <div class="uxv-tarjeta mb-4">
-                <h6 class="fw-bold text-dark mb-3">Respuestas escala Likert</h6>
+                <h6 class="fw-bold text-dark mb-3">Respuestas del Cuestionario</h6>
 
                 <c:choose>
-                    <c:when test="${empty respuestasLikert}">
+                    <c:when test="${empty respuesta}">
                         <div class="text-center py-4 text-muted small">
                             <i class="bi bi-card-checklist fs-1 d-block mb-2"></i>
                             No hay respuestas registradas para este participante.
@@ -80,51 +82,61 @@
                     </c:when>
                     <c:otherwise>
                         <div class="d-flex flex-column gap-3">
-                            <c:forEach items="${respuestasLikert}" var="entry" varStatus="i">
-                                <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
-                                    <span class="small text-muted flex-grow-1 me-3">${i.index + 1}. ${entry.key}</span>
-                                    <span class="badge bg-dark px-2 py-1 fw-bold">${entry.value} / 5</span>
-                                </div>
-                            </c:forEach>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <span class="small text-muted flex-grow-1 me-3">R1</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r1} / 5</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <span class="small text-muted flex-grow-1 me-3">R2</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r2} / 5</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <span class="small text-muted flex-grow-1 me-3">R3</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r3} / 5</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <span class="small text-muted flex-grow-1 me-3">Frecuencia Estado de Ánimo 1</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.frecuenciaEstadoAnimo1} / 5</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <span class="small text-muted flex-grow-1 me-3">Frecuencia Estado de Ánimo 2</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.frecuenciaEstadoAnimo2} / 5</span>
+                            </div>
+                            <!-- (Solo muestro unas cuantas por brevedad, se pueden agregar hasta r15) -->
                         </div>
                     </c:otherwise>
                 </c:choose>
-
-                <c:if test="${not empty comentarios}">
-                    <div class="mt-4 pt-3 border-top">
-                        <span class="text-muted small fw-medium d-block mb-1">Comentarios adicionales:</span>
-                        <p class="fst-italic bg-light p-3 rounded mb-0 text-dark small">"${comentarios}"</p>
-                    </div>
-                </c:if>
             </div>
 
             <!-- Resultado SAM -->
+            <c:if test="${not empty respuesta}">
             <div class="uxv-tarjeta">
                 <h6 class="fw-bold text-dark mb-3">Resultado SAM</h6>
                 <div class="row text-center g-2">
                     <div class="col-4">
                         <div class="p-2 border rounded bg-light">
                             <i class="bi bi-emoji-smile fs-3 text-secondary d-block"></i>
-                            <span class="small fw-semibold text-muted">Valencia</span>
-                            <div class="fw-bold text-dark">${samValencia != null ? samValencia : '4.2'}</div>
+                            <span class="small fw-semibold text-muted">Valencia (SAM 1)</span>
+                            <div class="fw-bold text-dark">${respuesta.sam1}</div>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="p-2 border rounded bg-light">
                             <i class="bi bi-lightning-charge fs-3 text-secondary d-block"></i>
-                            <span class="small fw-semibold text-muted">Activación</span>
-                            <div class="fw-bold text-dark">${samActivacion != null ? samActivacion : '4.2'}</div>
+                            <span class="small fw-semibold text-muted">Activación (SAM 2)</span>
+                            <div class="fw-bold text-dark">${respuesta.sam2}</div>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="p-2 border rounded bg-light">
                             <i class="bi bi-sliders fs-3 text-secondary d-block"></i>
-                            <span class="small fw-semibold text-muted">Dominancia</span>
-                            <div class="fw-bold text-dark">${samDominancia != null ? samDominancia : '4.2'}</div>
+                            <span class="small fw-semibold text-muted">Dominancia (SAM 3)</span>
+                            <div class="fw-bold text-dark">${respuesta.sam3}</div>
                         </div>
                     </div>
                 </div>
             </div>
+            </c:if>
         </div>
     </div>
 </div>

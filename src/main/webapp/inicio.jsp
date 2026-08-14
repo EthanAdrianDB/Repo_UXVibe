@@ -81,20 +81,20 @@
                             <c:forEach items="${pruebas}" var="prueba" varStatus="i">
                                 <tr>
                                     <td class="ps-4 text-muted fw-bold">${i.index + 1}</td>
-                                    <td class="fw-semibold text-dark">${prueba.nombreEstudio}</td>
+                                    <td class="fw-semibold text-dark">${prueba.nombre}</td>
                                     <td>
-                                        <a href="${prueba.urlDestino}" target="_blank" class="text-decoration-none text-muted">
-                                            ${prueba.urlDestino}
+                                        <a href="${prueba.urlSistema}" target="_blank" class="text-decoration-none text-muted">
+                                            ${prueba.urlSistema}
                                         </a>
                                     </td>
-                                    <td class="text-muted">${prueba.fechaCreacion != null ? prueba.fechaCreacion : prueba.fechaInicio}</td>
+                                    <td class="text-muted"><jsp:useBean id="now" class="java.util.Date"/><%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %><fmt:formatDate value="${now}" pattern="dd/MM/yyyy" /></td>
                                     <td class="fw-semibold">${prueba.totalParticipantes}</td>
                                     <td class="text-end pe-4">
                                         <div class="d-inline-flex gap-2">
                                             <!-- Ejecutar prueba (Abre Modal de Términos) -->
                                             <button type="button" class="btn btn-sm btn-light border text-dark" title="Ejecutar prueba"
-                                               data-tarea="<c:out value="${prueba.tarea}"/>"
-                                               data-url="<c:out value="${prueba.urlDestino}"/>"
+                                               data-tarea="<c:out value="${prueba.descripcion}"/>"
+                                               data-url="<c:out value="${prueba.urlSistema}"/>"
                                                onclick="openTerminosModal(${prueba.idPrueba}, this)">
                                                 <i class="bi bi-play-fill"></i>
                                             </button>

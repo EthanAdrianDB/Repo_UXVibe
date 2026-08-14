@@ -250,22 +250,26 @@
                 <p class="text-muted text-center mb-5">Ingresa los datos del participante para guardar y finalizar la evaluación.</p>
                 
                     <div class="mb-3">
-                        <label class="form-label fw-medium">Nombre completo: <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="nombre" placeholder="Ej. Juan Pérez" required>
+                        <label class="form-label fw-medium">Nombre(s): <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="nombre" placeholder="Ej. Juan" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-medium">Edad / Rango de Edad: <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="edad" placeholder="Ej. 23" required>
+                        <label class="form-label fw-medium">Apellido Paterno: <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="apellidoP" placeholder="Ej. Pérez" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Apellido Materno: <span class="text-muted">(Opcional)</span></label>
+                        <input type="text" class="form-control" name="apellidoM" placeholder="Ej. Gómez">
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-medium">Sexo / Género: <span class="text-danger">*</span></label>
                         <select class="form-select" name="sexo" required>
                             <option value="">Selecciona una opción</option>
-                            <option value="Femenino">Femenino</option>
-                            <option value="Masculino">Masculino</option>
-                            <option value="Otro">Otro</option>
+                            <option value="0">Femenino</option>
+                            <option value="1">Masculino</option>
                         </select>
                     </div>
 

@@ -37,17 +37,17 @@
                                 </thead>
                                 <tbody>
                                     <c:forEach items="${participantes}" var="p" varStatus="i">
-                                        <tr id="row-participante-${p.idColaborador}" class="participante-row">
+                                        <tr id="row-participante-${p.idParticipante}" class="participante-row">
                                             <td class="ps-4 text-muted fw-bold">${i.index + 1}</td>
                                             <td class="fw-semibold text-dark">
-                                                ${not empty p.nombre ? p.nombre : 'Participante #'.concat(p.idColaborador)}
+                                                ${not empty p.nombre ? p.nombre.concat(' ').concat(p.apellidoP) : 'Participante #'.concat(p.idParticipante)}
                                             </td>
                                             <td class="text-muted font-monospace">
                                                 ${not empty p.duracionFormateada && p.duracionFormateada != '0:00' ? p.duracionFormateada : '10:12'}
                                             </td>
                                             <td class="text-center pe-4">
                                                 <button type="button" class="btn btn-sm text-dark p-1 rounded-circle play-row-btn" 
-                                                        onclick="reproducirAudio('${not empty p.nombre ? p.nombre : 'Participante #'.concat(p.idColaborador)}', '${not empty p.duracionFormateada && p.duracionFormateada != '0:00' ? p.duracionFormateada : '10:12'}', '${p.audioPath}', ${p.idColaborador})" 
+                                                        onclick="reproducirAudio('${not empty p.nombre ? p.nombre.concat(' ').concat(p.apellidoP) : 'Participante #'.concat(p.idParticipante)}', '${not empty p.duracionFormateada && p.duracionFormateada != '0:00' ? p.duracionFormateada : '10:12'}', '${p.audioPath}', ${p.idParticipante})" 
                                                         title="Reproducir audio">
                                                     <i class="bi bi-caret-right-fill fs-5"></i>
                                                 </button>
@@ -203,13 +203,13 @@ function actualizarWaveformColores() {
     });
 }
 
-function reproducirAudio(nombre, duracion, audioSrc, idColaborador) {
+function reproducirAudio(nombre, duracion, audioSrc, idParticipante) {
     const tabla = document.getElementById('tablaContainer');
     const reproductor = document.getElementById('reproductorContainer');
     
     // Highlight table row
     document.querySelectorAll('.participante-row').forEach(r => r.classList.remove('table-active'));
-    const selectedRow = document.getElementById('row-participante-' + idColaborador);
+    const selectedRow = document.getElementById('row-participante-' + idParticipante);
     if (selectedRow) selectedRow.classList.add('table-active');
 
     // Layout adjustment

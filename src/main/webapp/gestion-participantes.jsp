@@ -40,23 +40,23 @@
                                 <tr>
                                     <td class="ps-4 text-muted fw-bold">${i.index + 1}</td>
                                     <td class="fw-semibold text-dark">
-                                        ${not empty p.nombre ? p.nombre : 'Participante #'.concat(p.idColaborador)}
+                                        ${not empty p.nombre ? p.nombre.concat(' ').concat(p.apellidoP) : 'Participante #'.concat(p.idParticipante)}
                                     </td>
-                                    <td>${p.rangoEdad != null ? p.rangoEdad : '-'}</td>
-                                    <td>${p.genero != null ? p.genero : '-'}</td>
-                                    <td class="text-muted">${p.fechaRealizacion != null ? p.fechaRealizacion : '-'}</td>
+                                    <td>N/A</td>
+                                    <td>${p.sexo == 0 ? 'Femenino' : 'Masculino'}</td>
+                                    <td class="text-muted">N/A</td>
                                     <td class="text-end pe-4">
                                         <div class="d-inline-flex gap-2">
                                             <!-- Ver detalle -->
                                             <a class="btn btn-sm btn-light border text-dark" title="Ver respuestas y detalle"
-                                               href="${pageContext.request.contextPath}/participante-detalle?id=${p.idColaborador}">
+                                               href="${pageContext.request.contextPath}/participante-detalle?id=${p.idParticipante}">
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                             <!-- Eliminar -->
                                             <form action="${pageContext.request.contextPath}/participantes" method="post" class="d-inline"
                                                   onsubmit="return confirm('¿Deseas eliminar a este participante?');">
                                                 <input type="hidden" name="action" value="delete">
-                                                <input type="hidden" name="id" value="${p.idColaborador}">
+                                                <input type="hidden" name="id" value="${p.idParticipante}">
                                                 <input type="hidden" name="idPrueba" value="${prueba.idPrueba}">
                                                 <button type="submit" class="btn btn-sm btn-light border text-danger" title="Eliminar">
                                                     <i class="bi bi-trash"></i>

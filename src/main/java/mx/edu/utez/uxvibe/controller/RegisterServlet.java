@@ -5,8 +5,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import mx.edu.utez.uxvibe.model.Investigador;
-import mx.edu.utez.uxvibe.model.dao.InvestigadorDao;
+import mx.edu.utez.uxvibe.model.Evaluador;
+import mx.edu.utez.uxvibe.model.dao.EvaluadorDao;
 import mx.edu.utez.uxvibe.utils.PasswordUtil;
 
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 @WebServlet(name = "RegisterServlet", value = "/registro")
 public class RegisterServlet extends HttpServlet {
 
-    private final InvestigadorDao investigadorDao = new InvestigadorDao();
+    private final EvaluadorDao evaluadorDao = new EvaluadorDao();
 
     // Mínimo 8 caracteres, una mayúscula, una minúscula y un número
     private static final Pattern PASSWORD_PATTERN =
@@ -53,7 +53,7 @@ public class RegisterServlet extends HttpServlet {
         }
 
         String correoNormalizado = correo.trim().toLowerCase();
-        if (investigadorDao.correoExiste(correoNormalizado)) {
+        if (evaluadorDao.buscarPorCorreo(correoNormalizado) != null) {
             request.setAttribute("error", "Ya existe una cuenta registrada con ese correo.");
             request.getRequestDispatcher("registro.jsp").forward(request, response);
             return;
@@ -61,10 +61,9 @@ public class RegisterServlet extends HttpServlet {
 
         String hash = PasswordUtil.hashPassword(password, "");
 
-        String nombreCompleto = (nombres.trim() + " " + apellidoPaterno.trim() + " " + apellidoMaterno.trim()).trim();
-        Investigador nuevo = new Investigador(0, nombreCompleto, correoNormalizado, hash);
+        Evaluador nuevo = new Evaluador(0, nombres.trim(), apellidoMaterno != null ? apellidoMaterno.trim() : "", apellidoPaterno.trim(), correoNormalizado, hash);
 
-        investigadorDao.create(nuevo);
+        evaluadorDao.create(nuevo);
         response.sendRedirect(request.getContextPath() + "/login?registroExitoso=true");
     }
 

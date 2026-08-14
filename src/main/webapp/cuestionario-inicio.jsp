@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UXVibe | ${prueba.nombreEstudio}</title>
+    <title>UXVibe | ${prueba.nombre}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/assets/css/uxvibe.css" rel="stylesheet">
 </head>
@@ -15,7 +15,7 @@
         <div class="card-body p-4">
             <h3 class="text-center mb-1">Formulario de evaluación</h3>
             <p class="text-center text-muted small mb-4">
-                Antes de comenzar "${prueba.nombreEstudio}", dinos tus datos demográficos
+                Antes de comenzar "${prueba.nombre}", dinos tus datos demográficos
             </p>
 
             <form action="${pageContext.request.contextPath}/cuestionario" method="post">
@@ -23,29 +23,29 @@
                 <input type="hidden" name="idPrueba" value="${prueba.idPrueba}">
 
                 <div class="mb-3">
-                    <label class="form-label">Nombre completo</label>
-                    <input type="text" class="form-control" name="nombre" placeholder="Ingresa tu nombre completo" required>
+                    <label class="form-label">Nombre(s)</label>
+                    <input type="text" class="form-control" name="nombre" placeholder="Ingresa tu nombre(s)" required>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Rango de Edad</label>
-                    <select class="form-select" name="rangoEdad" required>
-                        <option value="">Selecciona un rango</option>
-                        <option value="18-25">18 - 25 años</option>
-                        <option value="26-35">26 - 35 años</option>
-                        <option value="36-50">36 - 50 años</option>
-                        <option value="50+">Más de 50 años</option>
-                    </select>
+                    <label class="form-label">Apellido Paterno</label>
+                    <input type="text" class="form-control" name="apellidoP" placeholder="Ingresa tu apellido paterno" required>
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">Género</label>
-                    <select class="form-select" name="genero" required>
+                    <label class="form-label">Apellido Materno (Opcional)</label>
+                    <input type="text" class="form-control" name="apellidoM" placeholder="Ingresa tu apellido materno">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Sexo</label>
+                    <select class="form-select" name="sexo" required>
                         <option value="">Selecciona una opción</option>
-                        <option value="Femenino">Femenino</option>
-                        <option value="Masculino">Masculino</option>
-                        <option value="Otro">Otro / No especificar</option>
+                        <option value="0">Femenino</option>
+                        <option value="1">Masculino</option>
                     </select>
                 </div>
+
                 <div class="mb-4 form-check">
                     <input type="checkbox" class="form-check-input" id="consentimiento" name="consentimiento" value="1" required checked>
                     <label class="form-check-label small text-muted" for="consentimiento">

@@ -1,6 +1,6 @@
 package mx.edu.utez.uxvibe.model.dao;
 
-import mx.edu.utez.uxvibe.model.RespuestaCuestionario;
+import mx.edu.utez.uxvibe.model.Respuesta;
 import mx.edu.utez.uxvibe.utils.SQLConnector;
 
 import java.sql.Connection;
@@ -13,32 +13,49 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RespuestaDao implements Dao<RespuestaCuestionario, Integer> {
+public class RespuestaDao implements Dao<Respuesta, Integer> {
 
     @Override
-    public boolean create(RespuestaCuestionario entidad) {
-        String sqlMax = "SELECT NVL(MAX(id_respuesta), 0) + 1 FROM respuesta_cuestionario";
-        String sql = "INSERT INTO respuesta_cuestionario (id_respuesta, id_sesion, escala_satisfaccion, comentarios_libres) VALUES (?, ?, ?, ?)";
+    public boolean create(Respuesta entidad) {
+        String sql = "INSERT INTO Respuesta (id_participante, id_prueba, " +
+                     "sam_1, sam_2, sam_3, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, " +
+                     "frecuencia_estado_animo_1, frecuencia_estado_animo_2) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
-        try (Connection con = SQLConnector.getConnection()) {
-            int newId = 1;
-            try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sqlMax)) {
-                if (rs.next()) {
-                    newId = rs.getInt(1);
-                }
-            }
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
-            try (PreparedStatement ps = con.prepareStatement(sql)) {
-                ps.setInt(1, newId);
-                ps.setInt(2, entidad.getIdSesion());
-                ps.setInt(3, entidad.getValor());
-                ps.setString(4, entidad.getComentariosLibres() != null ? entidad.getComentariosLibres() : "");
+            ps.setInt(1, entidad.getIdParticipante());
+            ps.setInt(2, entidad.getIdPrueba());
+            ps.setInt(3, entidad.getSam1());
+            ps.setInt(4, entidad.getSam2());
+            ps.setInt(5, entidad.getSam3());
+            ps.setInt(6, entidad.getR1());
+            ps.setInt(7, entidad.getR2());
+            ps.setInt(8, entidad.getR3());
+            ps.setInt(9, entidad.getR4());
+            ps.setInt(10, entidad.getR5());
+            ps.setInt(11, entidad.getR6());
+            ps.setInt(12, entidad.getR7());
+            ps.setInt(13, entidad.getR8());
+            ps.setInt(14, entidad.getR9());
+            ps.setInt(15, entidad.getR10());
+            ps.setInt(16, entidad.getR11());
+            ps.setInt(17, entidad.getR12());
+            ps.setInt(18, entidad.getR13());
+            ps.setInt(19, entidad.getR14());
+            ps.setInt(20, entidad.getR15());
+            ps.setInt(21, entidad.getFrecuenciaEstadoAnimo1());
+            ps.setInt(22, entidad.getFrecuenciaEstadoAnimo2());
 
-                int rows = ps.executeUpdate();
-                if (rows > 0) {
-                    entidad.setIdRespuesta(newId);
-                    return true;
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        entidad.setIdRespuestas(rs.getInt(1));
+                    }
                 }
+                return true;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -47,13 +64,12 @@ public class RespuestaDao implements Dao<RespuestaCuestionario, Integer> {
     }
 
     @Override
-    public List<RespuestaCuestionario> getAll() {
-        List<RespuestaCuestionario> lista = new ArrayList<>();
-        String sql = "SELECT * FROM respuesta_cuestionario";
+    public List<Respuesta> getAll() {
+        List<Respuesta> lista = new ArrayList<>();
+        String sql = "SELECT * FROM Respuesta";
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-
             while (rs.next()) {
                 lista.add(aRespuesta(rs));
             }
@@ -63,13 +79,12 @@ public class RespuestaDao implements Dao<RespuestaCuestionario, Integer> {
         return lista;
     }
 
-    public List<RespuestaCuestionario> getPorParticipante(int idSesion) {
-        List<RespuestaCuestionario> lista = new ArrayList<>();
-        String sql = "SELECT * FROM respuesta_cuestionario WHERE id_sesion = ?";
+    public List<Respuesta> getPorParticipante(int idParticipante) {
+        List<Respuesta> lista = new ArrayList<>();
+        String sql = "SELECT * FROM Respuesta WHERE id_participante = ?";
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setInt(1, idSesion);
+            ps.setInt(1, idParticipante);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     lista.add(aRespuesta(rs));
@@ -82,11 +97,10 @@ public class RespuestaDao implements Dao<RespuestaCuestionario, Integer> {
     }
 
     @Override
-    public RespuestaCuestionario getById(Integer id) {
-        String sql = "SELECT * FROM respuesta_cuestionario WHERE id_respuesta = ?";
+    public Respuesta getById(Integer id) {
+        String sql = "SELECT * FROM Respuesta WHERE id_respuestas = ?";
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -100,29 +114,15 @@ public class RespuestaDao implements Dao<RespuestaCuestionario, Integer> {
     }
 
     @Override
-    public boolean update(RespuestaCuestionario entidad) {
-        String sql = "UPDATE respuesta_cuestionario SET id_sesion = ?, escala_satisfaccion = ?, comentarios_libres = ? WHERE id_respuesta = ?";
-        try (Connection con = SQLConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setInt(1, entidad.getIdSesion());
-            ps.setInt(2, entidad.getValor());
-            ps.setString(3, entidad.getComentariosLibres());
-            ps.setInt(4, entidad.getIdRespuesta());
-
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+    public boolean update(Respuesta entidad) {
+        return false; // Generalmente las respuestas no se actualizan
     }
 
     @Override
     public boolean delete(Integer id) {
-        String sql = "DELETE FROM respuesta_cuestionario WHERE id_respuesta = ?";
+        String sql = "DELETE FROM Respuesta WHERE id_respuestas = ?";
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -130,86 +130,37 @@ public class RespuestaDao implements Dao<RespuestaCuestionario, Integer> {
         }
         return false;
     }
-
+    
+    // Métodos de estadísticas requerirán ser reescritos en la fase 2 dependiendo de los requerimientos
     public Map<String, Double> promedioPorPregunta(int idPrueba) {
-        Map<String, Double> resultado = new LinkedHashMap<>();
-        resultado.put("Satisfacción General", satisfaccionPromedio(idPrueba));
-        return resultado;
-    }
-
-    public double satisfaccionPromedio(int idPrueba) {
-        String sql = "SELECT AVG(r.escala_satisfaccion) " +
-                     "FROM respuesta_cuestionario r " +
-                     "JOIN sesion_evaluacion s ON r.id_sesion = s.id_sesion " +
-                     "WHERE s.id_prueba = ?";
-        try (Connection con = SQLConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, idPrueba);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return Math.round(rs.getDouble(1) * 10.0) / 10.0;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0.0;
-    }
-
-    public Map<String, Double> promedioSam(int idPrueba) {
-        // SAM no mapeado en base de datos física, se retorna vacío para evitar errores
         return new LinkedHashMap<>();
     }
 
-    public Map<String, Integer> respuestasLikertDeParticipante(int idColaborador, int idPrueba) {
-        Map<String, Integer> resultado = new LinkedHashMap<>();
-        String sql = "SELECT r.escala_satisfaccion " +
-                     "FROM respuesta_cuestionario r " +
-                     "JOIN sesion_evaluacion s ON r.id_sesion = s.id_sesion " +
-                     "WHERE s.id_colaborador = ? AND s.id_prueba = ?";
-        try (Connection con = SQLConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, idColaborador);
-            ps.setInt(2, idPrueba);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    resultado.put("Satisfacción General", rs.getInt("escala_satisfaccion"));
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return resultado;
-    }
-
-    public String comentariosDeParticipante(int idColaborador, int idPrueba) {
-        String sql = "SELECT r.comentarios_libres " +
-                     "FROM respuesta_cuestionario r " +
-                     "JOIN sesion_evaluacion s ON r.id_sesion = s.id_sesion " +
-                     "WHERE s.id_colaborador = ? AND s.id_prueba = ?";
-        try (Connection con = SQLConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, idColaborador);
-            ps.setInt(2, idPrueba);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("comentarios_libres");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    // ---- helper de conversión ResultSet -> objeto ----
-
-    private RespuestaCuestionario aRespuesta(ResultSet rs) throws SQLException {
-        return new RespuestaCuestionario(
-                rs.getInt("id_respuesta"),
-                rs.getInt("id_sesion"),
-                rs.getInt("escala_satisfaccion"),
-                rs.getString("comentarios_libres")
-        );
+    private Respuesta aRespuesta(ResultSet rs) throws SQLException {
+        Respuesta res = new Respuesta();
+        res.setIdRespuestas(rs.getInt("id_respuestas"));
+        res.setIdParticipante(rs.getInt("id_participante"));
+        res.setIdPrueba(rs.getInt("id_prueba"));
+        res.setSam1(rs.getInt("sam_1"));
+        res.setSam2(rs.getInt("sam_2"));
+        res.setSam3(rs.getInt("sam_3"));
+        res.setR1(rs.getInt("r1"));
+        res.setR2(rs.getInt("r2"));
+        res.setR3(rs.getInt("r3"));
+        res.setR4(rs.getInt("r4"));
+        res.setR5(rs.getInt("r5"));
+        res.setR6(rs.getInt("r6"));
+        res.setR7(rs.getInt("r7"));
+        res.setR8(rs.getInt("r8"));
+        res.setR9(rs.getInt("r9"));
+        res.setR10(rs.getInt("r10"));
+        res.setR11(rs.getInt("r11"));
+        res.setR12(rs.getInt("r12"));
+        res.setR13(rs.getInt("r13"));
+        res.setR14(rs.getInt("r14"));
+        res.setR15(rs.getInt("r15"));
+        res.setFrecuenciaEstadoAnimo1(rs.getInt("frecuencia_estado_animo_1"));
+        res.setFrecuenciaEstadoAnimo2(rs.getInt("frecuencia_estado_animo_2"));
+        return res;
     }
 }
