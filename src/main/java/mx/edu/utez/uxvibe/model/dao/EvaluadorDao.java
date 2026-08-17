@@ -17,7 +17,7 @@ public class EvaluadorDao implements Dao<Evaluador, Integer> {
     public boolean create(Evaluador entidad) {
         String sql = "INSERT INTO Evaluador (nombre, apellido_m, apellido_p, correo, contrasena) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = SQLConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = con.prepareStatement(sql, new String[]{"ID_EVALUADOR"})) {
 
             ps.setString(1, entidad.getNombre());
             ps.setString(2, entidad.getApellidoM());
@@ -28,13 +28,16 @@ public class EvaluadorDao implements Dao<Evaluador, Integer> {
             int rows = ps.executeUpdate();
             if (rows > 0) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        entidad.setIdEvaluador(rs.getInt(1));
+                    if (rs != null && rs.next()) {
+                        try {
+                            entidad.setIdEvaluador(rs.getInt(1));
+                        } catch (Exception ignored) {}
                     }
-                }
+                } catch (Exception ignored) {}
                 return true;
             }
         } catch (SQLException e) {
+            System.err.println("[EvaluadorDao] Error al insertar evaluador: " + e.getMessage());
             e.printStackTrace();
         }
         return false;

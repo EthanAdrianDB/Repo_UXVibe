@@ -19,7 +19,7 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
     public boolean create(Participante entidad) {
         String sql = "INSERT INTO Participante (nombre, apellido_m, apellido_p, sexo, id_prueba, edad, fecha_realizacion) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = SQLConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = con.prepareStatement(sql, new String[]{"ID_PARTICIPANTE"})) {
 
             ps.setString(1, entidad.getNombre());
             ps.setString(2, entidad.getApellidoM());
@@ -34,13 +34,16 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
             int rows = ps.executeUpdate();
             if (rows > 0) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        entidad.setIdParticipante(rs.getInt(1));
+                    if (rs != null && rs.next()) {
+                        try {
+                            entidad.setIdParticipante(rs.getInt(1));
+                        } catch (Exception ignored) {}
                     }
-                }
+                } catch (Exception ignored) {}
                 return true;
             }
         } catch (SQLException e) {
+            System.err.println("[ParticipanteDao] Error al insertar participante: " + e.getMessage());
             e.printStackTrace();
         }
         return false;

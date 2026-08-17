@@ -23,7 +23,7 @@ public class RespuestaDao implements Dao<Respuesta, Integer> {
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection con = SQLConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = con.prepareStatement(sql, new String[]{"ID_RESPUESTA"})) {
             
             ps.setInt(1, entidad.getIdParticipante());
             ps.setInt(2, entidad.getIdPrueba());
@@ -51,13 +51,16 @@ public class RespuestaDao implements Dao<Respuesta, Integer> {
             int rows = ps.executeUpdate();
             if (rows > 0) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        entidad.setIdRespuestas(rs.getInt(1));
+                    if (rs != null && rs.next()) {
+                        try {
+                            entidad.setIdRespuestas(rs.getInt(1));
+                        } catch (Exception ignored) {}
                     }
-                }
+                } catch (Exception ignored) {}
                 return true;
             }
         } catch (SQLException e) {
+            System.err.println("[RespuestaDao] Error al insertar respuesta: " + e.getMessage());
             e.printStackTrace();
         }
         return false;

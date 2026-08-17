@@ -18,7 +18,7 @@ public class ArchivoAudioDao implements Dao<ArchivoAudio, Integer> {
     public boolean create(ArchivoAudio entidad) {
         String sql = "INSERT INTO Archivo_Audio (id_participante, id_prueba, audio) VALUES (?, ?, ?)";
         try (Connection con = SQLConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = con.prepareStatement(sql, new String[]{"ID_AUDIO"})) {
             
             ps.setInt(1, entidad.getIdParticipante());
             ps.setInt(2, entidad.getIdPrueba());
@@ -27,13 +27,16 @@ public class ArchivoAudioDao implements Dao<ArchivoAudio, Integer> {
             int rows = ps.executeUpdate();
             if (rows > 0) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        entidad.setIdAudio(rs.getInt(1));
+                    if (rs != null && rs.next()) {
+                        try {
+                            entidad.setIdAudio(rs.getInt(1));
+                        } catch (Exception ignored) {}
                     }
-                }
+                } catch (Exception ignored) {}
                 return true;
             }
         } catch (SQLException e) {
+            System.err.println("[ArchivoAudioDao] Error al insertar audio: " + e.getMessage());
             e.printStackTrace();
         }
         return false;

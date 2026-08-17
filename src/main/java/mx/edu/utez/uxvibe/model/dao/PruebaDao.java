@@ -17,7 +17,7 @@ public class PruebaDao implements Dao<Prueba, Integer> {
     public boolean create(Prueba entidad) {
         String sql = "INSERT INTO Prueba (nombre, descripcion, url_sistema, id_evaluador) VALUES (?, ?, ?, ?)";
         try (Connection con = SQLConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = con.prepareStatement(sql, new String[]{"ID_PRUEBA"})) {
 
             ps.setString(1, entidad.getNombre());
             ps.setString(2, entidad.getDescripcion());
@@ -27,13 +27,16 @@ public class PruebaDao implements Dao<Prueba, Integer> {
             int rows = ps.executeUpdate();
             if (rows > 0) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        entidad.setIdPrueba(rs.getInt(1));
+                    if (rs != null && rs.next()) {
+                        try {
+                            entidad.setIdPrueba(rs.getInt(1));
+                        } catch (Exception ignored) {}
                     }
-                }
+                } catch (Exception ignored) {}
                 return true;
             }
         } catch (SQLException e) {
+            System.err.println("[PruebaDao] Error al insertar prueba: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
