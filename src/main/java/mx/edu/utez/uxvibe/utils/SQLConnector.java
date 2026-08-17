@@ -16,84 +16,52 @@ import java.util.Properties;
 
 public class SQLConnector {
 
-    private static HikariDataSource dataSource;
+    private static volatile HikariDataSource dataSource;
 
-    static {
+    public static Connection getConnection() throws SQLException {
+        return getDataSource().getConnection();
+    }
+
+    public static void closeConnection() {
+        if (dataSource != null && !dataSource.isClosed()) {
+            dataSource.close();
+        }
+    }
+
+    private static synchronized HikariDataSource getDataSource() throws SQLException {
+        if (dataSource != null && !dataSource.isClosed()) {
+            return dataSource;
+        }
+
         try {
-            // 1. Localizar la carpeta de la Wallet
-            ClassLoader classLoader = SQLConnector.class.getClassLoader();
-            URL walletUrl = classLoader.getResource("wallet");
+            // 1. Localizar la carpeta de la Wallet con múltiples estrategias de fallback
+            String walletPath = buscarRutaWallet();
+            System.out.println("[SQLConnector] Ruta de Wallet detectada: " + walletPath);
 
-            if (walletUrl == null) {
-                throw new RuntimeException("No se encontró la carpeta 'wallet' en resources.");
-            }
-
-            // Uso de Paths para evitar problemas con caracteres especiales o espacios en la
-            // ruta de Tomcat
-            String walletPath = Paths.get(walletUrl.toURI()).toAbsolutePath().toString();
-            walletPath = walletPath.replace("\\", "/");
-
-            // 2. Intentar leer credenciales y nombre de BD desde el entorno o
-            // credentials.properties
-            String dbUser = System.getenv("DB_USER");
-            String dbPass = System.getenv("DB_PASS");
-            String dbName = System.getenv("DB_NAME");
-
-            if (dbUser == null || dbPass == null || dbName == null) {
-                System.out.println("Cargando credenciales desde credentials.properties...");
-                Properties creds = new Properties();
-                InputStream is = classLoader.getResourceAsStream("credentials.properties");
-
-                if (is == null) {
-                    File localCreds = new File("src/main/resources/credentials.properties");
-                    if (localCreds.exists()) {
-                        is = new FileInputStream(localCreds);
-                    }
-                }
-
-                if (is == null) {
-                    throw new RuntimeException(
-                            "No se encontró el archivo credentials.properties en resources ni en src/main/resources.");
-                }
-
-                try (InputStream stream = is) {
-                    creds.load(stream);
-                    if (dbUser == null)
-                        dbUser = creds.getProperty("db.user");
-                    if (dbPass == null) {
-                        dbPass = creds.getProperty("db.pass");
-                        if (dbPass == null) {
-                            dbPass = creds.getProperty("db.password");
-                        }
-                    }
-                    if (dbName == null)
-                        dbName = creds.getProperty("db.name");
-                }
-            }
+            // 2. Leer credenciales y nombre de BD
+            Properties creds = cargarCredenciales();
+            String dbUser = creds.getProperty("db.user");
+            String dbPass = creds.getProperty("db.pass");
+            String dbName = creds.getProperty("db.name");
 
             if (dbName == null || dbName.trim().isEmpty() || dbName.contains("NOMBRE_DE_TU_CONEXION")) {
-                throw new RuntimeException(
-                        "El nombre de la base de datos (db.name) no está configurado correctamente en credentials.properties.");
+                throw new SQLException("El nombre de la base de datos (db.name) no está configurado correctamente en credentials.properties.");
             }
             if (dbUser == null || dbUser.trim().isEmpty()) {
-                throw new RuntimeException(
-                        "El usuario de la base de datos (db.user) no está configurado en credentials.properties.");
+                throw new SQLException("El usuario de la base de datos (db.user) no está configurado en credentials.properties.");
             }
             if (dbPass == null || dbPass.trim().isEmpty() || dbPass.equals("TU_PASSWORD_AQUI")) {
-                throw new RuntimeException(
-                        "Debes colocar tu contraseña real en 'db.pass' dentro de credentials.properties (actualmente está 'TU_PASSWORD_AQUI').");
+                throw new SQLException("Debes colocar tu contraseña real en 'db.pass' dentro de credentials.properties (actualmente está 'TU_PASSWORD_AQUI').");
             }
 
-            // 3. Configuración de HikariCP para Oracle
+            // 3. Configuración de HikariCP para Oracle Autonomous Database
             HikariConfig config = new HikariConfig();
             config.setDriverClassName("oracle.jdbc.OracleDriver");
-
-            // Concatenación de la URL usando TNS_ADMIN
             config.setJdbcUrl("jdbc:oracle:thin:@" + dbName + "?TNS_ADMIN=" + walletPath);
             config.setUsername(dbUser);
             config.setPassword(dbPass);
 
-            // Configuraciones del Pool
+            // Parámetros de conexión y pool
             config.setMaximumPoolSize(10);
             config.setMinimumIdle(2);
             config.setIdleTimeout(30000);
@@ -103,43 +71,163 @@ public class SQLConnector {
             config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
             dataSource = new HikariDataSource(config);
-            System.out.println("¡Conexión a Oracle Cloud establecida con éxito!");
+            System.out.println("[SQLConnector] ¡Conexión a Oracle Cloud establecida con éxito!");
 
-            // 4. Inicialización automática de tablas si no existen en la BD
-            inicializarTablas();
+            // 4. Inicialización automática de tablas
+            inicializarTablas(dataSource.getConnection());
 
-        } catch (Exception e) {
-            System.err.println("Error al inicializar la base de datos");
+            return dataSource;
+        } catch (SQLException e) {
+            System.err.println("[SQLConnector] Error SQL al inicializar DataSource: " + e.getMessage());
             e.printStackTrace();
-            throw new ExceptionInInitializerError(e);
+            throw e;
+        } catch (Exception e) {
+            System.err.println("[SQLConnector] Error inesperado al inicializar DataSource: " + e.getMessage());
+            e.printStackTrace();
+            throw new SQLException("Error de configuración de conexión a Oracle: " + e.getMessage(), e);
         }
     }
 
-    public static Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+    private static String buscarRutaWallet() {
+        // Estrategia 1: ClassLoader
+        ClassLoader cl = SQLConnector.class.getClassLoader();
+        URL walletUrl = cl != null ? cl.getResource("wallet") : null;
+        if (walletUrl == null) {
+            cl = Thread.currentThread().getContextClassLoader();
+            if (cl != null) walletUrl = cl.getResource("wallet");
+        }
+
+        if (walletUrl != null) {
+            try {
+                File f = Paths.get(walletUrl.toURI()).toFile();
+                if (f.exists() && f.isDirectory()) {
+                    return f.getAbsolutePath().replace("\\", "/");
+                }
+            } catch (Exception ignored) {
+                File f = new File(walletUrl.getPath());
+                if (f.exists() && f.isDirectory()) {
+                    return f.getAbsolutePath().replace("\\", "/");
+                }
+            }
+        }
+
+        // Estrategia 2: Carpeta local directa src/main/resources/wallet
+        File localWallet = new File("src/main/resources/wallet");
+        if (localWallet.exists() && localWallet.isDirectory()) {
+            return localWallet.getAbsolutePath().replace("\\", "/");
+        }
+
+        // Estrategia 3: Buscar desde la ubicación del .class en el sistema de archivos
+        try {
+            URL codeLocation = SQLConnector.class.getProtectionDomain().getCodeSource().getLocation();
+            if (codeLocation != null) {
+                File current = Paths.get(codeLocation.toURI()).toFile();
+                for (int i = 0; i < 6 && current != null; i++) {
+                    File candidate = new File(current, "src/main/resources/wallet");
+                    if (candidate.exists() && candidate.isDirectory()) {
+                        return candidate.getAbsolutePath().replace("\\", "/");
+                    }
+                    File candidate2 = new File(current, "wallet");
+                    if (candidate2.exists() && candidate2.isDirectory()) {
+                        return candidate2.getAbsolutePath().replace("\\", "/");
+                    }
+                    current = current.getParentFile();
+                }
+            }
+        } catch (Exception ignored) {}
+
+        throw new RuntimeException("No se encontró la carpeta 'wallet'. Asegúrate de que exista en src/main/resources/wallet.");
     }
 
-    public static void closeConnection() {
-        if (dataSource != null && !dataSource.isClosed()) {
-            dataSource.close();
+    private static Properties cargarCredenciales() {
+        Properties creds = new Properties();
+
+        // 1. Variables de entorno
+        String envUser = System.getenv("DB_USER");
+        String envPass = System.getenv("DB_PASS");
+        String envName = System.getenv("DB_NAME");
+
+        if (envUser != null) creds.setProperty("db.user", envUser);
+        if (envPass != null) creds.setProperty("db.pass", envPass);
+        if (envName != null) creds.setProperty("db.name", envName);
+
+        if (creds.getProperty("db.user") != null && creds.getProperty("db.pass") != null && creds.getProperty("db.name") != null) {
+            return creds;
         }
+
+        // 2. Intentar cargar desde el ClassLoader
+        ClassLoader cl = SQLConnector.class.getClassLoader();
+        InputStream is = cl != null ? cl.getResourceAsStream("credentials.properties") : null;
+        if (is == null) {
+            cl = Thread.currentThread().getContextClassLoader();
+            if (cl != null) is = cl.getResourceAsStream("credentials.properties");
+        }
+
+        if (is != null) {
+            try (InputStream stream = is) {
+                creds.load(stream);
+            } catch (Exception e) {
+                System.err.println("[SQLConnector] Error leyendo credentials.properties desde classpath: " + e.getMessage());
+            }
+        } else {
+            // 3. Fallback: Buscar archivo en el disco
+            File localCreds = new File("src/main/resources/credentials.properties");
+            if (!localCreds.exists()) {
+                try {
+                    URL codeLocation = SQLConnector.class.getProtectionDomain().getCodeSource().getLocation();
+                    if (codeLocation != null) {
+                        File current = Paths.get(codeLocation.toURI()).toFile();
+                        for (int i = 0; i < 6 && current != null; i++) {
+                            File candidate = new File(current, "src/main/resources/credentials.properties");
+                            if (candidate.exists()) {
+                                localCreds = candidate;
+                                break;
+                            }
+                            current = current.getParentFile();
+                        }
+                    }
+                } catch (Exception ignored) {}
+            }
+
+            if (localCreds.exists()) {
+                try (InputStream stream = new FileInputStream(localCreds)) {
+                    creds.load(stream);
+                } catch (Exception e) {
+                    System.err.println("[SQLConnector] Error leyendo archivo de credenciales: " + e.getMessage());
+                }
+            }
+        }
+
+        // Fallback para db.password -> db.pass
+        if (creds.getProperty("db.pass") == null && creds.getProperty("db.password") != null) {
+            creds.setProperty("db.pass", creds.getProperty("db.password"));
+        }
+
+        return creds;
     }
 
     public static void inicializarTablas() {
-        try (Connection con = getConnection();
-                Statement stmt = con.createStatement()) {
+        try (Connection con = getConnection()) {
+            inicializarTablas(con);
+        } catch (SQLException e) {
+            System.err.println("[SQLConnector] Error al inicializar tablas: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private static void inicializarTablas(Connection con) {
+        try (Statement stmt = con.createStatement()) {
 
             // Verificar si la tabla EVALUADOR existe
             boolean tablasExisten = false;
-            try (ResultSet rs = stmt
-                    .executeQuery("SELECT count(*) FROM user_tables WHERE UPPER(table_name) = 'EVALUADOR'")) {
+            try (ResultSet rs = stmt.executeQuery("SELECT count(*) FROM user_tables WHERE UPPER(table_name) = 'EVALUADOR'")) {
                 if (rs.next() && rs.getInt(1) > 0) {
                     tablasExisten = true;
                 }
             }
 
             if (!tablasExisten) {
-                System.out.println("Las tablas no existen en la base de datos. Creando esquema...");
+                System.out.println("[SQLConnector] Las tablas no existen en la base de datos. Creando esquema...");
 
                 stmt.execute("CREATE TABLE Evaluador (" +
                         "id_evaluador NUMBER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY, " +
@@ -196,13 +284,13 @@ public class SQLConnector {
                         "CONSTRAINT fk_audio_prueba FOREIGN KEY (id_prueba) REFERENCES Prueba(id_prueba) ON DELETE CASCADE" +
                         ")");
 
-                System.out.println("Tablas creadas con éxito en Oracle Autonomous Database.");
+                System.out.println("[SQLConnector] Tablas creadas con éxito en Oracle Autonomous Database.");
             } else {
-                System.out.println("Las tablas ya existen en la base de datos.");
+                System.out.println("[SQLConnector] Las tablas ya existen en la base de datos.");
             }
 
         } catch (SQLException e) {
-            System.err.println("Error al inicializar las tablas de la base de datos: " + e.getMessage());
+            System.err.println("[SQLConnector] Error al inicializar las tablas de la base de datos: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -210,8 +298,7 @@ public class SQLConnector {
     public static void main(String[] args) {
         try (Connection con = getConnection()) {
             if (con.isValid(5)) {
-                System.out.println("Conexión de prueba exitosa a Oracle Cloud.");
-                inicializarTablas();
+                System.out.println("[SQLConnector] Conexión de prueba exitosa a Oracle Cloud.");
             }
         } catch (Exception e) {
             e.printStackTrace();
