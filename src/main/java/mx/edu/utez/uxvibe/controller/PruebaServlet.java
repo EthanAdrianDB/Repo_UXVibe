@@ -73,6 +73,11 @@ public class PruebaServlet extends HttpServlet {
             }
         }
 
+        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
         // Patrón PRG (Post/Redirect/Get): evita reenvíos duplicados al recargar
         response.sendRedirect(request.getContextPath() + "/inicio");
     }

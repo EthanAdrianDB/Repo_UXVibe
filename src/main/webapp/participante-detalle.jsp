@@ -26,7 +26,7 @@
 
                 <div class="mb-3">
                     <span class="text-muted small d-block">Edad</span>
-                    <span class="fw-semibold text-dark">N/A</span>
+                    <span class="fw-semibold text-dark">${not empty participante.edad && participante.edad > 0 ? participante.edad : 'No especificada'}</span>
                 </div>
 
                 <div class="mb-3">
@@ -38,21 +38,21 @@
 
                 <div class="mb-3">
                     <span class="text-muted small d-block">Fecha de realización</span>
-                    <span class="fw-semibold text-dark">N/A</span>
+                    <span class="fw-semibold text-dark">${not empty participante.fechaRealizacion ? participante.fechaRealizacion : 'No especificada'}</span>
                 </div>
 
                 <div class="mb-3">
                     <span class="text-muted small d-block">Duración de la prueba</span>
-                    <span class="fw-semibold text-dark">N/A</span>
+                    <span class="fw-semibold text-dark">${not empty participante.duracionFormateada && participante.duracionFormateada != '0:00' ? participante.duracionFormateada : 'No especificada'}</span>
                 </div>
 
                 <!-- Reproductor de Audio -->
                 <div class="mt-4 pt-3 border-top">
                     <span class="text-muted small fw-medium d-block mb-2">Audio de la sesión</span>
                     <c:choose>
-                        <c:when test="${not empty idSesion}">
+                        <c:when test="${tieneAudio}">
                             <audio controls class="w-100 rounded" style="background-color: #f1f3f4;">
-                                <source src="${pageContext.request.contextPath}/obtenerAudio?idParticipante=${participante.idParticipante}" type="audio/webm">
+                                <source src="${pageContext.request.contextPath}/audio?action=play&idPrueba=${participante.idPrueba}&idParticipante=${participante.idParticipante}" type="audio/webm">
                                 Tu navegador no soporta el reproductor de audio.
                             </audio>
                         </c:when>
@@ -83,26 +83,65 @@
                     <c:otherwise>
                         <div class="d-flex flex-column gap-3">
                             <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
-                                <span class="small text-muted flex-grow-1 me-3">R1</span>
+                                <span class="small text-muted flex-grow-1 me-3">Pregunta 1</span>
                                 <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r1} / 5</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
-                                <span class="small text-muted flex-grow-1 me-3">R2</span>
+                                <span class="small text-muted flex-grow-1 me-3">Pregunta 2</span>
                                 <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r2} / 5</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
-                                <span class="small text-muted flex-grow-1 me-3">R3</span>
+                                <span class="small text-muted flex-grow-1 me-3">Pregunta 3</span>
                                 <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r3} / 5</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
-                                <span class="small text-muted flex-grow-1 me-3">Frecuencia Estado de Ánimo 1</span>
-                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.frecuenciaEstadoAnimo1} / 5</span>
+                                <span class="small text-muted flex-grow-1 me-3">Pregunta 4</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r4} / 5</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
-                                <span class="small text-muted flex-grow-1 me-3">Frecuencia Estado de Ánimo 2</span>
-                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.frecuenciaEstadoAnimo2} / 5</span>
+                                <span class="small text-muted flex-grow-1 me-3">Pregunta 5</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r5} / 5</span>
                             </div>
-                            <!-- (Solo muestro unas cuantas por brevedad, se pueden agregar hasta r15) -->
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <span class="small text-muted flex-grow-1 me-3">Pregunta 6</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r6} / 5</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <span class="small text-muted flex-grow-1 me-3">Pregunta 7</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r7} / 5</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <span class="small text-muted flex-grow-1 me-3">Pregunta 8</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r8} / 5</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <span class="small text-muted flex-grow-1 me-3">Pregunta 9</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r9} / 5</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <span class="small text-muted flex-grow-1 me-3">Pregunta 10</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r10} / 5</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <span class="small text-muted flex-grow-1 me-3">Pregunta 11</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r11} / 5</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <span class="small text-muted flex-grow-1 me-3">Pregunta 12</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r12} / 5</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <span class="small text-muted flex-grow-1 me-3">Pregunta 13</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r13} / 5</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <span class="small text-muted flex-grow-1 me-3">Pregunta 14</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r14} / 5</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="small text-muted flex-grow-1 me-3">Pregunta 15</span>
+                                <span class="badge bg-dark px-2 py-1 fw-bold">${respuesta.r15} / 5</span>
+                            </div>
                         </div>
                     </c:otherwise>
                 </c:choose>

@@ -3,6 +3,7 @@
 <!doctype html>
 <html lang="es">
 <head>
+    <link rel="icon" href="${pageContext.request.contextPath}/assets/images/logoux.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UXVibe | Evaluación en Curso</title>
@@ -407,7 +408,7 @@
         }
 
         try {
-            const response = await fetch(this.action, {
+            const response = await fetch(this.getAttribute('action'), {
                 method: 'POST',
                 body: formData
             });

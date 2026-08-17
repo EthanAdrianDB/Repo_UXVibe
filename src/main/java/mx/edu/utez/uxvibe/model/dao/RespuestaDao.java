@@ -134,9 +134,34 @@ public class RespuestaDao implements Dao<Respuesta, Integer> {
         return false;
     }
     
-    // Métodos de estadísticas requerirán ser reescritos en la fase 2 dependiendo de los requerimientos
     public Map<String, Double> promedioPorPregunta(int idPrueba) {
-        return new LinkedHashMap<>();
+        Map<String, Double> promedios = new LinkedHashMap<>();
+        String sql = "SELECT AVG(sam_1) as s1, AVG(sam_2) as s2, AVG(sam_3) as s3, " +
+                     "AVG(r1) as r1, AVG(r2) as r2, AVG(r3) as r3, AVG(r4) as r4, AVG(r5) as r5, " +
+                     "AVG(r6) as r6, AVG(r7) as r7, AVG(r8) as r8, AVG(r9) as r9, AVG(r10) as r10, " +
+                     "AVG(r11) as r11, AVG(r12) as r12, AVG(r13) as r13, AVG(r14) as r14, AVG(r15) as r15 " +
+                     "FROM Respuesta WHERE id_prueba = ?";
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idPrueba);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    double s1 = rs.getDouble("s1");
+                    if (!rs.wasNull()) { // Solo agregar si hay datos
+                        promedios.put("SAM_1", Math.round(s1 * 10.0) / 10.0);
+                        promedios.put("SAM_2", Math.round(rs.getDouble("s2") * 10.0) / 10.0);
+                        promedios.put("SAM_3", Math.round(rs.getDouble("s3") * 10.0) / 10.0);
+                        
+                        for (int i = 1; i <= 15; i++) {
+                            promedios.put("Pregunta " + i, Math.round(rs.getDouble("r" + i) * 10.0) / 10.0);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return promedios;
     }
 
     private Respuesta aRespuesta(ResultSet rs) throws SQLException {

@@ -184,7 +184,21 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
         return resultado;
     }
     
-    // Eliminado edadPromedio porque ya no hay campo de edad en la BD
+    public double edadPromedio(int idPrueba) {
+        String sql = "SELECT AVG(edad) FROM Participante WHERE id_prueba = ? AND edad > 0";
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idPrueba);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return Math.round(rs.getDouble(1) * 10.0) / 10.0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0.0;
+    }
 
     private Participante aParticipante(ResultSet rs) throws SQLException {
         Participante p = new Participante(

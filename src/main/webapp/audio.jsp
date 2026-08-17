@@ -145,20 +145,74 @@ function filtrarParticipantes() {
 }
 
 let isPlaying = false;
-let playbackInterval = null;
-let currentSeconds = 0;
-let totalSeconds = 612; // Default 10:12 (612s)
+let totalSeconds = 0;
+let audioEl = null;
 
-function parseDurationToSeconds(durStr) {
-    if (!durStr) return 612;
-    const parts = durStr.split(':');
-    if (parts.length === 2) {
-        return (parseInt(parts[0], 10) * 60) + parseInt(parts[1], 10);
+document.addEventListener("DOMContentLoaded", () => {
+    audioEl = document.getElementById('audioElement');
+
+    if (audioEl) {
+        audioEl.addEventListener('loadedmetadata', () => {
+            if(isFinite(audioEl.duration)) {
+                totalSeconds = Math.floor(audioEl.duration);
+                document.getElementById('reproductorDuracion').innerText = formatSeconds(totalSeconds);
+            }
+        });
+
+        audioEl.addEventListener('timeupdate', () => {
+            const current = Math.floor(audioEl.currentTime);
+            document.getElementById('reproductorTiempoActual').innerText = formatSeconds(current);
+            
+            if (totalSeconds > 0) {
+                const progress = current / totalSeconds;
+                document.getElementById('progressSlider').value = progress * 100;
+                actualizarWaveformColores(progress);
+            }
+
+            if (isPlaying) {
+                const bars = document.querySelectorAll('#waveformContainer .waveform-bar');
+                if (bars.length > 0) {
+                    const randIndex = Math.floor(Math.random() * bars.length);
+                    const bar = bars[randIndex];
+                    if (bar) {
+                        bar.style.height = (Math.random() * 60 + 20) + '%';
+                    }
+                }
+            }
+        });
+
+        audioEl.addEventListener('ended', () => {
+            pausarAudio();
+            document.getElementById('reproductorTiempoActual').innerText = '00:00';
+            document.getElementById('progressSlider').value = 0;
+            actualizarWaveformColores(0);
+            
+            // Reset waveform heights to original state
+            const bars = document.querySelectorAll('#waveformContainer .waveform-bar');
+            bars.forEach((bar, i) => {
+                const numBars = bars.length;
+                const distanceToCenter = Math.abs((i - (numBars / 2)) / (numBars / 2));
+                const baseHeight = (1 - distanceToCenter) * 65;
+                bar.style.height = Math.max(12, Math.min(100, Math.random() * 45 + baseHeight)) + '%';
+            });
+        });
+        
+        audioEl.addEventListener('play', () => {
+            isPlaying = true;
+            const icon = document.getElementById('iconPlayPause');
+            if(icon) icon.className = 'bi bi-pause-fill fs-3';
+        });
+
+        audioEl.addEventListener('pause', () => {
+            isPlaying = false;
+            const icon = document.getElementById('iconPlayPause');
+            if(icon) icon.className = 'bi bi-play-fill fs-3';
+        });
     }
-    return 612;
-}
+});
 
 function formatSeconds(secs) {
+    if (isNaN(secs)) return '00:00';
     const m = Math.floor(secs / 60);
     const s = Math.floor(secs % 60);
     return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
@@ -186,10 +240,9 @@ function generarWaveform() {
     }
 }
 
-function actualizarWaveformColores() {
+function actualizarWaveformColores(progress) {
     const bars = document.querySelectorAll('#waveformContainer .waveform-bar');
     if (!bars.length) return;
-    const progress = currentSeconds / totalSeconds;
     const activeIndex = Math.floor(progress * bars.length);
 
     bars.forEach((bar, index) => {
@@ -207,41 +260,37 @@ function reproducirAudio(nombre, duracion, audioSrc, idParticipante) {
     const tabla = document.getElementById('tablaContainer');
     const reproductor = document.getElementById('reproductorContainer');
     
-    // Highlight table row
     document.querySelectorAll('.participante-row').forEach(r => r.classList.remove('table-active'));
     const selectedRow = document.getElementById('row-participante-' + idParticipante);
     if (selectedRow) selectedRow.classList.add('table-active');
 
-    // Layout adjustment
     if (tabla.classList.contains('col-12')) {
         tabla.classList.remove('col-12');
         tabla.classList.add('col-lg-8', 'col-md-7');
         reproductor.classList.remove('d-none');
     }
     
-    // Reset player states
+    if (!audioEl) audioEl = document.getElementById('audioElement');
     pausarAudio();
-    currentSeconds = 0;
-    totalSeconds = parseDurationToSeconds(duracion);
 
     document.getElementById('reproductorNombre').innerText = nombre || 'Participante';
-    document.getElementById('reproductorDuracion').innerText = duracion || '10:12';
+    document.getElementById('reproductorDuracion').innerText = '00:00'; // Se actualiza en loadedmetadata
     document.getElementById('reproductorTiempoActual').innerText = '00:00';
     document.getElementById('progressSlider').value = 0;
 
-    // Load actual audio if provided
-    const audioEl = document.getElementById('audioElement');
     if (audioSrc && audioSrc.trim() !== '') {
         audioEl.src = audioSrc;
+        audioEl.load();
     } else {
         audioEl.removeAttribute('src');
     }
 
     generarWaveform();
-    actualizarWaveformColores();
+    actualizarWaveformColores(0);
 
-    // Auto-start playback when selected
-    iniciarAudio();
+    if(audioEl.src) {
+        audioEl.play().catch(() => {});
+    }
 }
 
 function cerrarReproductor() {
@@ -257,6 +306,7 @@ function cerrarReproductor() {
 }
 
 function togglePlay() {
+    if (!audioEl) audioEl = document.getElementById('audioElement');
     if (isPlaying) {
         pausarAudio();
     } else {
@@ -265,76 +315,31 @@ function togglePlay() {
 }
 
 function iniciarAudio() {
-    isPlaying = true;
-    const icon = document.getElementById('iconPlayPause');
-    icon.className = 'bi bi-pause-fill fs-3';
-
-    const audioEl = document.getElementById('audioElement');
-    if (audioEl.src) {
+    if (!audioEl) audioEl = document.getElementById('audioElement');
+    if (audioEl && audioEl.src) {
         audioEl.play().catch(() => {});
     }
-
-    clearInterval(playbackInterval);
-    playbackInterval = setInterval(() => {
-        if (currentSeconds < totalSeconds) {
-            currentSeconds++;
-            document.getElementById('reproductorTiempoActual').innerText = formatSeconds(currentSeconds);
-            document.getElementById('progressSlider').value = (currentSeconds / totalSeconds) * 100;
-            actualizarWaveformColores();
-
-            // Animate random waveform bars for dynamic voice effect
-            const bars = document.querySelectorAll('#waveformContainer .waveform-bar');
-            if (bars.length > 0) {
-                const randIndex = Math.floor(Math.random() * bars.length);
-                const bar = bars[randIndex];
-                if (bar) {
-                    bar.style.height = (Math.random() * 60 + 20) + '%';
-                }
-            }
-        } else {
-            pausarAudio();
-            currentSeconds = 0;
-            document.getElementById('reproductorTiempoActual').innerText = '00:00';
-            document.getElementById('progressSlider').value = 0;
-            actualizarWaveformColores();
-        }
-    }, 1000);
 }
 
 function pausarAudio() {
-    isPlaying = false;
-    const icon = document.getElementById('iconPlayPause');
-    if (icon) icon.className = 'bi bi-play-fill fs-3';
-
-    const audioEl = document.getElementById('audioElement');
+    if (!audioEl) audioEl = document.getElementById('audioElement');
     if (audioEl && audioEl.src) {
         audioEl.pause();
-    }
-
-    if (playbackInterval) {
-        clearInterval(playbackInterval);
     }
 }
 
 function seekAudio(val) {
+    if (!audioEl) audioEl = document.getElementById('audioElement');
     const pct = parseFloat(val) / 100;
-    currentSeconds = Math.floor(pct * totalSeconds);
-    document.getElementById('reproductorTiempoActual').innerText = formatSeconds(currentSeconds);
-    actualizarWaveformColores();
+    actualizarWaveformColores(pct);
 
-    const audioEl = document.getElementById('audioElement');
     if (audioEl && audioEl.duration) {
         audioEl.currentTime = (pct * audioEl.duration);
     }
 }
 
 function skipSeconds(sec) {
-    currentSeconds = Math.max(0, Math.min(totalSeconds, currentSeconds + sec));
-    document.getElementById('reproductorTiempoActual').innerText = formatSeconds(currentSeconds);
-    document.getElementById('progressSlider').value = (currentSeconds / totalSeconds) * 100;
-    actualizarWaveformColores();
-
-    const audioEl = document.getElementById('audioElement');
+    if (!audioEl) audioEl = document.getElementById('audioElement');
     if (audioEl && audioEl.duration) {
         audioEl.currentTime = Math.max(0, Math.min(audioEl.duration, audioEl.currentTime + sec));
     }

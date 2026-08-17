@@ -110,15 +110,11 @@
                                                href="${pageContext.request.contextPath}/prueba?id=${prueba.idPrueba}">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                            <!-- Eliminar prueba -->
-                                            <form action="${pageContext.request.contextPath}/prueba" method="post" class="d-inline"
-                                                  onsubmit="return confirm('¿Deseas eliminar esta prueba?');">
-                                                <input type="hidden" name="action" value="delete">
-                                                <input type="hidden" name="id" value="${prueba.idPrueba}">
-                                                <button type="submit" class="btn btn-sm btn-light border text-danger" title="Eliminar prueba">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
+                                            <!-- Eliminar prueba (CRUD 3: Fetch - 1 Sola Tabla) -->
+                                            <button type="button" class="btn btn-sm btn-light border text-danger" title="Eliminar prueba (Fetch)"
+                                                    onclick="eliminarPruebaFetch(${prueba.idPrueba}, this)">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -149,6 +145,39 @@ function filtrarPruebas() {
         let texto = row.innerText.toLowerCase();
         row.style.display = texto.includes(input) ? "" : "none";
     });
+}
+
+async function eliminarPruebaFetch(idPrueba, btnElement) {
+    if (!confirm('¿Deseas eliminar esta prueba mediante Fetch (asíncrono)?')) return;
+    
+    const params = new URLSearchParams();
+    params.append('action', 'delete');
+    params.append('id', idPrueba);
+    
+    try {
+        const response = await fetch('${pageContext.request.contextPath}/prueba', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: params
+        });
+        
+        if (response.ok) {
+            const tr = btnElement.closest('tr');
+            if (tr) {
+                tr.style.transition = 'all 0.3s ease';
+                tr.style.opacity = '0';
+                setTimeout(() => tr.remove(), 300);
+            }
+        } else {
+            alert('Error al eliminar la prueba.');
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Error de conexión.');
+    }
 }
 
 let currentPruebaId = null;

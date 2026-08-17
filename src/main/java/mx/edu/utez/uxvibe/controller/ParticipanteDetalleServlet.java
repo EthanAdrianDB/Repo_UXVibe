@@ -30,8 +30,11 @@ public class ParticipanteDetalleServlet extends HttpServlet {
             List<Respuesta> respuestas = respuestaDao.getPorParticipante(id);
             Respuesta respuesta = respuestas.isEmpty() ? null : respuestas.get(0);
 
+            boolean tieneAudio = new mx.edu.utez.uxvibe.model.dao.ArchivoAudioDao().hasAudio(id, participante.getIdPrueba());
+
             request.setAttribute("participante", participante);
             request.setAttribute("respuesta", respuesta);
+            request.setAttribute("tieneAudio", tieneAudio);
         }
 
         request.getRequestDispatcher("participante-detalle.jsp").forward(request, response);

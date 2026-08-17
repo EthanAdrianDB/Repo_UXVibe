@@ -2,6 +2,7 @@
 <!doctype html>
 <html lang="es">
 <head>
+    <link rel="icon" href="${pageContext.request.contextPath}/assets/images/logoux.png" type="image/png">
     <meta charset="UTF-8">
     <title>UXVibe | Términos y condiciones</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
