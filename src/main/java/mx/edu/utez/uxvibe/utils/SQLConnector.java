@@ -3,6 +3,8 @@ package mx.edu.utez.uxvibe.utils;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Paths;
@@ -18,7 +20,7 @@ public class SQLConnector {
 
     static {
         try {
-            // 1. Localizar la carpeta de la Wallet en resources (carpeta "wallet")
+            // 1. Localizar la carpeta de la Wallet
             ClassLoader classLoader = SQLConnector.class.getClassLoader();
             URL walletUrl = classLoader.getResource("wallet");
 
@@ -26,11 +28,13 @@ public class SQLConnector {
                 throw new RuntimeException("No se encontró la carpeta 'wallet' en resources.");
             }
 
-            // Uso de Paths para evitar problemas con caracteres especiales o espacios en la ruta de Tomcat
+            // Uso de Paths para evitar problemas con caracteres especiales o espacios en la
+            // ruta de Tomcat
             String walletPath = Paths.get(walletUrl.toURI()).toAbsolutePath().toString();
             walletPath = walletPath.replace("\\", "/");
 
-            // 2. Intentar leer credenciales y nombre de BD desde el entorno o credentials.properties
+            // 2. Intentar leer credenciales y nombre de BD desde el entorno o
+            // credentials.properties
             String dbUser = System.getenv("DB_USER");
             String dbPass = System.getenv("DB_PASS");
             String dbName = System.getenv("DB_NAME");
@@ -38,20 +42,46 @@ public class SQLConnector {
             if (dbUser == null || dbPass == null || dbName == null) {
                 System.out.println("Cargando credenciales desde credentials.properties...");
                 Properties creds = new Properties();
-                try (InputStream is = classLoader.getResourceAsStream("credentials.properties")) {
-                    if (is == null) {
-                        throw new RuntimeException("No se encontró el archivo credentials.properties.");
-                    }
-                    creds.load(is);
+                InputStream is = classLoader.getResourceAsStream("credentials.properties");
 
-                    if (dbUser == null) dbUser = creds.getProperty("db.user");
-                    if (dbPass == null) dbPass = creds.getProperty("db.pass");
-                    if (dbName == null) dbName = creds.getProperty("db.name");
+                if (is == null) {
+                    File localCreds = new File("src/main/resources/credentials.properties");
+                    if (localCreds.exists()) {
+                        is = new FileInputStream(localCreds);
+                    }
+                }
+
+                if (is == null) {
+                    throw new RuntimeException(
+                            "No se encontró el archivo credentials.properties en resources ni en src/main/resources.");
+                }
+
+                try (InputStream stream = is) {
+                    creds.load(stream);
+                    if (dbUser == null)
+                        dbUser = creds.getProperty("db.user");
+                    if (dbPass == null) {
+                        dbPass = creds.getProperty("db.pass");
+                        if (dbPass == null) {
+                            dbPass = creds.getProperty("db.password");
+                        }
+                    }
+                    if (dbName == null)
+                        dbName = creds.getProperty("db.name");
                 }
             }
 
-            if (dbName == null) {
-                throw new RuntimeException("El nombre de la base de datos (db.name) no está configurado.");
+            if (dbName == null || dbName.trim().isEmpty() || dbName.contains("NOMBRE_DE_TU_CONEXION")) {
+                throw new RuntimeException(
+                        "El nombre de la base de datos (db.name) no está configurado correctamente en credentials.properties.");
+            }
+            if (dbUser == null || dbUser.trim().isEmpty()) {
+                throw new RuntimeException(
+                        "El usuario de la base de datos (db.user) no está configurado en credentials.properties.");
+            }
+            if (dbPass == null || dbPass.trim().isEmpty() || dbPass.equals("TU_PASSWORD_AQUI")) {
+                throw new RuntimeException(
+                        "Debes colocar tu contraseña real en 'db.pass' dentro de credentials.properties (actualmente está 'TU_PASSWORD_AQUI').");
             }
 
             // 3. Configuración de HikariCP para Oracle
@@ -75,7 +105,8 @@ public class SQLConnector {
             dataSource = new HikariDataSource(config);
             System.out.println("¡Conexión a Oracle Cloud establecida con éxito!");
 
-            // 4. Inicialización automática de tablas deshabilitada ya que existen en la BD real
+            // 4. Inicialización automática de tablas deshabilitada ya que existen en la BD
+            // real
             // inicializarTablas();
 
         } catch (Exception e) {
@@ -97,11 +128,12 @@ public class SQLConnector {
 
     private static void inicializarTablas() {
         try (Connection con = getConnection();
-             Statement stmt = con.createStatement()) {
+                Statement stmt = con.createStatement()) {
 
             // Verificar si la tabla EVALUADORES existe
             boolean tablasExisten = false;
-            try (ResultSet rs = stmt.executeQuery("SELECT count(*) FROM user_tables WHERE table_name = 'EVALUADORES'")) {
+            try (ResultSet rs = stmt
+                    .executeQuery("SELECT count(*) FROM user_tables WHERE table_name = 'EVALUADORES'")) {
                 if (rs.next() && rs.getInt(1) > 0) {
                     tablasExisten = true;
                 }
@@ -130,7 +162,8 @@ public class SQLConnector {
                         "url VARCHAR2(255), " +
                         "tarea VARCHAR2(4000), " +
                         "fecha_creacion VARCHAR2(50), " +
-                        "CONSTRAINT fk_pruebas_evaluador FOREIGN KEY (id_evaluador) REFERENCES evaluadores(id) ON DELETE CASCADE" +
+                        "CONSTRAINT fk_pruebas_evaluador FOREIGN KEY (id_evaluador) REFERENCES evaluadores(id) ON DELETE CASCADE"
+                        +
                         ")");
 
                 stmt.execute("CREATE TABLE preguntas (" +
@@ -139,7 +172,8 @@ public class SQLConnector {
                         "texto VARCHAR2(500) NOT NULL, " +
                         "orden NUMBER NOT NULL, " +
                         "tipo VARCHAR2(50) NOT NULL, " +
-                        "CONSTRAINT fk_preguntas_prueba FOREIGN KEY (id_prueba) REFERENCES pruebas(id) ON DELETE CASCADE" +
+                        "CONSTRAINT fk_preguntas_prueba FOREIGN KEY (id_prueba) REFERENCES pruebas(id) ON DELETE CASCADE"
+                        +
                         ")");
 
                 stmt.execute("CREATE TABLE participantes (" +
@@ -151,7 +185,8 @@ public class SQLConnector {
                         "fecha_realizacion VARCHAR2(50), " +
                         "duracion_segundos NUMBER, " +
                         "audio_path VARCHAR2(255), " +
-                        "CONSTRAINT fk_participantes_prueba FOREIGN KEY (id_prueba) REFERENCES pruebas(id) ON DELETE CASCADE" +
+                        "CONSTRAINT fk_participantes_prueba FOREIGN KEY (id_prueba) REFERENCES pruebas(id) ON DELETE CASCADE"
+                        +
                         ")");
 
                 stmt.execute("CREATE TABLE respuestas (" +
@@ -159,8 +194,10 @@ public class SQLConnector {
                         "id_participante NUMBER NOT NULL, " +
                         "id_pregunta NUMBER NOT NULL, " +
                         "valor NUMBER NOT NULL, " +
-                        "CONSTRAINT fk_respuestas_participante FOREIGN KEY (id_participante) REFERENCES participantes(id) ON DELETE CASCADE, " +
-                        "CONSTRAINT fk_respuestas_pregunta FOREIGN KEY (id_pregunta) REFERENCES preguntas(id) ON DELETE CASCADE" +
+                        "CONSTRAINT fk_respuestas_participante FOREIGN KEY (id_participante) REFERENCES participantes(id) ON DELETE CASCADE, "
+                        +
+                        "CONSTRAINT fk_respuestas_pregunta FOREIGN KEY (id_pregunta) REFERENCES preguntas(id) ON DELETE CASCADE"
+                        +
                         ")");
 
                 System.out.println("Tablas de base de datos creadas con éxito.");
