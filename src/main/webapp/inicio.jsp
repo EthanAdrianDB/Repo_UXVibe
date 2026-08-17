@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<jsp:useBean id="now" class="java.util.Date"/>
 <%@ include file="layout/header.jsp" %>
 
 <div class="container-fluid py-2">
@@ -87,7 +89,7 @@
                                             ${prueba.urlSistema}
                                         </a>
                                     </td>
-                                    <td class="text-muted"><jsp:useBean id="now" class="java.util.Date"/><%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %><fmt:formatDate value="${now}" pattern="dd/MM/yyyy" /></td>
+                                    <td class="text-muted"><fmt:formatDate value="${now}" pattern="dd/MM/yyyy" /></td>
                                     <td class="fw-semibold">${prueba.totalParticipantes}</td>
                                     <td class="text-end pe-4">
                                         <div class="d-inline-flex gap-2">

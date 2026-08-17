@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<jsp:useBean id="nowTab" class="java.util.Date"/>
 <div class="mb-4">
     <!-- Encabezado con botón de retorno y título -->
     <div class="d-flex align-items-center gap-3 mb-3">
@@ -29,7 +30,7 @@
             </div>
             <div>
                 <div class="text-muted small" style="font-size: 0.75rem;">Fecha de creacion</div>
-                <div class="fw-bold text-dark fs-6"><jsp:useBean id="now" class="java.util.Date"/><fmt:formatDate value="${now}" pattern="dd/MM/yyyy" /></div>
+                <div class="fw-bold text-dark fs-6"><fmt:formatDate value="${nowTab}" pattern="dd/MM/yyyy" /></div>
             </div>
         </div>
 

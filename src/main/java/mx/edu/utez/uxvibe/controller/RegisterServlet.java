@@ -63,8 +63,13 @@ public class RegisterServlet extends HttpServlet {
 
         Evaluador nuevo = new Evaluador(0, nombres.trim(), apellidoMaterno != null ? apellidoMaterno.trim() : "", apellidoPaterno.trim(), correoNormalizado, hash);
 
-        evaluadorDao.create(nuevo);
-        response.sendRedirect(request.getContextPath() + "/login?registroExitoso=true");
+        boolean creado = evaluadorDao.create(nuevo);
+        if (creado) {
+            response.sendRedirect(request.getContextPath() + "/login?registroExitoso=true");
+        } else {
+            request.setAttribute("error", "No se pudo registrar el usuario en la base de datos. Verifica que las tablas estén creadas.");
+            request.getRequestDispatcher("registro.jsp").forward(request, response);
+        }
     }
 
     private String validar(String nombres, String apellidoPaterno, String apellidoMaterno,
