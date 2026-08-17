@@ -298,7 +298,35 @@ public class SQLConnector {
     public static void main(String[] args) {
         try (Connection con = getConnection()) {
             if (con.isValid(5)) {
+                System.out.println("[SQLConnector] ========================================");
                 System.out.println("[SQLConnector] Conexión de prueba exitosa a Oracle Cloud.");
+                System.out.println("[SQLConnector] ========================================");
+                
+                // 1. Inicializar tablas
+                inicializarTablas(con);
+
+                // 2. Listar tablas del usuario
+                try (Statement stmt = con.createStatement();
+                     ResultSet rs = stmt.executeQuery("SELECT table_name FROM user_tables ORDER BY table_name")) {
+                    System.out.println("[SQLConnector] Tablas existentes en la base de datos:");
+                    while (rs.next()) {
+                        System.out.println("  - " + rs.getString("table_name"));
+                    }
+                }
+
+                // 3. Probar inserción con EvaluadorDao
+                mx.edu.utez.uxvibe.model.Evaluador testUser = new mx.edu.utez.uxvibe.model.Evaluador(
+                        0, "Test", "Tester", "Demo", "test_" + System.currentTimeMillis() + "@test.com", "Hash12345"
+                );
+                mx.edu.utez.uxvibe.model.dao.EvaluadorDao dao = new mx.edu.utez.uxvibe.model.dao.EvaluadorDao();
+                boolean insertado = dao.create(testUser);
+                if (insertado) {
+                    System.out.println("[SQLConnector] ¡Prueba de inserción en EVALUADOR exitosa! ID generado: " + testUser.getIdEvaluador());
+                    dao.delete(testUser.getIdEvaluador());
+                    System.out.println("[SQLConnector] Usuario de prueba eliminado limpiamente.");
+                } else {
+                    System.err.println("[SQLConnector] Falló la prueba de inserción. Error: " + mx.edu.utez.uxvibe.model.dao.EvaluadorDao.getUltimoError());
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -67,7 +67,8 @@ public class RegisterServlet extends HttpServlet {
         if (creado) {
             response.sendRedirect(request.getContextPath() + "/login?registroExitoso=true");
         } else {
-            request.setAttribute("error", "No se pudo registrar el usuario en la base de datos. Verifica que las tablas estén creadas.");
+            String err = EvaluadorDao.getUltimoError();
+            request.setAttribute("error", "Error al registrar en la base de datos: " + (err != null ? err : "Verifica la conexión a Oracle Cloud."));
             request.getRequestDispatcher("registro.jsp").forward(request, response);
         }
     }

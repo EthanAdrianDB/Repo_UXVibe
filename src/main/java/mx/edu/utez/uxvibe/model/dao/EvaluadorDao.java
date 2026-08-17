@@ -13,8 +13,15 @@ import java.util.List;
 
 public class EvaluadorDao implements Dao<Evaluador, Integer> {
 
+    private static String ultimoError = null;
+
+    public static String getUltimoError() {
+        return ultimoError;
+    }
+
     @Override
     public boolean create(Evaluador entidad) {
+        ultimoError = null;
         String sql = "INSERT INTO Evaluador (nombre, apellido_m, apellido_p, correo, contrasena) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, new String[]{"ID_EVALUADOR"})) {
@@ -37,6 +44,7 @@ public class EvaluadorDao implements Dao<Evaluador, Integer> {
                 return true;
             }
         } catch (SQLException e) {
+            ultimoError = e.getMessage();
             System.err.println("[EvaluadorDao] Error al insertar evaluador: " + e.getMessage());
             e.printStackTrace();
         }
