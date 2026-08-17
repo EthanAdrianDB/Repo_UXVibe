@@ -6,8 +6,11 @@
 
 # Sensitive files and database wallet credentials
 src/main/resources/credentials.properties
-src/main/resources/wallet/
+src/main/resources/wallet/*
+!src/main/resources/wallet/.gitkeep
+!src/main/resources/wallet/README.md
 *.sso
 *.p12
 *.pem
 *.jks
+*.ora
