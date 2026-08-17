@@ -89,7 +89,7 @@ public class SQLConnector {
     }
 
     private static String buscarRutaWallet() {
-        // Estrategia 1: ClassLoader
+        // Estrategia 1: ClassLoader de Tomcat / Java
         ClassLoader cl = SQLConnector.class.getClassLoader();
         URL walletUrl = cl != null ? cl.getResource("wallet") : null;
         if (walletUrl == null) {
@@ -100,35 +100,42 @@ public class SQLConnector {
         if (walletUrl != null) {
             try {
                 File f = Paths.get(walletUrl.toURI()).toFile();
-                if (f.exists() && f.isDirectory()) {
+                if (f.exists() && f.isDirectory() && new File(f, "tnsnames.ora").exists()) {
                     return f.getAbsolutePath().replace("\\", "/");
                 }
             } catch (Exception ignored) {
                 File f = new File(walletUrl.getPath());
-                if (f.exists() && f.isDirectory()) {
+                if (f.exists() && f.isDirectory() && new File(f, "tnsnames.ora").exists()) {
                     return f.getAbsolutePath().replace("\\", "/");
                 }
             }
         }
 
-        // Estrategia 2: Carpeta local directa src/main/resources/wallet
-        File localWallet = new File("src/main/resources/wallet");
-        if (localWallet.exists() && localWallet.isDirectory()) {
-            return localWallet.getAbsolutePath().replace("\\", "/");
+        // Estrategia 2: Rutas directas en disco
+        File[] candidatosWallet = new File[] {
+            new File("src/main/resources/wallet"),
+            new File("C:/Users/artur/Desktop/Repo_UXVibe/src/main/resources/wallet"),
+            new File("../src/main/resources/wallet"),
+            new File("../../src/main/resources/wallet")
+        };
+        for (File candidato : candidatosWallet) {
+            if (candidato.exists() && candidato.isDirectory() && new File(candidato, "tnsnames.ora").exists()) {
+                return candidato.getAbsolutePath().replace("\\", "/");
+            }
         }
 
-        // Estrategia 3: Buscar desde la ubicación del .class en el sistema de archivos
+        // Estrategia 3: Buscar subiendo desde la ubicación del .class
         try {
             URL codeLocation = SQLConnector.class.getProtectionDomain().getCodeSource().getLocation();
             if (codeLocation != null) {
                 File current = Paths.get(codeLocation.toURI()).toFile();
-                for (int i = 0; i < 6 && current != null; i++) {
+                for (int i = 0; i < 8 && current != null; i++) {
                     File candidate = new File(current, "src/main/resources/wallet");
-                    if (candidate.exists() && candidate.isDirectory()) {
+                    if (candidate.exists() && candidate.isDirectory() && new File(candidate, "tnsnames.ora").exists()) {
                         return candidate.getAbsolutePath().replace("\\", "/");
                     }
                     File candidate2 = new File(current, "wallet");
-                    if (candidate2.exists() && candidate2.isDirectory()) {
+                    if (candidate2.exists() && candidate2.isDirectory() && new File(candidate2, "tnsnames.ora").exists()) {
                         return candidate2.getAbsolutePath().replace("\\", "/");
                     }
                     current = current.getParentFile();
@@ -136,7 +143,7 @@ public class SQLConnector {
             }
         } catch (Exception ignored) {}
 
-        throw new RuntimeException("No se encontró la carpeta 'wallet'. Asegúrate de que exista en src/main/resources/wallet.");
+        throw new RuntimeException("No se encontró la carpeta 'wallet' con los archivos de Oracle (tnsnames.ora, cwallet.sso).");
     }
 
     private static Properties cargarCredenciales() {
@@ -151,7 +158,7 @@ public class SQLConnector {
         if (envPass != null) creds.setProperty("db.pass", envPass);
         if (envName != null) creds.setProperty("db.name", envName);
 
-        if (creds.getProperty("db.user") != null && creds.getProperty("db.pass") != null && creds.getProperty("db.name") != null) {
+        if (esValido(creds.getProperty("db.name")) && esValido(creds.getProperty("db.user")) && esValido(creds.getProperty("db.pass"))) {
             return creds;
         }
 
@@ -169,41 +176,69 @@ public class SQLConnector {
             } catch (Exception e) {
                 System.err.println("[SQLConnector] Error leyendo credentials.properties desde classpath: " + e.getMessage());
             }
-        } else {
-            // 3. Fallback: Buscar archivo en el disco
-            File localCreds = new File("src/main/resources/credentials.properties");
-            if (!localCreds.exists()) {
-                try {
-                    URL codeLocation = SQLConnector.class.getProtectionDomain().getCodeSource().getLocation();
-                    if (codeLocation != null) {
-                        File current = Paths.get(codeLocation.toURI()).toFile();
-                        for (int i = 0; i < 6 && current != null; i++) {
-                            File candidate = new File(current, "src/main/resources/credentials.properties");
-                            if (candidate.exists()) {
-                                localCreds = candidate;
-                                break;
-                            }
-                            current = current.getParentFile();
-                        }
-                    }
-                } catch (Exception ignored) {}
-            }
+        }
 
-            if (localCreds.exists()) {
-                try (InputStream stream = new FileInputStream(localCreds)) {
-                    creds.load(stream);
-                } catch (Exception e) {
-                    System.err.println("[SQLConnector] Error leyendo archivo de credenciales: " + e.getMessage());
+        // 3. Fallback: Buscar archivo en el disco si aún no tiene datos válidos
+        if (!esValido(creds.getProperty("db.name")) || !esValido(creds.getProperty("db.pass"))) {
+            File[] candidatos = new File[] {
+                new File("src/main/resources/credentials.properties"),
+                new File("C:/Users/artur/Desktop/Repo_UXVibe/src/main/resources/credentials.properties"),
+                new File("../src/main/resources/credentials.properties"),
+                new File("../../src/main/resources/credentials.properties")
+            };
+            for (File candidato : candidatos) {
+                if (candidato.exists()) {
+                    try (InputStream stream = new FileInputStream(candidato)) {
+                        creds.load(stream);
+                        if (esValido(creds.getProperty("db.name")) && esValido(creds.getProperty("db.pass"))) {
+                            System.out.println("[SQLConnector] Credenciales cargadas exitosamente desde: " + candidato.getAbsolutePath());
+                            break;
+                        }
+                    } catch (Exception ignored) {}
                 }
             }
         }
 
-        // Fallback para db.password -> db.pass
+        // 4. Buscar desde la ubicación del .class
+        if (!esValido(creds.getProperty("db.name")) || !esValido(creds.getProperty("db.pass"))) {
+            try {
+                URL codeLocation = SQLConnector.class.getProtectionDomain().getCodeSource().getLocation();
+                if (codeLocation != null) {
+                    File current = Paths.get(codeLocation.toURI()).toFile();
+                    for (int i = 0; i < 8 && current != null; i++) {
+                        File candidate = new File(current, "src/main/resources/credentials.properties");
+                        if (candidate.exists()) {
+                            try (InputStream stream = new FileInputStream(candidate)) {
+                                creds.load(stream);
+                                if (esValido(creds.getProperty("db.name")) && esValido(creds.getProperty("db.pass"))) {
+                                    break;
+                                }
+                            }
+                        }
+                        current = current.getParentFile();
+                    }
+                }
+            } catch (Exception ignored) {}
+        }
+
+        // Normalizar db.password -> db.pass
         if (creds.getProperty("db.pass") == null && creds.getProperty("db.password") != null) {
             creds.setProperty("db.pass", creds.getProperty("db.password"));
         }
 
+        // Valores por defecto de emergencia para el proyecto si faltaran
+        if (!esValido(creds.getProperty("db.name"))) {
+            creds.setProperty("db.name", "bduxvibe_high");
+        }
+        if (!esValido(creds.getProperty("db.user"))) {
+            creds.setProperty("db.user", "ADMIN");
+        }
+
         return creds;
+    }
+
+    private static boolean esValido(String valor) {
+        return valor != null && !valor.trim().isEmpty() && !valor.contains("NOMBRE_DE_TU_CONEXION") && !valor.equals("TU_PASSWORD_AQUI");
     }
 
     public static void inicializarTablas() {
