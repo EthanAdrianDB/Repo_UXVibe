@@ -21,8 +21,8 @@
 <body>
 
 <div class="card-box">
-    <div class="logo-circle">
-        <i class="bi bi-person-fill"></i>
+    <div style="padding-bottom: 15px">
+        <img src="${pageContext.request.contextPath}/assets/images/logo_correo.png" alt="Logo_UXVibe" style="width: 70px; height: 70px;">
     </div>
 
     <h3 class="fw-bold mb-3">¡Correo enviado!</h3>
@@ -30,18 +30,10 @@
         Hemos enviado un enlace de recuperación a tu correo: <br>
         <strong>${param.correo != null ? param.correo : 'tu correo registrado'}</strong>
     </p>
-    <p class="text-muted small mb-4">
+    <p class="text-muted small mb-4, box-reenviar">
         Revisa tu bandeja de entrada y sigue las instrucciones
     </p>
 
-    <div class="box-reenviar">
-        <p class="small text-dark mb-1">¿No recibiste el correo?</p>
-        <form action="${pageContext.request.contextPath}/recuperar" method="post" class="d-inline">
-            <input type="hidden" name="action" value="solicitar">
-            <input type="hidden" name="correo" value="${param.correo}">
-            <button type="submit" class="btn btn-link text-dark fw-bold p-0 small text-decoration-underline">Reenviar enlace</button>
-        </form>
-    </div>
 
     <div>
         <a href="login.jsp" class="link-teal">Volver al inicio de sesión</a>

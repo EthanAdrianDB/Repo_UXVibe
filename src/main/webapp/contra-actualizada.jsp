@@ -20,8 +20,8 @@
 <body>
 
 <div class="card-box">
-    <div class="logo-circle">
-        <i class="bi bi-person-fill"></i>
+    <div style="padding-bottom: 15px">
+        <img src="${pageContext.request.contextPath}/assets/images/logo_correo.png" alt="Logo_UXVibe" style="width: 70px; height: 70px;">
     </div>
 
     <h3 class="fw-bold mb-3">¡Contraseña actualizada!</h3>

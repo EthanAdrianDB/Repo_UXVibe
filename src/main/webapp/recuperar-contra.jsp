@@ -26,7 +26,7 @@
 
 <div class="card-box">
     <div style="padding-bottom: 15px">
-        <img src="${pageContext.request.contextPath}/assets/images/logo_correo.png" alt="Logo_UXVibe" style="width: 60px; height: 60px;">
+        <img src="${pageContext.request.contextPath}/assets/images/logo_correo.png" alt="Logo_UXVibe" style="width: 70px; height: 70px;">
     </div>
 
     <h3 class="fw-bold mb-2">Recuperar contraseña</h3>

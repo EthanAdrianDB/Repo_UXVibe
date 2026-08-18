@@ -27,8 +27,8 @@
 <body>
 
 <div class="card-box">
-    <div>
-        <img src="${pageContext.request.contextPath}/assets/images/logo_correo.png" alt="Logo_UXVibe" style="width: 38px; height: 38px;">
+    <div style="padding-bottom: 15px">
+        <img src="${pageContext.request.contextPath}/assets/images/logo_correo.png" alt="Logo_UXVibe" style="width: 70px; height: 70px;">
     </div>
 
     <h3 class="fw-bold mb-4">Crear nueva contraseña</h3>
