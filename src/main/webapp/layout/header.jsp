@@ -15,7 +15,7 @@
 <div class="uxv-layout">
     <div class="uxv-sidebar">
         <div class="logo">
-            <img src="${pageContext.request.contextPath}/assets/images/logoux.png" alt="UX" style="width: 38px; height: 38px; filter: brightness(0) invert(1);">
+            <img src="${pageContext.request.contextPath}/assets/images/logoUXVibe.png" alt="Logo_UXVibe" style="width: 38px; height: 38px;">
         </div>
         <a href="${pageContext.request.contextPath}/inicio"
            class="${pestanaActiva == 'inicio' ? 'activo' : ''}" title="Inicio">
