@@ -166,7 +166,13 @@ public class RespuestaDao implements Dao<Respuesta, Integer> {
 
     private Respuesta aRespuesta(ResultSet rs) throws SQLException {
         Respuesta res = new Respuesta();
-        res.setIdRespuestas(rs.getInt("id_respuestas"));
+        try {
+            res.setIdRespuestas(rs.getInt("id_respuesta"));
+        } catch (SQLException e) {
+            try {
+                res.setIdRespuestas(rs.getInt("id_respuestas"));
+            } catch (SQLException ignored) {}
+        }
         res.setIdParticipante(rs.getInt("id_participante"));
         res.setIdPrueba(rs.getInt("id_prueba"));
         res.setSam1(rs.getInt("sam_1"));

@@ -131,7 +131,49 @@ public class EvaluadorDao implements Dao<Evaluador, Integer> {
         return null;
     }
     
-    // Método temporal para no romper código existente que esperaba Token/Salt/Password
+    public static class TokenInfo {
+        private final int idEvaluador;
+        private final long expirationTime;
+
+        public TokenInfo(int idEvaluador, long expirationTime) {
+            this.idEvaluador = idEvaluador;
+            this.expirationTime = expirationTime;
+        }
+
+        public int getIdEvaluador() {
+            return idEvaluador;
+        }
+
+        public boolean isExpired() {
+            return System.currentTimeMillis() > expirationTime;
+        }
+    }
+
+    private static final java.util.concurrent.ConcurrentHashMap<String, TokenInfo> tokensRecuperacion = new java.util.concurrent.ConcurrentHashMap<>();
+
+    public void guardarTokenRecuperacion(String token, int idEvaluador, int minutosValidez) {
+        long exp = System.currentTimeMillis() + (minutosValidez * 60L * 1000L);
+        tokensRecuperacion.put(token, new TokenInfo(idEvaluador, exp));
+    }
+
+    public Evaluador buscarPorToken(String token) {
+        if (token == null || token.trim().isEmpty()) return null;
+        TokenInfo info = tokensRecuperacion.get(token);
+        if (info == null) return null;
+        if (info.isExpired()) {
+            tokensRecuperacion.remove(token);
+            return null;
+        }
+        return getById(info.getIdEvaluador());
+    }
+
+    public void eliminarToken(String token) {
+        if (token != null) {
+            tokensRecuperacion.remove(token);
+        }
+    }
+
+    // Actualizar contraseña del evaluador
     public boolean actualizarContrasena(int idEvaluador, String nuevoHash, String nuevoSalt) {
         String sql = "UPDATE Evaluador SET contrasena = ? WHERE id_evaluador = ?";
         try (Connection con = SQLConnector.getConnection();
@@ -143,11 +185,6 @@ public class EvaluadorDao implements Dao<Evaluador, Integer> {
             e.printStackTrace();
         }
         return false;
-    }
-    
-    // Método temporal para no romper buscarPorToken (puedes adaptarlo según cómo manejes recuperación ahora)
-    public Evaluador buscarPorToken(String token) {
-        return null; // A definir la lógica de recuperación de contraseña en el nuevo esquema
     }
 
     private Evaluador aEvaluador(ResultSet rs) throws SQLException {
@@ -161,3 +198,4 @@ public class EvaluadorDao implements Dao<Evaluador, Integer> {
         );
     }
 }
+

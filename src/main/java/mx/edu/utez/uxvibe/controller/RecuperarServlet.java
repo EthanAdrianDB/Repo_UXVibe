@@ -57,18 +57,27 @@ public class RecuperarServlet extends HttpServlet {
 
         if (correo != null && !correo.trim().isEmpty()) {
             String correoNormalizado = correo.trim().toLowerCase();
-            // Para la fase 2 usamos buscarPorCorreo como equivalente a correoExiste
-            if (evaluadorDao.buscarPorCorreo(correoNormalizado) != null) {
+            Evaluador evaluador = evaluadorDao.buscarPorCorreo(correoNormalizado);
+
+            if (evaluador != null) {
                 String token = UUID.randomUUID().toString();
-                // evaluadorDao.guardarTokenRecuperacion(correoNormalizado, token); // TODO: Agregar si se requiere en BD
+                evaluadorDao.guardarTokenRecuperacion(token, evaluador.getIdEvaluador(), 60);
 
                 String baseUrl = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath();
                 String enlaceRestablecer = baseUrl + "/recuperar?token=" + token;
 
                 String contenidoHtml = EmailSender.generarPlantillaRecuperacion(enlaceRestablecer);
-                EmailSender.sendMail(correoNormalizado, "Recuperar tu contraseña de UXVibe", contenidoHtml);
+
+                try {
+                    EmailSender.sendMail(correoNormalizado, "Recuperar tu contraseña de UXVibe", contenidoHtml);
+                    resp.sendRedirect("correo-enviado.jsp?correo=" + URLEncoder.encode(correoNormalizado, StandardCharsets.UTF_8));
+                } catch (Exception e) {
+                    System.err.println("[RecuperarServlet] Error al enviar correo de recuperación: " + e.getMessage());
+                    resp.sendRedirect("recuperar-contra.jsp?error=" + URLEncoder.encode("Error al enviar el correo: " + e.getMessage(), StandardCharsets.UTF_8));
+                }
+            } else {
+                resp.sendRedirect("recuperar-contra.jsp?error=" + URLEncoder.encode("No se encontró ninguna cuenta registrada con ese correo.", StandardCharsets.UTF_8));
             }
-            resp.sendRedirect("correo-enviado.jsp?correo=" + URLEncoder.encode(correoNormalizado, StandardCharsets.UTF_8));
         } else {
             resp.sendRedirect("recuperar-contra.jsp");
         }
@@ -99,10 +108,10 @@ public class RecuperarServlet extends HttpServlet {
         boolean actualizado = evaluadorDao.actualizarContrasena(evaluador.getIdEvaluador(), nuevoHash, "");
 
         if (actualizado) {
-            // evaluadorDao.eliminarToken(token); // TODO
+            evaluadorDao.eliminarToken(token);
             resp.sendRedirect("contra-actualizada.jsp");
         } else {
-            redirectError(resp, token, "Ocurrió un error al actualizar la contraseña.");
+            redirectError(resp, token, "Ocurrió un error al actualizar la contraseña en la base de datos.");
         }
     }
 
@@ -112,3 +121,4 @@ public class RecuperarServlet extends HttpServlet {
         resp.sendRedirect("cambiar-contra.jsp?token=" + tokenEnc + "&error=" + msgEnc);
     }
 }
+

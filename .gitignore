@@ -1,7 +1,10 @@
 # Project exclude paths
-/target/
-/.idea/
-/*.iml
+target/
+.idea/
+**/.idea/
+*.iml
+**/*.iml
+
 /EjemploIntegradorBasico5/
 
 # Sensitive files and database wallet credentials
