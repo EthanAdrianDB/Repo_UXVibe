@@ -80,6 +80,26 @@ public class PruebaServlet extends HttpServlet {
             String url = request.getParameter("url");
             String tarea = request.getParameter("tarea");
 
+            int idPruebaExcluida = 0;
+            if ("update".equals(action)) {
+                try {
+                    idPruebaExcluida = Integer.parseInt(request.getParameter("id"));
+                } catch(Exception ignored) {}
+            }
+
+            if (pruebaDao.existePrueba(evaluador.getIdEvaluador(), nombre, idPruebaExcluida)) {
+                request.setAttribute("error", "Ya tienes una prueba con ese nombre. Por favor, elige otro.");
+                Prueba p = new Prueba();
+                p.setNombre(nombre);
+                p.setUrlSistema(url);
+                p.setDescripcion(tarea);
+                if (idPruebaExcluida > 0) p.setIdPrueba(idPruebaExcluida);
+                
+                request.setAttribute("pruebaEditar", p);
+                request.getRequestDispatcher("nueva-prueba.jsp").forward(request, response);
+                return;
+            }
+
             Prueba prueba = new Prueba();
             prueba.setIdEvaluador(evaluador.getIdEvaluador());
             prueba.setNombre(nombre);
@@ -89,7 +109,7 @@ public class PruebaServlet extends HttpServlet {
             if ("create".equals(action)) {
                 pruebaDao.create(prueba);
             } else {
-                prueba.setIdPrueba(Integer.parseInt(request.getParameter("id")));
+                prueba.setIdPrueba(idPruebaExcluida);
                 pruebaDao.update(prueba);
             }
         }

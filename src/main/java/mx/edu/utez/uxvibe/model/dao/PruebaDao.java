@@ -137,6 +137,24 @@ public class PruebaDao implements Dao<Prueba, Integer> {
         }
     }
 
+    public boolean existePrueba(int idEvaluador, String nombre, int idPruebaExcluida) {
+        String sql = "SELECT COUNT(*) FROM Prueba WHERE id_evaluador = ? AND LOWER(nombre) = LOWER(?) AND id_prueba != ?";
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idEvaluador);
+            ps.setString(2, nombre.trim());
+            ps.setInt(3, idPruebaExcluida);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     private Prueba aPrueba(ResultSet rs) throws SQLException {
         return new Prueba(
                 rs.getInt("id_prueba"),

@@ -16,6 +16,12 @@
         </h2>
     </div>
 
+    <c:if test="${not empty error}">
+        <div class="alert alert-danger py-2 small mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> ${error}
+        </div>
+    </c:if>
+
     <!-- Formulario centrado/limpio -->
     <div class="row">
         <div class="col-md-9 col-lg-8">
