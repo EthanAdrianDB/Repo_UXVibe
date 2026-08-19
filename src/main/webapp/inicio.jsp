@@ -363,9 +363,9 @@
                                 </div>
                                 <div class="form-check mb-5 d-flex align-items-center gap-2">
                                     <input class="form-check-input mt-0" type="checkbox" id="checkAceptoTerminos"
-                                        style="width: 20px; height: 20px; background-color: #0f3f4a; border-color: #0f3f4a;">
+                                        style="width: 20px; height: 20px; cursor: pointer;">
                                     <label class="form-check-label ms-2" for="checkAceptoTerminos"
-                                        style="font-size: 0.95rem;">
+                                        style="font-size: 0.95rem; cursor: pointer;">
                                         Acepto los términos y condiciones.
                                     </label>
                                 </div>

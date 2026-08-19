@@ -59,7 +59,7 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        String hash = PasswordUtil.hashPassword(password, "");
+        String hash = PasswordUtil.hashPassword(password);
 
         Evaluador nuevo = new Evaluador(0, nombres.trim(), apellidoMaterno != null ? apellidoMaterno.trim() : "", apellidoPaterno.trim(), correoNormalizado, hash);
 
@@ -76,7 +76,7 @@ public class RegisterServlet extends HttpServlet {
     private String validar(String nombres, String apellidoPaterno, String apellidoMaterno,
                             String correo, String confirmarCorreo,
                             String password, String confirmarPassword) {
-        if (esVacio(nombres) || esVacio(apellidoPaterno) || esVacio(apellidoMaterno)
+        if (esVacio(nombres) || esVacio(apellidoPaterno)
                 || esVacio(correo) || esVacio(confirmarCorreo)
                 || esVacio(password) || esVacio(confirmarPassword)) {
             return "Todos los campos son obligatorios.";

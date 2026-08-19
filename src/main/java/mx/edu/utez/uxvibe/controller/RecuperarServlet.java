@@ -104,8 +104,8 @@ public class RecuperarServlet extends HttpServlet {
             return;
         }
 
-        String nuevoHash = PasswordUtil.hashPassword(pass1, "");
-        boolean actualizado = evaluadorDao.actualizarContrasena(evaluador.getIdEvaluador(), nuevoHash, "");
+        String nuevoHash = PasswordUtil.hashPassword(pass1);
+        boolean actualizado = evaluadorDao.actualizarContrasena(evaluador.getIdEvaluador(), nuevoHash);
 
         if (actualizado) {
             evaluadorDao.eliminarToken(token);

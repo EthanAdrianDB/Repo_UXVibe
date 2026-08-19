@@ -218,12 +218,20 @@
                 <div class="campo">
                     <label>
                         Contraseña <span class="text-danger">*</span> 
-                        <i class="bi bi-info-circle ms-1 text-secondary" style="cursor:pointer;" title="Mínimo 8 caracteres, una mayúscula, una minúscula y un número"></i>
                     </label>
                     <div class="input-icon-group has-icon">
                         <i class="bi bi-lock icon-prefix"></i>
-                        <input type="password" name="password" placeholder="Crea una contraseña"
-                               title="Mínimo 8 caracteres, una mayúscula, una minúscula y un número" required>
+                        <input type="password" id="inputPassword" name="password" placeholder="Crea una contraseña" required>
+                    </div>
+                    
+                    <div id="passwordChecklist" class="mt-2 p-2 bg-light rounded border border-light d-none" style="font-size: 0.85rem;">
+                        <div class="fw-semibold mb-1 text-dark">Tu contraseña debe contener:</div>
+                        <ul class="list-unstyled mb-0 ps-1">
+                            <li id="req-length" class="text-muted mb-1"><i class="bi bi-circle me-1"></i> Mínimo 8 caracteres</li>
+                            <li id="req-upper" class="text-muted mb-1"><i class="bi bi-circle me-1"></i> Una letra mayúscula</li>
+                            <li id="req-lower" class="text-muted mb-1"><i class="bi bi-circle me-1"></i> Una letra minúscula</li>
+                            <li id="req-number" class="text-muted"><i class="bi bi-circle me-1"></i> Un número</li>
+                        </ul>
                     </div>
                 </div>
 
@@ -231,7 +239,10 @@
                     <label>Confirmar contraseña <span class="text-danger">*</span></label>
                     <div class="input-icon-group has-icon">
                         <i class="bi bi-lock icon-prefix"></i>
-                        <input type="password" name="confirmarPassword" placeholder="Confirma tu contraseña" required>
+                        <input type="password" id="inputConfirmPassword" name="confirmarPassword" placeholder="Confirma tu contraseña" required>
+                    </div>
+                    <div id="passwordMatchError" class="text-danger mt-1 d-none" style="font-size: 0.85rem;">
+                        Las contraseñas no coinciden.
                     </div>
                 </div>
 
@@ -256,5 +267,72 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const passwordInput = document.getElementById('inputPassword');
+        const confirmPasswordInput = document.getElementById('inputConfirmPassword');
+        const checklist = document.getElementById('passwordChecklist');
+        const matchError = document.getElementById('passwordMatchError');
+        const form = document.querySelector('form');
+        
+        const reqs = {
+            length: { regex: /.{8,}/, el: document.getElementById('req-length') },
+            upper: { regex: /[A-Z]/, el: document.getElementById('req-upper') },
+            lower: { regex: /[a-z]/, el: document.getElementById('req-lower') },
+            number: { regex: /[0-9]/, el: document.getElementById('req-number') }
+        };
+
+        function updateChecklist() {
+            const val = passwordInput.value;
+            let allValid = true;
+
+            for (const key in reqs) {
+                const isValid = reqs[key].regex.test(val);
+                const icon = reqs[key].el.querySelector('i');
+                
+                if (isValid) {
+                    reqs[key].el.classList.remove('text-muted');
+                    reqs[key].el.classList.add('text-success');
+                    icon.classList.remove('bi-circle');
+                    icon.classList.add('bi-check-circle-fill');
+                } else {
+                    reqs[key].el.classList.add('text-muted');
+                    reqs[key].el.classList.remove('text-success');
+                    icon.classList.add('bi-circle');
+                    icon.classList.remove('bi-check-circle-fill');
+                    allValid = false;
+                }
+            }
+            return allValid;
+        }
+
+        passwordInput.addEventListener('focus', () => {
+            checklist.classList.remove('d-none');
+        });
+
+        passwordInput.addEventListener('input', updateChecklist);
+
+        function checkMatch() {
+            if (confirmPasswordInput.value.length > 0 && confirmPasswordInput.value !== passwordInput.value) {
+                matchError.classList.remove('d-none');
+                return false;
+            } else {
+                matchError.classList.add('d-none');
+                return true;
+            }
+        }
+
+        confirmPasswordInput.addEventListener('input', checkMatch);
+        passwordInput.addEventListener('input', checkMatch);
+
+        form.addEventListener('submit', function(e) {
+            if (!updateChecklist() || !checkMatch()) {
+                e.preventDefault();
+                checklist.classList.remove('d-none');
+                if (!checkMatch()) matchError.classList.remove('d-none');
+            }
+        });
+    });
+</script>
 </body>
 </html>

@@ -174,7 +174,7 @@ public class EvaluadorDao implements Dao<Evaluador, Integer> {
     }
 
     // Actualizar contraseña del evaluador
-    public boolean actualizarContrasena(int idEvaluador, String nuevoHash, String nuevoSalt) {
+    public boolean actualizarContrasena(int idEvaluador, String nuevoHash) {
         String sql = "UPDATE Evaluador SET contrasena = ? WHERE id_evaluador = ?";
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {

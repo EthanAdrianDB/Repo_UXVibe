@@ -48,8 +48,8 @@ public class PerfilServlet extends HttpServlet {
             String confirmarPassword = request.getParameter("confirmarPassword");
 
             if (password != null && password.equals(confirmarPassword)) {
-                String nuevoHash = PasswordUtil.hashPassword(password, "");
-                evaluadorDao.actualizarContrasena(evaluador.getIdEvaluador(), nuevoHash, "");
+                String nuevoHash = PasswordUtil.hashPassword(password);
+                evaluadorDao.actualizarContrasena(evaluador.getIdEvaluador(), nuevoHash);
                 evaluador.setContrasena(nuevoHash);
                 session.setAttribute("evaluador", evaluador);
                 response.sendRedirect(request.getContextPath() + "/perfil?actualizado=password");

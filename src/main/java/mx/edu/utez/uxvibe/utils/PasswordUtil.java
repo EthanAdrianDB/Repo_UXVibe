@@ -19,6 +19,10 @@ public class PasswordUtil {
         return Base64.getEncoder().encodeToString(salt);
     }
 
+    public static String hashPassword(String password) {
+        return hashPassword(password, "");
+    }
+
     public static String hashPassword(String password, String salt) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
