@@ -75,49 +75,58 @@
                 
                 <div class="mb-4 p-3 bg-white border rounded">
                     <label class="form-label fw-bold mb-1">Valencia: ¿Cómo te sientes después de haber interactuado con la página/sistema Web?</label>
+                    <div class="text-center mt-3 mb-2">
+                        <img src="${pageContext.request.contextPath}/assets/images/img.png" class="img-fluid" alt="Escala Valencia" style="max-height: 120px;">
+                    </div>
                     <div class="d-flex justify-content-between align-items-center pt-2">
                         <span class="small text-muted" style="font-size: 0.8rem;">1 (Muy mal)</span>
-                        <div class="d-flex gap-2 justify-content-center">
-                            <% for (int v = 1; v <= 5; v++) { %>
+                        <div class="d-flex gap-2 justify-content-center flex-wrap">
+                            <% for (int v = 1; v <= 9; v++) { %>
                                 <label>
                                     <input type="radio" name="sam1" value="<%= v %>" required>
                                     <div class="opcion-escala"><%= v %></div>
                                 </label>
                             <% } %>
                         </div>
-                        <span class="small text-muted" style="font-size: 0.8rem;">5 (Muy bien)</span>
+                        <span class="small text-muted" style="font-size: 0.8rem;">9 (Muy bien)</span>
                     </div>
                 </div>
 
                 <div class="mb-4 p-3 bg-white border rounded">
                     <label class="form-label fw-bold mb-1">Activación: ¿Qué tan impactante o estimulante fue tu experiencia?</label>
+                    <div class="text-center mt-3 mb-2">
+                        <img src="${pageContext.request.contextPath}/assets/images/img_1.png" class="img-fluid" alt="Escala Activación" style="max-height: 120px;">
+                    </div>
                     <div class="d-flex justify-content-between align-items-center pt-2">
                         <span class="small text-muted" style="font-size: 0.8rem;">1 (Muy calmado)</span>
-                        <div class="d-flex gap-2 justify-content-center">
-                            <% for (int v = 1; v <= 5; v++) { %>
+                        <div class="d-flex gap-2 justify-content-center flex-wrap">
+                            <% for (int v = 1; v <= 9; v++) { %>
                                 <label>
                                     <input type="radio" name="sam2" value="<%= v %>" required>
                                     <div class="opcion-escala"><%= v %></div>
                                 </label>
                             <% } %>
                         </div>
-                        <span class="small text-muted" style="font-size: 0.8rem;">5 (Muy alterado)</span>
+                        <span class="small text-muted" style="font-size: 0.8rem;">9 (Muy alterado)</span>
                     </div>
                 </div>
 
                 <div class="mb-4 p-3 bg-white border rounded">
                     <label class="form-label fw-bold mb-1">Dominio: ¿Qué tanto control tuviste sobre tus emociones y la navegación?</label>
+                    <div class="text-center mt-3 mb-2">
+                        <img src="${pageContext.request.contextPath}/assets/images/img_2.png" class="img-fluid" alt="Escala Dominio" style="max-height: 120px;">
+                    </div>
                     <div class="d-flex justify-content-between align-items-center pt-2">
                         <span class="small text-muted" style="font-size: 0.8rem;">1 (Muy influenciado)</span>
-                        <div class="d-flex gap-2 justify-content-center">
-                            <% for (int v = 1; v <= 5; v++) { %>
+                        <div class="d-flex gap-2 justify-content-center flex-wrap">
+                            <% for (int v = 1; v <= 9; v++) { %>
                                 <label>
                                     <input type="radio" name="sam3" value="<%= v %>" required>
                                     <div class="opcion-escala"><%= v %></div>
                                 </label>
                             <% } %>
                         </div>
-                        <span class="small text-muted" style="font-size: 0.8rem;">5 (Muy dominante)</span>
+                        <span class="small text-muted" style="font-size: 0.8rem;">9 (Muy dominante)</span>
                     </div>
                 </div>
 

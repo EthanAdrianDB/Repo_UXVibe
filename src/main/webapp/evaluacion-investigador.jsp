@@ -109,49 +109,58 @@
                 
                 <div class="mb-4 text-start">
                     <label class="form-label fw-bold">Valencia: ¿Cómo te sientes después de haber interactuado con la página/sistema Web?</label>
+                    <div class="text-center mt-3 mb-2">
+                        <img src="${pageContext.request.contextPath}/assets/images/img.png" class="img-fluid" alt="Escala Valencia" style="max-height: 120px;">
+                    </div>
                     <div class="d-flex justify-content-between align-items-center mt-2 px-3 py-3 bg-white border rounded">
                         <span class="small text-muted fw-bold me-2 text-center" style="width: 80px;">1<br>(Muy mal)</span>
                         <div class="d-flex gap-1 flex-wrap justify-content-center flex-grow-1">
-                            <% for(int i=1; i<=5; i++) { %>
+                            <% for(int i=1; i<=9; i++) { %>
                                 <div class="form-check form-check-inline m-0 text-center" style="width: 30px;">
                                     <input class="form-check-input float-none mx-auto d-block mb-1" type="radio" name="sam_valencia" id="sam_val_<%= i %>" value="<%= i %>" required>
                                     <label class="form-check-label small" for="sam_val_<%= i %>"><%= i %></label>
                                 </div>
                             <% } %>
                         </div>
-                        <span class="small text-muted fw-bold ms-2 text-center" style="width: 80px;">5<br>(Muy bien)</span>
+                        <span class="small text-muted fw-bold ms-2 text-center" style="width: 80px;">9<br>(Muy bien)</span>
                     </div>
                 </div>
 
                 <div class="mb-4 text-start">
                     <label class="form-label fw-bold">Activación: ¿Qué tan impactante fue tu experiencia?</label>
+                    <div class="text-center mt-3 mb-2">
+                        <img src="${pageContext.request.contextPath}/assets/images/img_1.png" class="img-fluid" alt="Escala Activación" style="max-height: 120px;">
+                    </div>
                     <div class="d-flex justify-content-between align-items-center mt-2 px-3 py-3 bg-white border rounded">
                         <span class="small text-muted fw-bold me-2 text-center" style="width: 80px;">1<br>(Muy calmado)</span>
                         <div class="d-flex gap-1 flex-wrap justify-content-center flex-grow-1">
-                            <% for(int i=1; i<=5; i++) { %>
+                            <% for(int i=1; i<=9; i++) { %>
                                 <div class="form-check form-check-inline m-0 text-center" style="width: 30px;">
                                     <input class="form-check-input float-none mx-auto d-block mb-1" type="radio" name="sam_activacion" id="sam_act_<%= i %>" value="<%= i %>" required>
                                     <label class="form-check-label small" for="sam_act_<%= i %>"><%= i %></label>
                                 </div>
                             <% } %>
                         </div>
-                        <span class="small text-muted fw-bold ms-2 text-center" style="width: 80px;">5<br>(Muy alterado)</span>
+                        <span class="small text-muted fw-bold ms-2 text-center" style="width: 80px;">9<br>(Muy alterado)</span>
                     </div>
                 </div>
 
                 <div class="mb-5 text-start">
                     <label class="form-label fw-bold">Dominio: ¿Qué tanto dominio tuviste sobre tus emociones y sentimientos?</label>
+                    <div class="text-center mt-3 mb-2">
+                        <img src="${pageContext.request.contextPath}/assets/images/img_2.png" class="img-fluid" alt="Escala Dominio" style="max-height: 120px;">
+                    </div>
                     <div class="d-flex justify-content-between align-items-center mt-2 px-3 py-3 bg-white border rounded">
                         <span class="small text-muted fw-bold me-2 text-center" style="width: 90px;">1<br>(Muy influenciado)</span>
                         <div class="d-flex gap-1 flex-wrap justify-content-center flex-grow-1">
-                            <% for(int i=1; i<=5; i++) { %>
+                            <% for(int i=1; i<=9; i++) { %>
                                 <div class="form-check form-check-inline m-0 text-center" style="width: 30px;">
                                     <input class="form-check-input float-none mx-auto d-block mb-1" type="radio" name="sam_dominio" id="sam_dom_<%= i %>" value="<%= i %>" required>
                                     <label class="form-check-label small" for="sam_dom_<%= i %>"><%= i %></label>
                                 </div>
                             <% } %>
                         </div>
-                        <span class="small text-muted fw-bold ms-2 text-center" style="width: 90px;">5<br>(Muy dominante)</span>
+                        <span class="small text-muted fw-bold ms-2 text-center" style="width: 90px;">9<br>(Muy dominante)</span>
                     </div>
                 </div>
                 
