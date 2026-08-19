@@ -61,6 +61,7 @@ public class CuestionarioServlet extends HttpServlet {
             String apellidoM = request.getParameter("apellidoM");
             String apellidoP = request.getParameter("apellidoP");
             int sexo = parseSexo(request.getParameter("sexo"));
+            int edad = parseIntSafe(request.getParameter("edad"), 0);
 
             Participante participante = new Participante();
             participante.setIdPrueba(idPrueba);
@@ -68,6 +69,7 @@ public class CuestionarioServlet extends HttpServlet {
             participante.setApellidoM(apellidoM != null ? apellidoM.trim() : "");
             participante.setApellidoP(apellidoP != null ? apellidoP.trim() : "");
             participante.setSexo(sexo);
+            participante.setEdad(edad);
 
             participanteDao.create(participante);
 

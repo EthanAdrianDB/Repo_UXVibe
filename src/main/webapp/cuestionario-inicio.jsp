@@ -39,6 +39,11 @@
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label">Edad</label>
+                    <input type="number" class="form-control" name="edad" placeholder="Ingresa tu edad (ej. 25)" min="1" max="120" required>
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label">Sexo</label>
                     <select class="form-select" name="sexo" required>
                         <option value="">Selecciona una opción</option>

@@ -43,11 +43,13 @@
                                                 ${not empty p.nombre ? p.nombre.concat(' ').concat(p.apellidoP) : 'Participante #'.concat(p.idParticipante)}
                                             </td>
                                             <td class="text-muted font-monospace">
-                                                ${not empty p.duracionFormateada && p.duracionFormateada != '0:00' ? p.duracionFormateada : '10:12'}
+                                                <span class="audio-duration-display" data-audio-src="${pageContext.request.contextPath}/audio?action=play&idPrueba=${prueba.idPrueba}&idParticipante=${p.idParticipante}">
+                                                    ${not empty p.duracionFormateada && p.duracionFormateada != '0:00' ? p.duracionFormateada : '--:--'}
+                                                </span>
                                             </td>
                                             <td class="text-center pe-4">
                                                 <button type="button" class="btn btn-sm text-dark p-1 rounded-circle play-row-btn" 
-                                                        onclick="reproducirAudio('${not empty p.nombre ? p.nombre.concat(' ').concat(p.apellidoP) : 'Participante #'.concat(p.idParticipante)}', '${not empty p.duracionFormateada && p.duracionFormateada != '0:00' ? p.duracionFormateada : '10:12'}', '${pageContext.request.contextPath}/audio?action=play&idPrueba=${prueba.idPrueba}&idParticipante=${p.idParticipante}', ${p.idParticipante})" 
+                                                        onclick="reproducirAudio('${not empty p.nombre ? p.nombre.concat(' ').concat(p.apellidoP) : 'Participante #'.concat(p.idParticipante)}', '${pageContext.request.contextPath}/audio?action=play&idPrueba=${prueba.idPrueba}&idParticipante=${p.idParticipante}', ${p.idParticipante})" 
                                                         title="Reproducir audio">
                                                     <i class="bi bi-caret-right-fill fs-5"></i>
                                                 </button>
@@ -96,7 +98,7 @@
                         <!-- Time & Progress Controls -->
                         <div class="d-flex justify-content-between text-muted fw-mono small mt-2 mb-1" style="font-size: 0.8rem;">
                             <span id="reproductorTiempoActual" class="text-dark font-monospace">00:00</span>
-                            <span id="reproductorDuracion" class="text-muted font-monospace">10:12</span>
+                            <span id="reproductorDuracion" class="text-muted font-monospace">--:--</span>
                         </div>
 
                         <!-- Progress Slider -->
@@ -149,6 +151,21 @@ let totalSeconds = 0;
 let audioEl = null;
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Dynamic fetching of durations
+    document.querySelectorAll('.audio-duration-display').forEach(el => {
+        let src = el.getAttribute('data-audio-src');
+        if (src && el.innerText.trim() === '--:--') {
+            let tempAudio = new Audio();
+            tempAudio.preload = "metadata";
+            tempAudio.addEventListener('loadedmetadata', () => {
+                if (isFinite(tempAudio.duration)) {
+                    el.innerText = formatSeconds(tempAudio.duration);
+                }
+            });
+            tempAudio.src = src;
+        }
+    });
+
     audioEl = document.getElementById('audioElement');
 
     if (audioEl) {
@@ -256,7 +273,7 @@ function actualizarWaveformColores(progress) {
     });
 }
 
-function reproducirAudio(nombre, duracion, audioSrc, idParticipante) {
+function reproducirAudio(nombre, audioSrc, idParticipante) {
     const tabla = document.getElementById('tablaContainer');
     const reproductor = document.getElementById('reproductorContainer');
     

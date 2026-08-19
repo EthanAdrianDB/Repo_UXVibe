@@ -30,56 +30,122 @@
                 <input type="hidden" name="action" value="responder">
 
                 <!-- 15 Preguntas tipo Likert -->
-                <h5 class="mt-4 mb-3 text-primary border-bottom pb-2">Sección 1: Preguntas Generales</h5>
+                <h5 class="mt-4 mb-3 text-dark border-bottom pb-2 fw-bold">Sección 1: Preguntas Generales de Usabilidad</h5>
                 <p class="text-muted small mb-4">Califica del 1 al 5 (donde 1 es Totalmente en desacuerdo y 5 es Totalmente de acuerdo)</p>
-                <c:forEach begin="1" end="15" var="q">
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">Pregunta R${q}</label>
-                        <p class="small text-muted mb-2">Por favor indica tu nivel de acuerdo con esta afirmación.</p>
-                        <div class="d-flex justify-content-start gap-3 flex-wrap">
-                            <c:forEach begin="1" end="5" var="v">
-                                <label>
-                                    <input type="radio" name="r${q}" value="${v}" required>
-                                    <div class="opcion-escala">${v}</div>
-                                </label>
-                            </c:forEach>
+                <% 
+                    String[] uxPreguntas = {
+                        "1. Me resultó fácil aprender a navegar por esta página/sistema web.",
+                        "2. La estructura del menú y los enlaces es intuitiva y sé dónde encontrar la información.",
+                        "3. Creo que el sistema web es innecesariamente complejo o difícil de entender.",
+                        "4. Las funciones y herramientas de la página cubren completamente mis necesidades.",
+                        "5. Este sistema web me permite realizar mis tareas de forma más rápida y eficiente.",
+                        "6. La información, textos y contenidos que ofrece la plataforma son claros y valiosos.",
+                        "7. El diseño visual de la página web es atractivo, limpio y moderno.",
+                        "8. El tamaño de la letra, los contrastes y los colores facilitan una lectura cómoda.",
+                        "9. La interfaz se siente saturada, desordenada o visualmente confusa.",
+                        "10. La página web carga rápidamente y las secciones responden sin retrasos.",
+                        "11. El sistema funciona correctamente en mi navegador y no experimenté errores técnicos.",
+                        "12. La plataforma se adapta bien y es fácil de usar si accedo desde el teléfono móvil.",
+                        "13. Me siento satisfecho con mi experiencia general utilizando este sitio/sistema web.",
+                        "14. Recomendaría este sitio o sistema web a otros colegas o usuarios.",
+                        "15. Si tuviera otra alternativa que haga lo mismo, preferiría no usar esta web."
+                    };
+                    for (int i = 0; i < uxPreguntas.length; i++) {
+                %>
+                    <div class="mb-4 p-3 bg-white border rounded">
+                        <label class="form-label fw-bold mb-2"><%= uxPreguntas[i] %></label>
+                        <div class="d-flex justify-content-between align-items-center pt-2">
+                            <span class="small text-muted" style="font-size: 0.8rem;">Totalmente en desacuerdo (1)</span>
+                            <div class="d-flex gap-2 justify-content-center">
+                                <% for (int v = 1; v <= 5; v++) { %>
+                                    <label>
+                                        <input type="radio" name="r<%= (i + 1) %>" value="<%= v %>" required>
+                                        <div class="opcion-escala"><%= v %></div>
+                                    </label>
+                                <% } %>
+                            </div>
+                            <span class="small text-muted" style="font-size: 0.8rem;">Totalmente de acuerdo (5)</span>
                         </div>
                     </div>
-                </c:forEach>
+                <% } %>
 
                 <!-- 3 Preguntas SAM -->
-                <h5 class="mt-5 mb-3 text-primary border-bottom pb-2">Sección 2: Evaluación SAM</h5>
-                <p class="text-muted small mb-4">Califica del 1 al 9 (Escala SAM)</p>
-                <c:forEach begin="1" end="3" var="s">
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">Escala SAM ${s}</label>
-                        <div class="d-flex justify-content-start gap-2 flex-wrap">
-                            <c:forEach begin="1" end="9" var="v">
+                <h5 class="mt-5 mb-3 text-dark border-bottom pb-2 fw-bold">Sección 2: Evaluación Emocional (Escala SAM)</h5>
+                <p class="text-muted small mb-4">Califica tu estado emocional durante la interacción (Escala 1 a 5)</p>
+                
+                <div class="mb-4 p-3 bg-white border rounded">
+                    <label class="form-label fw-bold mb-1">Valencia: ¿Cómo te sientes después de haber interactuado con la página/sistema Web?</label>
+                    <div class="d-flex justify-content-between align-items-center pt-2">
+                        <span class="small text-muted" style="font-size: 0.8rem;">1 (Muy mal)</span>
+                        <div class="d-flex gap-2 justify-content-center">
+                            <% for (int v = 1; v <= 5; v++) { %>
                                 <label>
-                                    <input type="radio" name="sam${s}" value="${v}" required>
-                                    <div class="opcion-escala" style="width:35px; height:35px;">${v}</div>
+                                    <input type="radio" name="sam1" value="<%= v %>" required>
+                                    <div class="opcion-escala"><%= v %></div>
                                 </label>
-                            </c:forEach>
+                            <% } %>
                         </div>
+                        <span class="small text-muted" style="font-size: 0.8rem;">5 (Muy bien)</span>
                     </div>
-                </c:forEach>
+                </div>
+
+                <div class="mb-4 p-3 bg-white border rounded">
+                    <label class="form-label fw-bold mb-1">Activación: ¿Qué tan impactante o estimulante fue tu experiencia?</label>
+                    <div class="d-flex justify-content-between align-items-center pt-2">
+                        <span class="small text-muted" style="font-size: 0.8rem;">1 (Muy calmado)</span>
+                        <div class="d-flex gap-2 justify-content-center">
+                            <% for (int v = 1; v <= 5; v++) { %>
+                                <label>
+                                    <input type="radio" name="sam2" value="<%= v %>" required>
+                                    <div class="opcion-escala"><%= v %></div>
+                                </label>
+                            <% } %>
+                        </div>
+                        <span class="small text-muted" style="font-size: 0.8rem;">5 (Muy alterado)</span>
+                    </div>
+                </div>
+
+                <div class="mb-4 p-3 bg-white border rounded">
+                    <label class="form-label fw-bold mb-1">Dominio: ¿Qué tanto control tuviste sobre tus emociones y la navegación?</label>
+                    <div class="d-flex justify-content-between align-items-center pt-2">
+                        <span class="small text-muted" style="font-size: 0.8rem;">1 (Muy influenciado)</span>
+                        <div class="d-flex gap-2 justify-content-center">
+                            <% for (int v = 1; v <= 5; v++) { %>
+                                <label>
+                                    <input type="radio" name="sam3" value="<%= v %>" required>
+                                    <div class="opcion-escala"><%= v %></div>
+                                </label>
+                            <% } %>
+                        </div>
+                        <span class="small text-muted" style="font-size: 0.8rem;">5 (Muy dominante)</span>
+                    </div>
+                </div>
 
                 <!-- 2 Frecuencias de estado de ánimo -->
-                <h5 class="mt-5 mb-3 text-primary border-bottom pb-2">Sección 3: Estado de Ánimo</h5>
-                <c:forEach begin="1" end="2" var="f">
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">Frecuencia de Estado de Ánimo ${f}</label>
-                        <p class="small text-muted mb-2">Califica del 1 al 5 la frecuencia.</p>
-                        <div class="d-flex justify-content-start gap-3 flex-wrap">
-                            <c:forEach begin="1" end="5" var="v">
-                                <label>
-                                    <input type="radio" name="frecuenciaEstadoAnimo${f}" value="${v}" required>
-                                    <div class="opcion-escala">${v}</div>
-                                </label>
-                            </c:forEach>
-                        </div>
-                    </div>
-                </c:forEach>
+                <h5 class="mt-5 mb-3 text-dark border-bottom pb-2 fw-bold">Sección 3: Frecuencia de Estados de Ánimo</h5>
+                <div class="mb-4 p-3 bg-white border rounded">
+                    <label class="form-label fw-bold mb-2">En una semana típica, ¿con qué frecuencia te sientes estresado/a?</label>
+                    <select class="form-select" name="frecuenciaEstadoAnimo1" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="1">Nunca</option>
+                        <option value="2">De vez en cuando</option>
+                        <option value="3">Cerca de la mitad del tiempo</option>
+                        <option value="4">La mayor parte del tiempo</option>
+                        <option value="5">Siempre</option>
+                    </select>
+                </div>
+
+                <div class="mb-4 p-3 bg-white border rounded">
+                    <label class="form-label fw-bold mb-2">En una semana típica, ¿con qué frecuencia te sientes relajado/a?</label>
+                    <select class="form-select" name="frecuenciaEstadoAnimo2" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="1">Nunca</option>
+                        <option value="2">De vez en cuando</option>
+                        <option value="3">Cerca de la mitad del tiempo</option>
+                        <option value="4">La mayor parte del tiempo</option>
+                        <option value="5">Siempre</option>
+                    </select>
+                </div>
 
                 <!-- Botón que abre el modal de confirmación -->
                 <button type="button" class="btn text-white w-100 py-3 mt-4" style="background-color: #3b8285;" data-bs-toggle="modal" data-bs-target="#modalConfirmarGuardar">

@@ -22,42 +22,48 @@ public class RespuestaDao implements Dao<Respuesta, Integer> {
                      "frecuencia_estado_animo_1, frecuencia_estado_animo_2) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
-        try (Connection con = SQLConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, new String[]{"ID_RESPUESTA"})) {
-            
-            ps.setInt(1, entidad.getIdParticipante());
-            ps.setInt(2, entidad.getIdPrueba());
-            ps.setInt(3, entidad.getSam1());
-            ps.setInt(4, entidad.getSam2());
-            ps.setInt(5, entidad.getSam3());
-            ps.setInt(6, entidad.getR1());
-            ps.setInt(7, entidad.getR2());
-            ps.setInt(8, entidad.getR3());
-            ps.setInt(9, entidad.getR4());
-            ps.setInt(10, entidad.getR5());
-            ps.setInt(11, entidad.getR6());
-            ps.setInt(12, entidad.getR7());
-            ps.setInt(13, entidad.getR8());
-            ps.setInt(14, entidad.getR9());
-            ps.setInt(15, entidad.getR10());
-            ps.setInt(16, entidad.getR11());
-            ps.setInt(17, entidad.getR12());
-            ps.setInt(18, entidad.getR13());
-            ps.setInt(19, entidad.getR14());
-            ps.setInt(20, entidad.getR15());
-            ps.setInt(21, entidad.getFrecuenciaEstadoAnimo1());
-            ps.setInt(22, entidad.getFrecuenciaEstadoAnimo2());
+        try (Connection con = SQLConnector.getConnection()) {
+            PreparedStatement ps;
+            try {
+                ps = con.prepareStatement(sql, new String[]{"ID_RESPUESTAS"});
+            } catch (SQLException e) {
+                ps = con.prepareStatement(sql, new String[]{"ID_RESPUESTA"});
+            }
+            try (PreparedStatement statement = ps) {
+                statement.setInt(1, entidad.getIdParticipante());
+                statement.setInt(2, entidad.getIdPrueba());
+                statement.setInt(3, entidad.getSam1());
+                statement.setInt(4, entidad.getSam2());
+                statement.setInt(5, entidad.getSam3());
+                statement.setInt(6, entidad.getR1());
+                statement.setInt(7, entidad.getR2());
+                statement.setInt(8, entidad.getR3());
+                statement.setInt(9, entidad.getR4());
+                statement.setInt(10, entidad.getR5());
+                statement.setInt(11, entidad.getR6());
+                statement.setInt(12, entidad.getR7());
+                statement.setInt(13, entidad.getR8());
+                statement.setInt(14, entidad.getR9());
+                statement.setInt(15, entidad.getR10());
+                statement.setInt(16, entidad.getR11());
+                statement.setInt(17, entidad.getR12());
+                statement.setInt(18, entidad.getR13());
+                statement.setInt(19, entidad.getR14());
+                statement.setInt(20, entidad.getR15());
+                statement.setInt(21, entidad.getFrecuenciaEstadoAnimo1());
+                statement.setInt(22, entidad.getFrecuenciaEstadoAnimo2());
 
-            int rows = ps.executeUpdate();
-            if (rows > 0) {
-                try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs != null && rs.next()) {
-                        try {
-                            entidad.setIdRespuestas(rs.getInt(1));
-                        } catch (Exception ignored) {}
-                    }
-                } catch (Exception ignored) {}
-                return true;
+                int rows = statement.executeUpdate();
+                if (rows > 0) {
+                    try (ResultSet rs = statement.getGeneratedKeys()) {
+                        if (rs != null && rs.next()) {
+                            try {
+                                entidad.setIdRespuestas(rs.getInt(1));
+                            } catch (Exception ignored) {}
+                        }
+                    } catch (Exception ignored) {}
+                    return true;
+                }
             }
         } catch (SQLException e) {
             System.err.println("[RespuestaDao] Error al insertar respuesta: " + e.getMessage());
