@@ -20,32 +20,32 @@
         <div class="card shadow-sm">
             <div class="card-body p-4">
                 <div class="text-center mb-4">
-                    <i class="bi bi-person-circle display-4 text-secondary"></i>
-                    <h4 class="mt-2 mb-0">${sessionScope.evaluador.nombre}</h4>
-                    <p class="text-muted small">Investigador</p>
+                    <h4 class="mt-2 mb-0">
+                        ${sessionScope.evaluador.nombre}
+                        ${sessionScope.evaluador.apellidoP}
+                        ${sessionScope.evaluador.apellidoM != null ? sessionScope.evaluador.apellidoM : ''}
+                    </h4>
+                    <p class="text-muted small">Evaluador UX</p>
                 </div>
 
                 <% if (!modoEdicion && !modoContrasena) { %>
 
                     <!-- ===== MODO VISTA (solo lectura) ===== -->
-                    <h6 class="text-primary border-bottom pb-2">Información personal</h6>
-                    <p class="mb-1 text-muted small">Nombre completo</p>
+                    <h6 class="text-primary border-bottom pb-2 bold">Información personal</h6>
+                    <p class="mb-1 text-muted small">Nombre(s)</p>
                     <p>${sessionScope.evaluador.nombre}</p>
+                    <p class="mb-1 text-muted small">Apellidos</p>
+                    <p>${sessionScope.evaluador.apellidoP} ${sessionScope.evaluador.apellidoM != null ? sessionScope.evaluador.apellidoM : ''}</p>
                     <p class="mb-1 text-muted small">Correo electrónico</p>
                     <p>${sessionScope.evaluador.correo}</p>
 
-                    <a href="${pageContext.request.contextPath}/perfil?editar=true" class="btn btn-outline-primary w-100 mb-4">
-                        <i class="bi bi-pencil-fill"></i> Editar información
-                    </a>
+                    <a href="${pageContext.request.contextPath}/perfil?editar=true" class="btn btn-outline-primary w-100 mb-4">Editar información</a>
 
                     <h6 class="text-primary border-bottom pb-2">Seguridad de la cuenta</h6>
-                    <a href="${pageContext.request.contextPath}/perfil?editar=contrasena" class="btn btn-outline-dark w-100 mb-3">
-                        <i class="bi bi-key-fill"></i> Cambiar contraseña
-                    </a>
+                    <a href="${pageContext.request.contextPath}/perfil?editar=contrasena" class="btn btn-outline-primary w-100 mb-4">Cambiar contraseña</a>
 
                     <a href="${pageContext.request.contextPath}/logout" class="btn btn-outline-danger w-100"
-                       onclick="return confirm('¿Cerrar sesión?');">
-                        <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                       onclick="return confirm('¿Cerrar sesión?');">Cerrar sesión
                     </a>
 
                 <% } else if (modoEdicion) { %>
@@ -73,7 +73,7 @@
 
                         <div class="d-flex gap-2">
                             <a href="${pageContext.request.contextPath}/perfil" class="btn btn-outline-secondary w-50">Cancelar</a>
-                            <button type="submit" class="btn btn-primary w-50"><i class="bi bi-save"></i> Guardar</button>
+                            <button type="submit" class="btn btn-primary w-50">Guardar cambios</button>
                         </div>
                     </form>
 
@@ -84,18 +84,19 @@
                     <form action="${pageContext.request.contextPath}/perfil" method="post">
                         <input type="hidden" name="action" value="cambiarContrasena">
                         <div class="mb-2">
-                            <label class="form-label small text-muted mb-0">Nueva contraseña</label>
-                            <input type="password" class="form-control" name="password"
-                                   title="Mínimo 8 caracteres, una mayúscula, una minúscula y un número" required>
+                            <label class="form-label small text-muted mb-0">Contraseña
+                                <i class="bi bi-info-circle ms-1 text-secondary" style="cursor:pointer;" title="Mínimo 8 caracteres, una mayúscula, una minúscula y un número"></i>
+                            </label>
+                            <input type="password" class="form-control" name="password" placeholder="Ingresa tu nueva contraseña" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small text-muted mb-0">Confirmar contraseña</label>
-                            <input type="password" class="form-control" name="confirmarPassword" required>
+                            <input type="password" class="form-control" name="confirmarPassword" placeholder="Confirma tu contraseña" required>
                         </div>
 
                         <div class="d-flex gap-2">
                             <a href="${pageContext.request.contextPath}/perfil" class="btn btn-outline-secondary w-50">Cancelar</a>
-                            <button type="submit" class="btn btn-dark w-50"><i class="bi bi-key-fill"></i> Guardar</button>
+                            <button type="submit" class="btn btn-dark w-50">Cambiar contraseña</button>
                         </div>
                     </form>
 
