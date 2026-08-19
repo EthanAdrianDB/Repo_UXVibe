@@ -266,7 +266,9 @@
                         let input = document.getElementById("inputBuscarPrueba").value.toLowerCase();
                         let rows = document.querySelectorAll("#tablaPruebas tbody tr");
                         rows.forEach(row => {
-                            let texto = row.innerText.toLowerCase();
+                            // La columna Nombre es el segundo td (índice 1)
+                            let nombreTd = row.querySelectorAll("td")[1];
+                            let texto = nombreTd ? nombreTd.innerText.toLowerCase() : "";
                             row.classList.remove('d-none');
                             row.style.display = texto.includes(input) ? "" : "none";
                         });

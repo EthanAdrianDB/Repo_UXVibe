@@ -10,6 +10,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/assets/css/uxvibe.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- SweetAlert2 para alertas elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .step-container {
             display: none;
@@ -448,7 +450,15 @@
             if (response.ok) {
                 // If the servlet returns a redirect or ok status
                 const idPrueba = document.querySelector('input[name="idPrueba"]').value;
-                window.location.href = '${pageContext.request.contextPath}/participantes?idPrueba=' + idPrueba;
+                Swal.fire({
+                    title: '¡Evaluación completada!',
+                    text: 'Los datos del participante y la grabación se han guardado con éxito.',
+                    icon: 'success',
+                    confirmButtonColor: '#3b8285',
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    window.location.href = '${pageContext.request.contextPath}/participantes?idPrueba=' + idPrueba;
+                });
             } else {
                 alert("Error al guardar la evaluación. Status: " + response.status);
                 btnFinalizar.disabled = false;
