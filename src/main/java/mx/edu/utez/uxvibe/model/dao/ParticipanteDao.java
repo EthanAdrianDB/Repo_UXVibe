@@ -52,7 +52,7 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
     @Override
     public List<Participante> getAll() {
         List<Participante> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Participante ORDER BY id_participante DESC";
+        String sql = "SELECT * FROM Participante ORDER BY id_participante ASC";
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -67,7 +67,7 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
 
     public List<Participante> getPorPrueba(int idPrueba) {
         List<Participante> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Participante WHERE id_prueba = ? ORDER BY id_participante DESC";
+        String sql = "SELECT * FROM Participante WHERE id_prueba = ? ORDER BY id_participante ASC";
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idPrueba);
