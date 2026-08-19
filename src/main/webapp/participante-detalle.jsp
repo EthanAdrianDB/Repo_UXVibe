@@ -43,7 +43,7 @@
 
                 <div class="mb-3">
                     <span class="text-muted small d-block">Duración de la prueba</span>
-                    <span class="fw-semibold text-dark">${not empty participante.duracionFormateada && participante.duracionFormateada != '0:00' ? participante.duracionFormateada : 'No especificada'}</span>
+                    <span id="duracionPruebaText" class="fw-semibold text-dark">${not empty participante.duracionFormateada && participante.duracionFormateada != '0:00' ? participante.duracionFormateada : 'No especificada'}</span>
                 </div>
 
                 <!-- Reproductor de Audio -->
@@ -51,10 +51,31 @@
                     <span class="text-muted small fw-medium d-block mb-2">Audio de la sesión</span>
                     <c:choose>
                         <c:when test="${tieneAudio}">
-                            <audio controls controlsList="nodownload" class="w-100 rounded" style="background-color: #f1f3f4;">
+                            <audio id="audioPrueba" controls controlsList="nodownload" class="w-100 rounded" style="background-color: #f1f3f4;">
                                 <source src="${pageContext.request.contextPath}/audio?action=play&idPrueba=${participante.idPrueba}&idParticipante=${participante.idParticipante}" type="audio/webm">
                                 Tu navegador no soporta el reproductor de audio.
                             </audio>
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    const audioEl = document.getElementById("audioPrueba");
+                                    const duracionText = document.getElementById("duracionPruebaText");
+                                    
+                                    if (audioEl && duracionText) {
+                                        audioEl.addEventListener("loadedmetadata", function() {
+                                            const durationInSeconds = audioEl.duration;
+                                            // Ignorar Infinity (problema común en Chrome con audios WebM transmitidos)
+                                            if (durationInSeconds && durationInSeconds !== Infinity) {
+                                                const minutes = Math.floor(durationInSeconds / 60);
+                                                const seconds = Math.floor(durationInSeconds % 60);
+                                                const formatted = minutes + ":" + (seconds < 10 ? "0" : "") + seconds + " min";
+                                                if (duracionText.innerText === 'No especificada' || duracionText.innerText.includes('0:00')) {
+                                                    duracionText.innerText = formatted;
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+                            </script>
                         </c:when>
                         <c:otherwise>
                             <div class="p-3 bg-light rounded text-center text-muted small">
