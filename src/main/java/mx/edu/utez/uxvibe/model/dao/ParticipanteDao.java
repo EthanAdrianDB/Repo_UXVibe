@@ -183,6 +183,48 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
         }
         return resultado;
     }
+
+    public Map<String, Double> distribucionPorSexoEvaluador(int idEvaluador) {
+        Map<String, Double> resultado = new LinkedHashMap<>();
+        resultado.put("Femenino", 0.0);
+        resultado.put("Masculino", 0.0);
+
+        String sql = "SELECT pa.sexo, COUNT(*) as conteo FROM Participante pa " +
+                     "JOIN Prueba pr ON pa.id_prueba = pr.id_prueba " +
+                     "WHERE pr.id_evaluador = ? GROUP BY pa.sexo";
+
+        int total = 0;
+        int countFemenino = 0;
+        int countMasculino = 0;
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idEvaluador);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int sexo = rs.getInt("sexo");
+                    int conteo = rs.getInt("conteo");
+                    total += conteo;
+                    if (sexo == 1) {
+                        countMasculino += conteo;
+                    } else {
+                        countFemenino += conteo;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (total > 0) {
+            double pctFemenino = Math.round(((countFemenino * 100.0) / total) * 10.0) / 10.0;
+            double pctMasculino = Math.round(((countMasculino * 100.0) / total) * 10.0) / 10.0;
+            resultado.put("Femenino", pctFemenino);
+            resultado.put("Masculino", pctMasculino);
+        }
+
+        return resultado;
+    }
     
     public double edadPromedio(int idPrueba) {
         String sql = "SELECT AVG(edad) FROM Participante WHERE id_prueba = ? AND edad > 0";

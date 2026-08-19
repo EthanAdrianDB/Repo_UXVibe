@@ -13,6 +13,7 @@ import mx.edu.utez.uxvibe.model.dao.PruebaDao;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet(name = "InicioServlet", value = "/inicio")
 public class InicioServlet extends HttpServlet {
@@ -34,9 +35,12 @@ public class InicioServlet extends HttpServlet {
             totalParticipantes += p.getTotalParticipantes();
         }
 
+        Map<String, Double> distribucionSexo = participanteDao.distribucionPorSexoEvaluador(evaluador.getIdEvaluador());
+
         request.setAttribute("pruebas", pruebas);
         request.setAttribute("totalPruebas", pruebas.size());
         request.setAttribute("totalParticipantes", totalParticipantes);
+        request.setAttribute("distribucionSexo", distribucionSexo);
         request.setAttribute("pestanaActiva", "inicio");
 
         request.getRequestDispatcher("inicio.jsp").forward(request, response);

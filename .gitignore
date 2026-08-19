@@ -6,6 +6,8 @@ target/
 **/*.iml
 
 /EjemploIntegradorBasico5/
+Repo_UXVibe/
+/Repo_UXVibe/
 
 # Sensitive files and database wallet credentials
 src/main/resources/credentials.properties
