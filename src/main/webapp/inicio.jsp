@@ -168,7 +168,7 @@
                                                             <button type="button"
                                                                 class="btn btn-sm btn-light border text-danger"
                                                                 title="Eliminar prueba (Fetch)"
-                                                                onclick="eliminarPruebaFetch(${prueba.idPrueba}, this)">
+                                                                onclick="abrirModalEliminarPrueba(${prueba.idPrueba}, this)">
                                                                 <i class="bi bi-trash"></i>
                                                             </button>
                                                         </div>
@@ -203,12 +203,26 @@
                         });
                     }
 
-                    async function eliminarPruebaFetch(idPrueba, btnElement) {
-                        if (!confirm('¿Deseas eliminar esta prueba mediante Fetch (asíncrono)?')) return;
+                    let pruebaAEliminarId = null;
+                    let pruebaAEliminarBtn = null;
+                    let modalEliminarPruebaInstance = null;
+
+                    function abrirModalEliminarPrueba(idPrueba, btnElement) {
+                        pruebaAEliminarId = idPrueba;
+                        pruebaAEliminarBtn = btnElement;
+                        
+                        if (!modalEliminarPruebaInstance) {
+                            modalEliminarPruebaInstance = new bootstrap.Modal(document.getElementById('modalEliminarPrueba'));
+                        }
+                        modalEliminarPruebaInstance.show();
+                    }
+
+                    async function ejecutarEliminacionPrueba() {
+                        if (!pruebaAEliminarId || !pruebaAEliminarBtn) return;
 
                         const params = new URLSearchParams();
                         params.append('action', 'delete');
-                        params.append('id', idPrueba);
+                        params.append('id', pruebaAEliminarId);
 
                         try {
                             const response = await fetch('${pageContext.request.contextPath}/prueba', {
@@ -221,11 +235,14 @@
                             });
 
                             if (response.ok) {
-                                const tr = btnElement.closest('tr');
+                                const tr = pruebaAEliminarBtn.closest('tr');
                                 if (tr) {
                                     tr.style.transition = 'all 0.3s ease';
                                     tr.style.opacity = '0';
                                     setTimeout(() => tr.remove(), 300);
+                                }
+                                if (modalEliminarPruebaInstance) {
+                                    modalEliminarPruebaInstance.hide();
                                 }
                             } else {
                                 alert('Error al eliminar la prueba.');
@@ -299,6 +316,27 @@
                         }
                     });
                 </script>
+
+                <!-- Modal de Confirmación de Eliminación de Prueba -->
+                <div class="modal fade" id="modalEliminarPrueba" tabindex="-1" aria-labelledby="modalEliminarPruebaLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+                            <div class="modal-body p-5 text-center">
+                                <div class="mb-4 mx-auto d-flex align-items-center justify-content-center" style="width: 90px; height: 90px; border: 4px solid #C19B76; border-radius: 50%;">
+                                    <i class="bi bi-exclamation" style="font-size: 4rem; color: #C19B76;"></i>
+                                </div>
+                                <h4 class="fw-bold mb-3 text-dark" id="modalEliminarPruebaLabel">Eliminación de prueba</h4>
+                                <p class="text-dark mb-4 fs-6">
+                                    ¿Está seguro de que desea eliminar esta<br>prueba?
+                                </p>
+                                <div class="d-flex justify-content-center gap-3">
+                                    <button type="button" class="btn btn-outline-secondary px-4 py-2 fw-semibold" style="width: 140px; border-color: #6c757d;" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn px-4 py-2 fw-semibold text-white" style="width: 140px; background-color: #d9534f; border-color: #d9534f;" onclick="ejecutarEliminacionPrueba()">Eliminar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Modal de Términos y Condiciones -->
                 <div class="modal fade" id="modalTerminos" tabindex="-1" aria-labelledby="modalTerminosLabel"
