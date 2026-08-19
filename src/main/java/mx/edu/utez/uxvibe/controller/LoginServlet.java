@@ -32,7 +32,7 @@ public class LoginServlet extends HttpServlet {
 
         Evaluador evaluador = (correo != null) ? evaluadorDao.buscarPorCorreo(correo.trim()) : null;
 
-        if (evaluador != null) {
+        if (evaluador != null && password != null) {
             String hashIngresado = PasswordUtil.hashPassword(password, "");
             if (hashIngresado.equals(evaluador.getContrasena())) {
                 HttpSession session = request.getSession(true);
