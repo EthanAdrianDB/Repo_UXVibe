@@ -181,11 +181,9 @@
 
                                 <!-- Pie de tabla / Paginación -->
                                 <div class="d-flex justify-content-between align-items-center p-3 bg-white border-top">
-                                    <span class="text-muted small">1 - ${pruebas.size()} de ${pruebas.size()}</span>
-                                    <div class="uxv-pagination">
-                                        <a href="#" class="page-btn text-muted"><i class="bi bi-chevron-left"></i></a>
-                                        <a href="#" class="page-btn active">1</a>
-                                        <a href="#" class="page-btn text-muted"><i class="bi bi-chevron-right"></i></a>
+                                    <span class="text-muted small pagination-info">1 - ${pruebas.size()} de ${pruebas.size()}</span>
+                                    <div class="uxv-pagination" id="paginationControls">
+                                        <!-- Paginación dinámica -->
                                     </div>
                                 </div>
                             </div>
@@ -194,13 +192,85 @@
                 </div>
 
                 <script>
+                    function paginarPruebas(pageSize = 6) {
+                        const table = document.getElementById('tablaPruebas');
+                        if (!table) return;
+                        const tbody = table.querySelector('tbody');
+                        const rows = Array.from(tbody.querySelectorAll('tr'));
+                        
+                        const visibleRows = rows.filter(row => row.style.display !== 'none');
+                        const totalPages = Math.ceil(visibleRows.length / pageSize) || 1;
+                        let currentPage = 1;
+
+                        function renderPage(page) {
+                            currentPage = page;
+                            const start = (page - 1) * pageSize;
+                            const end = start + pageSize;
+
+                            visibleRows.forEach((row, index) => {
+                                if (index >= start && index < end) {
+                                    row.classList.remove('d-none');
+                                } else {
+                                    row.classList.add('d-none');
+                                }
+                            });
+
+                            renderPaginationControls();
+                        }
+
+                        function renderPaginationControls() {
+                            const paginationContainer = document.getElementById('paginationControls');
+                            const infoContainer = document.querySelector('.pagination-info');
+                            if (!paginationContainer || !infoContainer) return;
+
+                            paginationContainer.innerHTML = '';
+                            
+                            const currentStart = visibleRows.length === 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
+                            const currentEnd = Math.min(currentPage * pageSize, visibleRows.length);
+                            infoContainer.innerText = `${currentStart} - ${currentEnd} de ${visibleRows.length}`;
+
+                            if (totalPages <= 1) return;
+
+                            const prevBtn = document.createElement('a');
+                            prevBtn.href = '#';
+                            prevBtn.className = `page-btn text-muted ${currentPage === 1 ? 'disabled' : ''}`;
+                            prevBtn.innerHTML = '<i class="bi bi-chevron-left"></i>';
+                            prevBtn.onclick = (e) => { e.preventDefault(); if (currentPage > 1) renderPage(currentPage - 1); };
+                            paginationContainer.appendChild(prevBtn);
+
+                            for (let i = 1; i <= totalPages; i++) {
+                                const numBtn = document.createElement('a');
+                                numBtn.href = '#';
+                                numBtn.className = `page-btn ${i === currentPage ? 'active' : 'text-muted'}`;
+                                numBtn.innerText = i;
+                                numBtn.onclick = (e) => { e.preventDefault(); renderPage(i); };
+                                paginationContainer.appendChild(numBtn);
+                            }
+
+                            const nextBtn = document.createElement('a');
+                            nextBtn.href = '#';
+                            nextBtn.className = `page-btn text-muted ${currentPage === totalPages ? 'disabled' : ''}`;
+                            nextBtn.innerHTML = '<i class="bi bi-chevron-right"></i>';
+                            nextBtn.onclick = (e) => { e.preventDefault(); if (currentPage < totalPages) renderPage(currentPage + 1); };
+                            paginationContainer.appendChild(nextBtn);
+                        }
+
+                        renderPage(1);
+                    }
+
+                    document.addEventListener("DOMContentLoaded", function() {
+                        paginarPruebas();
+                    });
+
                     function filtrarPruebas() {
                         let input = document.getElementById("inputBuscarPrueba").value.toLowerCase();
                         let rows = document.querySelectorAll("#tablaPruebas tbody tr");
                         rows.forEach(row => {
                             let texto = row.innerText.toLowerCase();
+                            row.classList.remove('d-none');
                             row.style.display = texto.includes(input) ? "" : "none";
                         });
+                        paginarPruebas();
                     }
 
                     let pruebaAEliminarId = null;

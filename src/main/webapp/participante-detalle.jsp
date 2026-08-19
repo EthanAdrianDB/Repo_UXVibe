@@ -51,7 +51,7 @@
                     <span class="text-muted small fw-medium d-block mb-2">Audio de la sesión</span>
                     <c:choose>
                         <c:when test="${tieneAudio}">
-                            <audio controls class="w-100 rounded" style="background-color: #f1f3f4;">
+                            <audio controls controlsList="nodownload" class="w-100 rounded" style="background-color: #f1f3f4;">
                                 <source src="${pageContext.request.contextPath}/audio?action=play&idPrueba=${participante.idPrueba}&idParticipante=${participante.idParticipante}" type="audio/webm">
                                 Tu navegador no soporta el reproductor de audio.
                             </audio>
