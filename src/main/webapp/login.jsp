@@ -15,13 +15,16 @@
         .split { display:flex; min-height:100vh; }
         .panel-marca {
             flex:1; background-color: #173E45; color:#fff;
-            display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px; text-align:center;
+            display:flex; align-items:center; justify-content:center; padding:40px;
+        }
+        .brand-content {
+            width: 100%; max-width: 500px;
         }
         .brand-header {
-            display: flex; align-items: center; justify-content: left; gap: 8px; margin-bottom: 8px;
+            display: flex; align-items: center; justify-content: flex-start; gap: 8px; margin-bottom: 8px; transform: translateX(50px);
         }
-        .brand-logo-img { width: 52px; height: 52px; object-fit: contain; filter: brightness(0) invert(1); }
-        .brand-title { font-size: 42px; font-weight: 800; color: #F7F8F9; letter-spacing: -0.5px; line-height: 1; }
+        .brand-logo-img { width: 80px; height: 80px; object-fit: contain; }
+        .brand-title { font-size: 70px; font-weight: 640; color: #F7F8F9; letter-spacing: -0.5px; line-height: 1; }
         .brand-subtitle { font-size: 18px; color: #e2e8f0; font-weight: 400; max-width: 380px; margin: 0 auto 20px auto; line-height: 1.3; }
         .brand-illustration { max-width: 440px; width: 100%; height: auto; margin-top: 10px; opacity: 0.9; }
 
@@ -55,12 +58,15 @@
 <div class="split">
     <!-- Left Dark Teal Brand Panel (Matching Image 3) -->
     <div class="panel-marca">
-        <div class="brand-header">
-            <img src="${pageContext.request.contextPath}/assets/images/logoUXVibe.png" alt="UX Logo" style="width: 80px; height: 80px;">
-            <span class="brand-title">UXVibe</span>
+        <div class="brand-content">
+            <div class="brand-header">
+                <img src="${pageContext.request.contextPath}/assets/images/logoUXVibe.png" alt="UX Logo" class="brand-logo-img">
+                <span class="brand-title">UXVibe</span>
+            </div>
+            <p class="brand-subtitle">Plataforma para la evaluación de experiencia de usuario</p>
+            <img src="${pageContext.request.contextPath}/assets/images/ux-illustration.svg" alt="Ilustración UXVibe" class="brand-illustration">
         </div>
-        <p class="brand-subtitle" style="text-align: justify;">Plataforma para la evaluación de experiencia de usuario</p>
-        <img src="${pageContext.request.contextPath}/assets/images/ux-illustration.svg" alt="Ilustración UXVibe" class="brand-illustration">
+
     </div>
 
     <!-- Right Login Form Panel -->

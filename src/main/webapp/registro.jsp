@@ -36,23 +36,26 @@
             align-items: center;
             justify-content: center;
             padding: 40px;
-            text-align: center;
+        }
+        .brand-content {
+            width: 100%; max-width: 500px; transform: translateY(-80px);
         }
         .brand-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 12px;
+            justify-content: flex-start;
+            gap: 8px;
             margin-bottom: 8px;
+            transform: translateX(50px);
         }
         .brand-logo-img {
-            width: 52px;
-            height: 52px;
+            width: 80px;
+            height: 80px;
             object-fit: contain;
         }
         .brand-title {
-            font-size: 42px;
-            font-weight: 800;
+            font-size: 70px;
+            font-weight: 640;
             color: #0E0A07;
             letter-spacing: -0.5px;
             line-height: 1;
@@ -190,9 +193,9 @@
                 </div>
 
                 <div class="campo">
-                    <label>Apellido materno <span class="text-danger">*</span></label>
+                    <label>Apellido materno </label>
                     <div class="input-icon-group">
-                        <input type="text" name="apellidoMaterno" placeholder="Ingresa tu apellido materno" value="${apellidoMaterno}" required>
+                        <input type="text" name="apellidoMaterno" placeholder="Ingresa tu apellido materno" value="${apellidoMaterno}">
                     </div>
                 </div>
 
@@ -243,12 +246,14 @@
 
     <!-- Right Brand Panel -->
     <div class="panel-marca">
-        <div class="brand-header">
-            <img src="${pageContext.request.contextPath}/assets/images/logoux.png" alt="UX Logo" class="brand-logo-img">
-            <span class="brand-title">UXVibe</span>
+        <div class="brand-content">
+            <div class="brand-header">
+                <img src="${pageContext.request.contextPath}/assets/images/logoux.png" alt="UX Logo" class="brand-logo-img">
+                <span class="brand-title">UXVibe</span>
+            </div>
+            <p class="brand-subtitle">Plataforma para la evaluación de experiencia de usuario</p>
+            <img src="${pageContext.request.contextPath}/assets/images/ux-illustration.svg" alt="Ilustración UXVibe" class="brand-illustration">
         </div>
-        <p class="brand-subtitle" style="text-align: justify;">Plataforma para la evaluación de experiencia de usuario</p>
-        <img src="${pageContext.request.contextPath}/assets/images/ux-illustration.svg" alt="Ilustración UXVibe" class="brand-illustration">
     </div>
 </div>
 </body>
