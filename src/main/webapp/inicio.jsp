@@ -227,13 +227,13 @@
                             
                             const currentStart = visibleRows.length === 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
                             const currentEnd = Math.min(currentPage * pageSize, visibleRows.length);
-                            infoContainer.innerText = `${currentStart} - ${currentEnd} de ${visibleRows.length}`;
+                            infoContainer.innerText = currentStart + " - " + currentEnd + " de " + visibleRows.length;
 
                             if (totalPages <= 1) return;
 
                             const prevBtn = document.createElement('a');
                             prevBtn.href = '#';
-                            prevBtn.className = `page-btn text-muted ${currentPage === 1 ? 'disabled' : ''}`;
+                            prevBtn.className = 'page-btn text-muted ' + (currentPage === 1 ? 'disabled' : '');
                             prevBtn.innerHTML = '<i class="bi bi-chevron-left"></i>';
                             prevBtn.onclick = (e) => { e.preventDefault(); if (currentPage > 1) renderPage(currentPage - 1); };
                             paginationContainer.appendChild(prevBtn);
@@ -241,7 +241,7 @@
                             for (let i = 1; i <= totalPages; i++) {
                                 const numBtn = document.createElement('a');
                                 numBtn.href = '#';
-                                numBtn.className = `page-btn ${i === currentPage ? 'active' : 'text-muted'}`;
+                                numBtn.className = 'page-btn ' + (i === currentPage ? 'active' : 'text-muted');
                                 numBtn.innerText = i;
                                 numBtn.onclick = (e) => { e.preventDefault(); renderPage(i); };
                                 paginationContainer.appendChild(numBtn);
@@ -249,7 +249,7 @@
 
                             const nextBtn = document.createElement('a');
                             nextBtn.href = '#';
-                            nextBtn.className = `page-btn text-muted ${currentPage === totalPages ? 'disabled' : ''}`;
+                            nextBtn.className = 'page-btn text-muted ' + (currentPage === totalPages ? 'disabled' : '');
                             nextBtn.innerHTML = '<i class="bi bi-chevron-right"></i>';
                             nextBtn.onclick = (e) => { e.preventDefault(); if (currentPage < totalPages) renderPage(currentPage + 1); };
                             paginationContainer.appendChild(nextBtn);
