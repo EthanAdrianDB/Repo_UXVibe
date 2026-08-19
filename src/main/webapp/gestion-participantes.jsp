@@ -53,12 +53,11 @@
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                             <!-- Eliminar -->
-                                            <form action="${pageContext.request.contextPath}/participantes" method="post" class="d-inline"
-                                                  onsubmit="return confirm('¿Deseas eliminar a este participante?');">
+                                            <form action="${pageContext.request.contextPath}/participantes" method="post" class="d-inline" id="formDelete_${p.idParticipante}">
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="id" value="${p.idParticipante}">
                                                 <input type="hidden" name="idPrueba" value="${prueba.idPrueba}">
-                                                <button type="submit" class="btn btn-sm btn-light border text-danger" title="Eliminar">
+                                                <button type="button" class="btn btn-sm btn-light border text-danger" title="Eliminar" onclick="abrirModalEliminar('formDelete_${p.idParticipante}')">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
@@ -93,6 +92,44 @@ function filtrarParticipantes() {
         row.style.display = texto.includes(input) ? "" : "none";
     });
 }
+
+let formAEliminar = null;
+let modalEliminarInstance = null;
+
+function abrirModalEliminar(formId) {
+    formAEliminar = document.getElementById(formId);
+    if (!modalEliminarInstance) {
+        modalEliminarInstance = new bootstrap.Modal(document.getElementById('modalEliminarParticipante'));
+    }
+    modalEliminarInstance.show();
+}
+
+function ejecutarEliminacion() {
+    if (formAEliminar) {
+        formAEliminar.submit();
+    }
+}
 </script>
+
+<!-- Modal de Confirmación de Eliminación -->
+<div class="modal fade" id="modalEliminarParticipante" tabindex="-1" aria-labelledby="modalEliminarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+            <div class="modal-body p-5 text-center">
+                <div class="mb-4 mx-auto d-flex align-items-center justify-content-center" style="width: 90px; height: 90px; border: 4px solid #C19B76; border-radius: 50%;">
+                    <i class="bi bi-exclamation" style="font-size: 4rem; color: #C19B76;"></i>
+                </div>
+                <h4 class="fw-bold mb-3 text-dark" id="modalEliminarLabel">Eliminación de participante</h4>
+                <p class="text-dark mb-4 fs-6">
+                    ¿Está seguro de que desea eliminar a este<br>participante?
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn btn-outline-secondary px-4 py-2 fw-semibold" style="width: 140px; border-color: #6c757d;" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn px-4 py-2 fw-semibold text-white" style="width: 140px; background-color: #d9534f; border-color: #d9534f;" onclick="ejecutarEliminacion()">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <%@ include file="layout/footer.jsp" %>
