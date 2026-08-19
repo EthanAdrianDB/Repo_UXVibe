@@ -19,6 +19,7 @@ public class EmailSender {
                         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; margin:0; padding:40px 20px; background-color: #f9f9f9; }
                         .email-container { max-width: 550px; background: #ffffff; padding: 40px; margin: 0 auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
                         .header { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; }
+                        .brand-logo-img { width: 80px; height: 80px; object-fit: contain; }
                         .brand-title { font-size: 26px; font-weight: 700; color: #173E45; }
                         .btn-reset { display: inline-block; background-color: #173E45; color: #ffffff !important; text-decoration: none; padding: 14px 28px; border-radius: 6px; font-weight: 600; font-size: 15px; margin: 25px 0; text-align: center; }
                         .footer-note { font-size: 13px; color: #777; line-height: 1.5; margin-top: 25px; }
@@ -32,7 +33,7 @@ public class EmailSender {
                         </div>
                         <p>Hola,</p>
                         <p>Recibimos una solicitud para restablecer la contraseña de tu cuenta en UXVibe.</p>
-                        <p>Para crear una nueva contraseña, haz clic en el siguiente enlace:</p>
+                        <p>Para crear una nueva contraseña, haz clic en el siguiente botón:</p>
                         <div style="text-align: center;">
                             <a href="%s" class="btn-reset">Restablecer mi contraseña</a>
                         </div>
@@ -40,7 +41,7 @@ public class EmailSender {
                         <hr>
                         <p><strong>Si no fuiste tú:</strong></p>
                         <p class="footer-note">Si no solicitaste este cambio, puedes ignorar este correo. Tu contraseña actual seguirá siendo válida.</p>
-                        <p class="footer-note" style="color: #aaa; margin-top: 30px;">2026 UXVibe. Todos los derechos reservados.</p>
+                        <p class="footer-note" style="color: #aaa; margin-top: 30px;">&copy;2026 UXVibe | Todos los derechos reservados.</p>
                     </div>
                 </body>
                 </html>
