@@ -175,21 +175,21 @@
                         <div class="p-2 border rounded bg-light">
                             <i class="bi bi-emoji-smile fs-3 text-secondary d-block"></i>
                             <span class="small fw-semibold text-muted">Valencia (SAM 1)</span>
-                            <div class="fw-bold text-dark fs-5 mt-1">${respuesta.sam1} / 5</div>
+                            <div class="fw-bold text-dark fs-5 mt-1">${respuesta.sam1} / 9</div>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="p-2 border rounded bg-light">
                             <i class="bi bi-lightning-charge fs-3 text-secondary d-block"></i>
                             <span class="small fw-semibold text-muted">Activación (SAM 2)</span>
-                            <div class="fw-bold text-dark fs-5 mt-1">${respuesta.sam2} / 5</div>
+                            <div class="fw-bold text-dark fs-5 mt-1">${respuesta.sam2} / 9</div>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="p-2 border rounded bg-light">
                             <i class="bi bi-sliders fs-3 text-secondary d-block"></i>
                             <span class="small fw-semibold text-muted">Dominancia (SAM 3)</span>
-                            <div class="fw-bold text-dark fs-5 mt-1">${respuesta.sam3} / 5</div>
+                            <div class="fw-bold text-dark fs-5 mt-1">${respuesta.sam3} / 9</div>
                         </div>
                     </div>
                 </div>

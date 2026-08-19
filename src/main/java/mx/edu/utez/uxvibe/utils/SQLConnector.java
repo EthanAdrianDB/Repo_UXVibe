@@ -321,7 +321,34 @@ public class SQLConnector {
 
                 System.out.println("[SQLConnector] Tablas creadas con éxito en Oracle Autonomous Database.");
             } else {
-                System.out.println("[SQLConnector] Las tablas ya existen en la base de datos.");
+                System.out.println("[SQLConnector] Las tablas ya existen en la base de datos. Verificando actualizaciones de esquema...");
+                // Agregar columnas nuevas de forma segura (ignora el error si ya existen)
+                String[] columnasNuevas = {
+                    "sam_1 NUMBER", "sam_2 NUMBER", "sam_3 NUMBER",
+                    "frecuencia_estado_animo_1 NUMBER", "frecuencia_estado_animo_2 NUMBER"
+                };
+                for (String col : columnasNuevas) {
+                    try {
+                        stmt.execute("ALTER TABLE Respuesta ADD " + col);
+                        System.out.println("[SQLConnector] Se agregó la columna " + col + " a Respuesta.");
+                    } catch (SQLException ignored) {
+                        // Si ya existe (ORA-01430) simplemente continuamos
+                    }
+                }
+                
+                // Buscar y eliminar constraints CHECK que limitan los valores de SAM
+                try (ResultSet rs = stmt.executeQuery("SELECT constraint_name, search_condition FROM user_constraints WHERE table_name = 'RESPUESTA' AND constraint_type = 'C'")) {
+                    while (rs.next()) {
+                        String cName = rs.getString(1);
+                        String cCond = rs.getString(2);
+                        if (cCond != null && (cCond.toLowerCase().contains("sam") || cName.equals("SYS_C0047608"))) {
+                            try (Statement dropStmt = con.createStatement()) {
+                                dropStmt.execute("ALTER TABLE Respuesta DROP CONSTRAINT " + cName);
+                                System.out.println("[SQLConnector] Constraint " + cName + " eliminada exitosamente para permitir valores de SAM > 5.");
+                            } catch (SQLException ignored) {}
+                        }
+                    }
+                } catch (SQLException ignored) {}
             }
 
         } catch (SQLException e) {
