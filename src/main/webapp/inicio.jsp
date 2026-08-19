@@ -309,14 +309,19 @@
                                 <h4 class="text-center fw-bold mb-4">TÉRMINOS Y CONDICIONES</h4>
                                 <div class="border border-dark p-4 mb-4 bg-white"
                                     style="height: 200px; overflow-y: auto; font-size: 0.9rem;">
-                                    Al utilizar nuestros servicios de grabación, edición o procesamiento de audio,
-                                    aceptas cumplir con los siguientes términos y condiciones.
+                                    Al participar en esta prueba de usabilidad, aceptas los siguientes términos y condiciones relacionados con la recopilación y tratamiento de tus datos.
                                     <br><br>
-                                    <strong>1. Objeto del Servicio</strong><br>
-                                    UX ofrece servicios de grabación en estudio, masterización online, plataforma de
-                                    almacenamiento y edición de audio. El usuario es responsable de proporcionar el
-                                    material base o asistir a las sesiones en las condiciones acordadas. y blabla
-                                    blabla. (En lo que Derick nos da los terminos este que sea base).
+                                    <strong>1. Objeto de la Evaluación</strong><br>
+                                    UXVibe tiene como propósito recopilar información sobre la experiencia de usuario (UX) al interactuar con sistemas web. Esto incluye la grabación de audio de tus impresiones durante la prueba y tus respuestas a los cuestionarios.
+                                    <br><br>
+                                    <strong>2. Privacidad y Confidencialidad</strong><br>
+                                    Toda la información recopilada, incluyendo grabaciones de voz y datos personales, será tratada con estricta confidencialidad. Se utilizará exclusivamente para fines de investigación y mejora del sistema evaluado, y no será compartida con terceros ajenos al proyecto.
+                                    <br><br>
+                                    <strong>3. Participación Voluntaria</strong><br>
+                                    Tu participación es completamente voluntaria. Tienes el derecho de detener la prueba y retirar tu consentimiento en cualquier momento sin ninguna consecuencia.
+                                    <br><br>
+                                    <strong>4. Consentimiento de Grabación de Audio</strong><br>
+                                    Al aceptar estos términos, otorgas tu consentimiento explícito para que tu voz sea grabada durante la sesión con el fin de analizar tus comentarios e impresiones en tiempo real.
                                 </div>
                                 <div class="form-check mb-5 d-flex align-items-center gap-2">
                                     <input class="form-check-input mt-0" type="checkbox" id="checkAceptoTerminos"

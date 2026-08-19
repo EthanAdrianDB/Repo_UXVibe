@@ -7,13 +7,28 @@
     <!-- 4 Tarjetas Métricas Principales -->
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
-            <div class="uxv-tarjeta text-center">
-                <div class="valor text-dark">${prueba.totalParticipantes}</div>
-                <div class="subtitulo text-muted fw-medium">Participantes</div>
+            <div class="uxv-tarjeta d-flex flex-column justify-content-center h-100" style="padding: 10px 15px;">
+                <div class="subtitulo text-muted fw-medium mb-2 text-center" style="font-size: 0.85rem;">Distribución por sexo</div>
+                <c:choose>
+                    <c:when test="${empty distribucionSexo}">
+                        <div class="text-center small text-muted">Sin datos</div>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach items="${distribucionSexo}" var="entry">
+                            <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+                                <span class="small text-muted text-truncate" style="font-size: 0.75rem; max-width: 45px;" title="${entry.key}">${entry.key}</span>
+                                <div class="flex-grow-1 rounded-pill overflow-hidden" style="height: 6px; background-color: #EFE7DA;">
+                                    <div class="rounded-pill" style="height: 6px; width: ${entry.value}%; background-color: #C29B77;"></div>
+                                </div>
+                                <span class="small fw-bold text-dark" style="font-size: 0.75rem; width: 35px; text-align: right;">${entry.value}%</span>
+                            </div>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="uxv-tarjeta text-center">
+            <div class="uxv-tarjeta text-center h-100 d-flex flex-column justify-content-center">
                 <div class="valor text-dark">${not empty edadPromedio ? edadPromedio : 'N/A'}</div>
                 <div class="subtitulo text-muted fw-medium">Edad promedio</div>
             </div>
@@ -32,10 +47,10 @@
         </div>
     </div>
 
-    <!-- Sección de Gráficos (Likert y Distribución por Sexo) -->
+    <!-- Sección de Gráficos (Likert) -->
     <div class="row g-3 mb-4">
         <!-- Promedio por pregunta (Escala Likert) -->
-        <div class="col-md-7">
+        <div class="col-12">
             <div class="uxv-tarjeta h-100">
                 <h6 class="fw-bold text-dark mb-3">Promedio por pregunta (Escala Likert)</h6>
                 <c:choose>
@@ -56,32 +71,6 @@
                                     <span class="small fw-bold" style="width:30px;">${entry.value}</span>
                                 </div>
                             </c:if>
-                        </c:forEach>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-        </div>
-
-        <!-- Distribución por sexo -->
-        <div class="col-md-5">
-            <div class="uxv-tarjeta h-100">
-                <h6 class="fw-bold text-dark mb-3">Distribución por sexo</h6>
-                <c:choose>
-                    <c:when test="${empty distribucionSexo}">
-                        <div class="text-center py-4">
-                            <i class="bi bi-pie-chart text-muted fs-1 mb-2 d-block"></i>
-                            <span class="text-muted small">Sin información demográfica registrada aún.</span>
-                        </div>
-                    </c:when>
-                    <c:otherwise>
-                        <c:forEach items="${distribucionSexo}" var="entry">
-                            <div class="d-flex align-items-center gap-3 mb-2">
-                                <span class="small fw-semibold text-muted" style="width:80px;">${entry.key}</span>
-                                <div class="flex-grow-1 bg-light rounded overflow-hidden" style="height:14px;">
-                                    <div class="bg-dark rounded" style="height:14px; width:${entry.value}%;"></div>
-                                </div>
-                                <span class="small fw-bold" style="width:40px;">${entry.value}%</span>
-                            </div>
                         </c:forEach>
                     </c:otherwise>
                 </c:choose>

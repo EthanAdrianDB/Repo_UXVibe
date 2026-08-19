@@ -29,6 +29,7 @@ public class EmailSender {
                 <body>
                     <div class="email-container">
                         <div class="header">
+                            <img src="https://raw.githubusercontent.com/EthanAdrianDB/Repo_UXVibe/main/src/main/webapp/assets/images/logoux.png" alt="UXVibe Logo" class="brand-logo-img">
                             <span class="brand-title">UXVibe</span>
                         </div>
                         <p>Hola,</p>

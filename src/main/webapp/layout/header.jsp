@@ -26,10 +26,28 @@
             <i class="bi bi-person"></i>
         </a>
         <div class="spacer"></div>
-        <a href="${pageContext.request.contextPath}/logout" title="Cerrar sesión"
-           onclick="return confirm('¿Cerrar sesión?');">
+        <a href="#" title="Cerrar sesión" data-bs-toggle="modal" data-bs-target="#modalLogout">
             <i class="bi bi-box-arrow-right"></i>
         </a>
+    </div>
+
+    <!-- Modal Cierre de Sesión -->
+    <div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow" style="border-radius: 8px;">
+                <div class="modal-body p-4 text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-exclamation-circle" style="font-size: 5rem; color: #C29B77;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Cierre de sesión</h4>
+                    <p class="text-dark mb-4" style="font-size: 1.1rem;">Si deseas salir haz clic en Cerrar sesión o en Cancelar para continuar trabajando</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <button type="button" class="btn px-4 py-2" style="border-color: #6c757d; color: #495057; width: 140px;" data-bs-dismiss="modal">Cancelar</button>
+                        <a href="${pageContext.request.contextPath}/logout" class="btn text-white px-4 py-2" style="background-color: #d9534f; border-color: #d9534f; width: 140px;">Cerrar Sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="uxv-contenido">
