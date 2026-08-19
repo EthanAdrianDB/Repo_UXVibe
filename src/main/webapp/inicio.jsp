@@ -6,7 +6,12 @@
 
 <div class="container-fluid py-2">
     <!-- Encabezado de Bienvenida -->
-    <h2 class="fw-bold mb-4">Bienvenido, ${sessionScope.evaluador.nombre != null ? sessionScope.evaluador.nombre : 'Investigador'}</h2>
+    <h2 class="fw-bold mb-4">
+        Bienvenido,
+        ${sessionScope.evaluador.nombre}
+        ${sessionScope.evaluador.apellidoP}
+        ${sessionScope.evaluador.apellidoM != null ? sessionScope.evaluador.apellidoM : ''}
+    </h2>
 
     <!-- Tarjetas Métricas Superiores -->
     <div class="row g-3 mb-4">

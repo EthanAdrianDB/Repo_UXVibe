@@ -49,19 +49,17 @@
             <div class="input-group">
                 <span class="input-group-text border-right-none"><i class="bi bi-lock"></i></span>
                 <input type="password" class="form-control" name="p1" placeholder="Crea una contraseña" required>
-                <span class="input-group-text border-left-none"><i class="bi bi-info-circle"></i></span>
             </div>
         </div>
 
         <div class="mb-4">
             <label class="form-label fw-bold small text-dark mb-1">
-                Confirmar contraseña: <span class="text-danger">*</span>
-                <i class="bi bi-info-circle text-muted ms-1" title="Confirma tu contraseña"></i>
+                Confirmar contraseña <span class="text-danger">*</span>
+                <i class="text-muted ms-1" title="Confirma tu contraseña"></i>
             </label>
             <div class="input-group">
                 <span class="input-group-text border-right-none"><i class="bi bi-lock"></i></span>
                 <input type="password" class="form-control" name="p2" placeholder="Confirma tu contraseña" required>
-                <span class="input-group-text border-left-none"><i class="bi bi-info-circle"></i></span>
             </div>
         </div>
 

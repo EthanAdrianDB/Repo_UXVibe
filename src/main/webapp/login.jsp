@@ -88,7 +88,7 @@
 
             <form action="${pageContext.request.contextPath}/login" method="post">
                 <div class="campo">
-                    <label for="correo">Correo electrónico:</label>
+                    <label for="correo">Correo electrónico</label>
                     <div class="input-icon-group">
                         <i class="bi bi-envelope icon-prefix"></i>
                         <input type="email" id="correo" name="correo" placeholder="Ingresa tu correo electrónico" required>
@@ -96,7 +96,7 @@
                 </div>
 
                 <div class="campo">
-                    <label for="password">Contraseña:</label>
+                    <label for="password">Contraseña</label>
                     <div class="input-icon-group">
                         <i class="bi bi-lock icon-prefix"></i>
                         <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>

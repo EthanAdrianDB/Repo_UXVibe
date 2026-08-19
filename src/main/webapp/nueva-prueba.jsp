@@ -30,12 +30,6 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="plataforma" class="form-label fw-medium">Nombre de la plataforma: <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control form-control-lg uxv-input" id="plataforma" name="plataforma" 
-                           value="${not empty pruebaEditar ? pruebaEditar.descripcion : ''}" placeholder="Ej. Gmail, Facebook, etc." required>
-                </div>
-
-                <div class="mb-3">
                     <label for="url" class="form-label fw-medium">URL: <span class="text-danger">*</span></label>
                     <input type="url" class="form-control form-control-lg uxv-input" id="url" name="url" 
                            value="${pruebaEditar.urlDestino}" placeholder="Ej. https://ejemplo.com" required>
