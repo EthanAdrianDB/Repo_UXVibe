@@ -148,7 +148,7 @@
                 </div>
 
                 <!-- Botón que abre el modal de confirmación -->
-                <button type="button" class="btn text-white w-100 py-3 mt-4" style="background-color: #3b8285;" data-bs-toggle="modal" data-bs-target="#modalConfirmarGuardar">
+                <button type="button" class="btn text-white w-100 py-3 mt-4" style="background-color: #3b8285;" onclick="validarYMostrarModal()">
                     Enviar Cuestionario
                 </button>
             </form>
@@ -172,5 +172,16 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function validarYMostrarModal() {
+        const form = document.getElementById('formPregunta');
+        if (form.checkValidity()) {
+            const modal = new bootstrap.Modal(document.getElementById('modalConfirmarGuardar'));
+            modal.show();
+        } else {
+            form.reportValidity();
+        }
+    }
+</script>
 </body>
 </html>

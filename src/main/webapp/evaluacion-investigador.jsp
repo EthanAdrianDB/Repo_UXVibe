@@ -114,7 +114,7 @@
                         <div class="d-flex gap-1 flex-wrap justify-content-center flex-grow-1">
                             <% for(int i=1; i<=5; i++) { %>
                                 <div class="form-check form-check-inline m-0 text-center" style="width: 30px;">
-                                    <input class="form-check-input float-none mx-auto d-block mb-1" type="radio" name="sam_valencia" id="sam_val_<%= i %>" value="<%= i %>">
+                                    <input class="form-check-input float-none mx-auto d-block mb-1" type="radio" name="sam_valencia" id="sam_val_<%= i %>" value="<%= i %>" required>
                                     <label class="form-check-label small" for="sam_val_<%= i %>"><%= i %></label>
                                 </div>
                             <% } %>
@@ -130,7 +130,7 @@
                         <div class="d-flex gap-1 flex-wrap justify-content-center flex-grow-1">
                             <% for(int i=1; i<=5; i++) { %>
                                 <div class="form-check form-check-inline m-0 text-center" style="width: 30px;">
-                                    <input class="form-check-input float-none mx-auto d-block mb-1" type="radio" name="sam_activacion" id="sam_act_<%= i %>" value="<%= i %>">
+                                    <input class="form-check-input float-none mx-auto d-block mb-1" type="radio" name="sam_activacion" id="sam_act_<%= i %>" value="<%= i %>" required>
                                     <label class="form-check-label small" for="sam_act_<%= i %>"><%= i %></label>
                                 </div>
                             <% } %>
@@ -146,7 +146,7 @@
                         <div class="d-flex gap-1 flex-wrap justify-content-center flex-grow-1">
                             <% for(int i=1; i<=5; i++) { %>
                                 <div class="form-check form-check-inline m-0 text-center" style="width: 30px;">
-                                    <input class="form-check-input float-none mx-auto d-block mb-1" type="radio" name="sam_dominio" id="sam_dom_<%= i %>" value="<%= i %>">
+                                    <input class="form-check-input float-none mx-auto d-block mb-1" type="radio" name="sam_dominio" id="sam_dom_<%= i %>" value="<%= i %>" required>
                                     <label class="form-check-label small" for="sam_dom_<%= i %>"><%= i %></label>
                                 </div>
                             <% } %>
@@ -199,7 +199,7 @@
                         <div class="d-flex justify-content-between px-3">
                             <% for(int j=1; j<=5; j++) { %>
                             <div class="form-check form-check-inline m-0 text-center">
-                                <input class="form-check-input float-none mb-1 mx-auto d-block" type="radio" name="ux_q<%= (i+1) %>" id="ux_q<%= (i+1) %>_v<%= j %>" value="<%= j %>">
+                                <input class="form-check-input float-none mb-1 mx-auto d-block" type="radio" name="ux_q<%= (i+1) %>" id="ux_q<%= (i+1) %>_v<%= j %>" value="<%= j %>" required>
                                 <label class="form-check-label small" for="ux_q<%= (i+1) %>_v<%= j %>"><%= j %></label>
                             </div>
                             <% } %>
@@ -211,7 +211,7 @@
                     
                     <div class="mb-4 p-3 bg-white border rounded">
                         <label class="form-label fw-bold mb-3">5. En una semana típica ¿con que frecuencia se siente estresado/a?</label>
-                        <select class="form-select" name="estado_estresado">
+                        <select class="form-select" name="estado_estresado" required>
                             <option value="">Selecciona una opción</option>
                             <option value="Nunca">Nunca</option>
                             <option value="De vez en cuando">De vez en cuando</option>
@@ -223,7 +223,7 @@
 
                     <div class="mb-4 p-3 bg-white border rounded">
                         <label class="form-label fw-bold mb-3">6. En una semana típica ¿con que frecuencia se siente Relajado/a?</label>
-                        <select class="form-select" name="estado_relajado">
+                        <select class="form-select" name="estado_relajado" required>
                             <option value="">Selecciona una opción</option>
                             <option value="Nunca">Nunca</option>
                             <option value="De vez en cuando">De vez en cuando</option>
@@ -371,6 +371,29 @@
     let urlAbierta = false;
 
     function nextStep(stepNumber) {
+        // Enforce validation before proceeding forwards
+        const currentActive = document.querySelector('.step-container.active');
+        if (currentActive) {
+            const currentStepId = currentActive.id; // 'step1', 'step2', 'step3', 'step4'
+            const targetStepId = 'step' + stepNumber;
+            // Only validate if we are moving forward
+            if (stepNumber > parseInt(currentStepId.replace('step', ''))) {
+                const inputs = currentActive.querySelectorAll('input[required], select[required]');
+                let allValid = true;
+                
+                // HTML5 reportValidity natively checks inputs even in hidden tabs? No, they are visible now
+                // We'll use manual check for radio groups and normal inputs
+                inputs.forEach(input => {
+                    if (!input.checkValidity()) {
+                        input.reportValidity();
+                        allValid = false;
+                    }
+                });
+                
+                if (!allValid) return; // Stop if not valid
+            }
+        }
+
         if (stepNumber === 2 && !urlAbierta) {
             const url = document.getElementById('hiddenUrlDestino').value;
             if (url && url.trim() !== '') {
