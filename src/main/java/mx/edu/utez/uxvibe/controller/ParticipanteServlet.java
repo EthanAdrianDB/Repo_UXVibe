@@ -104,13 +104,17 @@ public class ParticipanteServlet extends HttpServlet {
                 new mx.edu.utez.uxvibe.model.dao.RespuestaDao().create(r);
 
                 // Save audio
-                Part audioPart = request.getPart("audio_file");
-                if (audioPart != null && audioPart.getSize() > 0) {
-                    ArchivoAudio audio = new ArchivoAudio();
-                    audio.setIdParticipante(p.getIdParticipante());
-                    audio.setIdPrueba(idPrueba);
-                    audio.setAudio(audioPart.getInputStream());
-                    new ArchivoAudioDao().create(audio);
+                try {
+                    Part audioPart = request.getPart("audio_file");
+                    if (audioPart != null && audioPart.getSize() > 0) {
+                        ArchivoAudio audio = new ArchivoAudio();
+                        audio.setIdParticipante(p.getIdParticipante());
+                        audio.setIdPrueba(idPrueba);
+                        audio.setAudio(audioPart.getInputStream());
+                        new ArchivoAudioDao().create(audio);
+                    }
+                } catch (Exception e) {
+                    System.out.println("Audio no adjuntado o error al obtener part: " + e.getMessage());
                 }
             }
         }
