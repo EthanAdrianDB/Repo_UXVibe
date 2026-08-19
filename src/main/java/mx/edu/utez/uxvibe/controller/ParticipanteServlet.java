@@ -5,6 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import mx.edu.utez.uxvibe.model.Evaluador;
 import mx.edu.utez.uxvibe.model.Participante;
 import mx.edu.utez.uxvibe.model.Prueba;
 import mx.edu.utez.uxvibe.model.dao.ParticipanteDao;
@@ -29,8 +30,29 @@ public class ParticipanteServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        int idPrueba = Integer.parseInt(request.getParameter("idPrueba"));
+        Evaluador evaluador = (Evaluador) request.getSession().getAttribute("evaluador");
+        if (evaluador == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            return;
+        }
+
+        String idParam = request.getParameter("idPrueba");
+        int idPrueba = -1;
+        try {
+            if (idParam != null && !idParam.isEmpty()) {
+                idPrueba = Integer.parseInt(idParam);
+            }
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/error-acceso.jsp");
+            return;
+        }
+
         Prueba prueba = pruebaDao.getById(idPrueba);
+        if (prueba == null || prueba.getIdEvaluador() != evaluador.getIdEvaluador()) {
+            response.sendRedirect(request.getContextPath() + "/error-acceso.jsp");
+            return;
+        }
+
         List<Participante> participantes = participanteDao.getPorPrueba(idPrueba);
 
         request.setAttribute("prueba", prueba);

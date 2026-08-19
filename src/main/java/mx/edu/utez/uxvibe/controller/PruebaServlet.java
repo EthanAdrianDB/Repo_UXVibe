@@ -30,8 +30,29 @@ public class PruebaServlet extends HttpServlet {
         }
 
         if (idParam != null) {
+            Evaluador evaluador = (Evaluador) request.getSession().getAttribute("evaluador");
+            if (evaluador == null) {
+                response.sendRedirect(request.getContextPath() + "/login.jsp");
+                return;
+            }
+
+            int idPrueba = -1;
+            try {
+                if (!idParam.isEmpty()) {
+                    idPrueba = Integer.parseInt(idParam);
+                }
+            } catch (NumberFormatException e) {
+                response.sendRedirect(request.getContextPath() + "/error-acceso.jsp");
+                return;
+            }
+
             // Editar: mandamos la prueba existente al formulario de nueva-prueba.jsp
-            Prueba prueba = pruebaDao.getById(Integer.parseInt(idParam));
+            Prueba prueba = pruebaDao.getById(idPrueba);
+            if (prueba == null || prueba.getIdEvaluador() != evaluador.getIdEvaluador()) {
+                response.sendRedirect(request.getContextPath() + "/error-acceso.jsp");
+                return;
+            }
+
             request.setAttribute("pruebaEditar", prueba);
             request.getRequestDispatcher("nueva-prueba.jsp").forward(request, response);
             return;

@@ -10,6 +10,7 @@ import mx.edu.utez.uxvibe.model.dao.ParticipanteDao;
 import mx.edu.utez.uxvibe.model.dao.PruebaDao;
 import mx.edu.utez.uxvibe.model.dao.RespuestaDao;
 
+import mx.edu.utez.uxvibe.model.Evaluador;
 import java.io.IOException;
 
 @WebServlet(name = "ResultadosServlet", value = "/resultados")
@@ -23,8 +24,28 @@ public class ResultadosServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        int idPrueba = Integer.parseInt(request.getParameter("idPrueba"));
+        Evaluador evaluador = (Evaluador) request.getSession().getAttribute("evaluador");
+        if (evaluador == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            return;
+        }
+
+        String idParam = request.getParameter("idPrueba");
+        int idPrueba = -1;
+        try {
+            if (idParam != null && !idParam.isEmpty()) {
+                idPrueba = Integer.parseInt(idParam);
+            }
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/error-acceso.jsp");
+            return;
+        }
+
         Prueba prueba = pruebaDao.getById(idPrueba);
+        if (prueba == null || prueba.getIdEvaluador() != evaluador.getIdEvaluador()) {
+            response.sendRedirect(request.getContextPath() + "/error-acceso.jsp");
+            return;
+        }
 
         request.setAttribute("prueba", prueba);
         request.setAttribute("pestanaActiva", "resultados");
