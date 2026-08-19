@@ -22,10 +22,23 @@ public class AudioServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
-        int idPrueba = Integer.parseInt(request.getParameter("idPrueba"));
+        String idPruebaStr = request.getParameter("idPrueba");
+        int idPrueba = 0;
+        try {
+            if (idPruebaStr != null) idPrueba = Integer.parseInt(idPruebaStr);
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/inicio");
+            return;
+        }
 
         if ("play".equals(action)) {
-            int idParticipante = Integer.parseInt(request.getParameter("idParticipante"));
+            int idParticipante = 0;
+            try {
+                idParticipante = Integer.parseInt(request.getParameter("idParticipante"));
+            } catch (NumberFormatException e) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
             java.io.InputStream is = new mx.edu.utez.uxvibe.model.dao.ArchivoAudioDao().getAudioStream(idParticipante, idPrueba);
             
             if (is != null) {

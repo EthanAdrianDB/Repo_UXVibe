@@ -32,9 +32,13 @@ public class CuestionarioServlet extends HttpServlet {
         if (idParticipante == null) {
             String idPruebaStr = request.getParameter("idPrueba");
             if (idPruebaStr != null) {
-                int idPrueba = Integer.parseInt(idPruebaStr);
-                Prueba prueba = pruebaDao.getById(idPrueba);
-                request.setAttribute("prueba", prueba);
+                try {
+                    int idPrueba = Integer.parseInt(idPruebaStr);
+                    Prueba prueba = pruebaDao.getById(idPrueba);
+                    request.setAttribute("prueba", prueba);
+                } catch (NumberFormatException e) {
+                    // Si el ID es inválido, simplemente no se carga la prueba
+                }
             }
             request.getRequestDispatcher("cuestionario-inicio.jsp").forward(request, response);
             return;
