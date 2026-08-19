@@ -158,8 +158,16 @@ document.addEventListener("DOMContentLoaded", () => {
             let tempAudio = new Audio();
             tempAudio.preload = "metadata";
             tempAudio.addEventListener('loadedmetadata', () => {
-                if (isFinite(tempAudio.duration)) {
+                if (isFinite(tempAudio.duration) && tempAudio.duration > 0) {
                     el.innerText = formatSeconds(tempAudio.duration);
+                } else if (tempAudio.duration === Infinity) {
+                    tempAudio.currentTime = 1e101;
+                    tempAudio.addEventListener('timeupdate', function onTime() {
+                        tempAudio.removeEventListener('timeupdate', onTime);
+                        if (isFinite(tempAudio.duration) && tempAudio.duration > 0) {
+                            el.innerText = formatSeconds(tempAudio.duration);
+                        }
+                    }, { once: true });
                 }
             });
             tempAudio.src = src;
@@ -170,19 +178,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (audioEl) {
         audioEl.addEventListener('loadedmetadata', () => {
-            if(isFinite(audioEl.duration)) {
+            if (isFinite(audioEl.duration) && audioEl.duration > 0) {
+                totalSeconds = Math.floor(audioEl.duration);
+                document.getElementById('reproductorDuracion').innerText = formatSeconds(totalSeconds);
+            } else if (audioEl.duration === Infinity) {
+                // Fix for WebM blobs in Chromium where duration is Infinity
+                const onSeekEnd = function() {
+                    audioEl.removeEventListener('timeupdate', onSeekEnd);
+                    if (isFinite(audioEl.duration) && audioEl.duration > 0) {
+                        totalSeconds = Math.floor(audioEl.duration);
+                        document.getElementById('reproductorDuracion').innerText = formatSeconds(totalSeconds);
+                    }
+                    audioEl.currentTime = 0;
+                };
+                audioEl.addEventListener('timeupdate', onSeekEnd, { once: true });
+                audioEl.currentTime = 1e101;
+            }
+        });
+
+        audioEl.addEventListener('durationchange', () => {
+            if (isFinite(audioEl.duration) && audioEl.duration > 0) {
                 totalSeconds = Math.floor(audioEl.duration);
                 document.getElementById('reproductorDuracion').innerText = formatSeconds(totalSeconds);
             }
         });
 
         audioEl.addEventListener('timeupdate', () => {
-            const current = Math.floor(audioEl.currentTime);
+            if (isFinite(audioEl.duration) && audioEl.duration > 0 && totalSeconds === 0) {
+                totalSeconds = Math.floor(audioEl.duration);
+                document.getElementById('reproductorDuracion').innerText = formatSeconds(totalSeconds);
+            }
+
+            const current = Math.floor(audioEl.currentTime || 0);
             document.getElementById('reproductorTiempoActual').innerText = formatSeconds(current);
             
-            if (totalSeconds > 0) {
-                const progress = current / totalSeconds;
-                document.getElementById('progressSlider').value = progress * 100;
+            const dur = (isFinite(audioEl.duration) && audioEl.duration > 0) ? audioEl.duration : totalSeconds;
+            if (dur > 0) {
+                const progress = (audioEl.currentTime || 0) / dur;
+                document.getElementById('progressSlider').value = Math.min(100, progress * 100);
                 actualizarWaveformColores(progress);
             }
 
@@ -229,7 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function formatSeconds(secs) {
-    if (isNaN(secs)) return '00:00';
+    if (!isFinite(secs) || isNaN(secs) || secs < 0) return '00:00';
     const m = Math.floor(secs / 60);
     const s = Math.floor(secs % 60);
     return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
@@ -290,8 +323,9 @@ function reproducirAudio(nombre, audioSrc, idParticipante) {
     if (!audioEl) audioEl = document.getElementById('audioElement');
     pausarAudio();
 
+    totalSeconds = 0;
     document.getElementById('reproductorNombre').innerText = nombre || 'Participante';
-    document.getElementById('reproductorDuracion').innerText = '00:00'; // Se actualiza en loadedmetadata
+    document.getElementById('reproductorDuracion').innerText = '--:--';
     document.getElementById('reproductorTiempoActual').innerText = '00:00';
     document.getElementById('progressSlider').value = 0;
 
@@ -347,18 +381,40 @@ function pausarAudio() {
 
 function seekAudio(val) {
     if (!audioEl) audioEl = document.getElementById('audioElement');
+    if (!audioEl) return;
+    
     const pct = parseFloat(val) / 100;
     actualizarWaveformColores(pct);
 
-    if (audioEl && audioEl.duration) {
-        audioEl.currentTime = (pct * audioEl.duration);
+    const dur = (isFinite(audioEl.duration) && audioEl.duration > 0) ? audioEl.duration : totalSeconds;
+    if (dur > 0) {
+        const targetTime = pct * dur;
+        audioEl.currentTime = targetTime;
+        document.getElementById('reproductorTiempoActual').innerText = formatSeconds(Math.floor(targetTime));
     }
 }
 
 function skipSeconds(sec) {
     if (!audioEl) audioEl = document.getElementById('audioElement');
-    if (audioEl && audioEl.duration) {
-        audioEl.currentTime = Math.max(0, Math.min(audioEl.duration, audioEl.currentTime + sec));
+    if (!audioEl) return;
+    
+    const dur = (isFinite(audioEl.duration) && audioEl.duration > 0) ? audioEl.duration : totalSeconds;
+    const current = audioEl.currentTime || 0;
+    let target = current + sec;
+    
+    if (dur > 0) {
+        target = Math.max(0, Math.min(dur, target));
+    } else {
+        target = Math.max(0, target);
+    }
+    
+    audioEl.currentTime = target;
+    document.getElementById('reproductorTiempoActual').innerText = formatSeconds(Math.floor(target));
+    
+    if (dur > 0) {
+        const progress = target / dur;
+        document.getElementById('progressSlider').value = Math.min(100, progress * 100);
+        actualizarWaveformColores(progress);
     }
 }
 </script>

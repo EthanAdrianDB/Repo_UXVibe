@@ -81,6 +81,26 @@ public class ArchivoAudioDao implements Dao<ArchivoAudio, Integer> {
         return null;
     }
 
+    public byte[] getAudioBytes(int idParticipante, int idPrueba) {
+        String sql = "SELECT audio FROM Archivo_Audio WHERE id_participante = ? AND id_prueba = ?";
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idParticipante);
+            ps.setInt(2, idPrueba);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    java.sql.Blob blob = rs.getBlob("audio");
+                    if (blob != null) {
+                        return blob.getBytes(1, (int) blob.length());
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean hasAudio(int idParticipante, int idPrueba) {
         String sql = "SELECT COUNT(*) FROM Archivo_Audio WHERE id_participante = ? AND id_prueba = ?";
         try (Connection con = SQLConnector.getConnection();

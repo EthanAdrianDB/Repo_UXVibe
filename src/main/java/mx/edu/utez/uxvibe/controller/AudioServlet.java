@@ -39,18 +39,60 @@ public class AudioServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
-            java.io.InputStream is = new mx.edu.utez.uxvibe.model.dao.ArchivoAudioDao().getAudioStream(idParticipante, idPrueba);
+            byte[] audioBytes = new mx.edu.utez.uxvibe.model.dao.ArchivoAudioDao().getAudioBytes(idParticipante, idPrueba);
             
-            if (is != null) {
-                response.setContentType("audio/webm"); // Default type used by MediaRecorder
-                java.io.OutputStream os = response.getOutputStream();
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = is.read(buffer)) != -1) {
-                    os.write(buffer, 0, bytesRead);
+            if (audioBytes != null && audioBytes.length > 0) {
+                int fileLength = audioBytes.length;
+                String rangeHeader = request.getHeader("Range");
+
+                response.setContentType("audio/webm");
+                response.setHeader("Accept-Ranges", "bytes");
+
+                if (rangeHeader != null && rangeHeader.startsWith("bytes=")) {
+                    String rangeValue = rangeHeader.substring(6).trim();
+                    int dashPos = rangeValue.indexOf('-');
+                    int start = 0;
+                    int end = fileLength - 1;
+
+                    try {
+                        if (dashPos == 0) {
+                            int suffix = Integer.parseInt(rangeValue.substring(1));
+                            start = Math.max(0, fileLength - suffix);
+                        } else if (dashPos == rangeValue.length() - 1) {
+                            start = Integer.parseInt(rangeValue.substring(0, dashPos));
+                        } else if (dashPos > 0) {
+                            start = Integer.parseInt(rangeValue.substring(0, dashPos));
+                            end = Integer.parseInt(rangeValue.substring(dashPos + 1));
+                        }
+                    } catch (NumberFormatException ignored) {}
+
+                    if (start >= fileLength) {
+                        response.setStatus(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+                        response.setHeader("Content-Range", "bytes */" + fileLength);
+                        return;
+                    }
+
+                    if (end >= fileLength) {
+                        end = fileLength - 1;
+                    }
+
+                    int contentLength = (end - start) + 1;
+
+                    response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+                    response.setHeader("Content-Range", "bytes " + start + "-" + end + "/" + fileLength);
+                    response.setContentLength(contentLength);
+
+                    java.io.OutputStream os = response.getOutputStream();
+                    os.write(audioBytes, start, contentLength);
+                    os.flush();
+                } else {
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    response.setContentLength(fileLength);
+
+                    java.io.OutputStream os = response.getOutputStream();
+                    os.write(audioBytes, 0, fileLength);
+                    os.flush();
                 }
-                is.close();
-                os.flush();
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
