@@ -1,3 +1,11 @@
+<%-- 
+    ===================================================================
+    Verificación de Código de Seguridad — UXVibe
+    Controlador: RecuperarServlet (/recuperar?action=checar)
+    Descripción: Vista para ingresar el código numérico de verificación
+    temporal en flujos de validación de dos pasos o recuperación.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!doctype html>

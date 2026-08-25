@@ -16,14 +16,26 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+/**
+ * Controlador para el proceso de recuperación de contraseña olvidada.
+ * Flujo:
+ * 1. El usuario solicita restablecer contraseña indicando su correo.
+ * 2. Se genera un token UUID con vigencia de 60 min y se envía por correo vía EmailSender.
+ * 3. El usuario hace clic en el enlace, se valida el token y puede ingresar una nueva contraseña.
+ */
 @WebServlet(name = "RecuperarServlet", value = "/recuperar")
 public class RecuperarServlet extends HttpServlet {
 
     private final EvaluadorDao evaluadorDao = new EvaluadorDao();
 
+    // Regla de complejidad de contraseña
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$");
 
+    /**
+     * Petición GET: Valida el token que viene en la URL (?token=UUID).
+     * Si es válido, lo lleva a cambiar-contra.jsp; si no, redirige con error.
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String token = req.getParameter("token");
@@ -38,6 +50,9 @@ public class RecuperarServlet extends HttpServlet {
         resp.sendRedirect("recuperar-contra.jsp?error=" + URLEncoder.encode("El enlace de recuperación es inválido o expiró.", StandardCharsets.UTF_8));
     }
 
+    /**
+     * Petición POST: Enruta la acción ("solicitar" enlace o "actualizar" contraseña).
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
@@ -52,6 +67,9 @@ public class RecuperarServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Paso 1: Genera un token único y envía el correo con la plantilla HTML.
+     */
     private void solicitarEnlace(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String correo = req.getParameter("correo");
 
@@ -60,9 +78,11 @@ public class RecuperarServlet extends HttpServlet {
             Evaluador evaluador = evaluadorDao.buscarPorCorreo(correoNormalizado);
 
             if (evaluador != null) {
+                // Generamos token aleatorio único
                 String token = UUID.randomUUID().toString();
                 evaluadorDao.guardarTokenRecuperacion(token, evaluador.getIdEvaluador(), 60);
 
+                // Construimos la URL completa para restablecer la contraseña
                 String baseUrl = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath();
                 String enlaceRestablecer = baseUrl + "/recuperar?token=" + token;
 
@@ -83,6 +103,9 @@ public class RecuperarServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Paso 2: Valida las contraseñas nuevas, comprueba el token y actualiza el hash en la base de datos.
+     */
     private void actualizarContrasena(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String token = req.getParameter("token");
         String pass1 = req.getParameter("p1");
@@ -104,17 +127,21 @@ public class RecuperarServlet extends HttpServlet {
             return;
         }
 
+        // Hasheamos la nueva contraseña antes de persistirla
         String nuevoHash = PasswordUtil.hashPassword(pass1);
         boolean actualizado = evaluadorDao.actualizarContrasena(evaluador.getIdEvaluador(), nuevoHash);
 
         if (actualizado) {
-            evaluadorDao.eliminarToken(token);
+            evaluadorDao.eliminarToken(token); // Invalidamos el token usado
             resp.sendRedirect("contra-actualizada.jsp");
         } else {
             redirectError(resp, token, "Ocurrió un error al actualizar la contraseña en la base de datos.");
         }
     }
 
+    /**
+     * Helper para redirigir a la pantalla de cambio de contraseña con mensaje de error codificado en la URL.
+     */
     private void redirectError(HttpServletResponse resp, String token, String mensaje) throws IOException {
         String tokenEnc = token != null ? URLEncoder.encode(token, StandardCharsets.UTF_8) : "";
         String msgEnc = URLEncoder.encode(mensaje, StandardCharsets.UTF_8);

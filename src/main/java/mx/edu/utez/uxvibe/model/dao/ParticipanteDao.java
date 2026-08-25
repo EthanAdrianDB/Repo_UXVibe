@@ -13,8 +13,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * DAO para la tabla Participante.
+ * Gestiona el registro, consulta y métricas demográficas (sexo, edad promedio)
+ * de los usuarios que participan en una sesión de prueba UX.
+ */
 public class ParticipanteDao implements Dao<Participante, Integer> {
 
+    /**
+     * Inserta un nuevo participante ligado a una prueba.
+     * Si no se especifica fecha, se le asigna la fecha actual en formato dd/MM/yyyy.
+     */
     @Override
     public boolean create(Participante entidad) {
         String sql = "INSERT INTO Participante (nombre, apellido_m, apellido_p, sexo, id_prueba, edad, fecha_realizacion) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -27,7 +36,7 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
             ps.setInt(4, entidad.getSexo());
             ps.setInt(5, entidad.getIdPrueba());
             ps.setInt(6, entidad.getEdad());
-            // Guardar la fecha actual como fecha de realización
+            // Guardar la fecha actual como fecha de realización si viene nula
             String fechaActual = new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date());
             ps.setString(7, entidad.getFechaRealizacion() != null ? entidad.getFechaRealizacion() : fechaActual);
 
@@ -49,6 +58,9 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
         return false;
     }
 
+    /**
+     * Devuelve la lista completa de todos los participantes registrados en el sistema.
+     */
     @Override
     public List<Participante> getAll() {
         List<Participante> lista = new ArrayList<>();
@@ -65,6 +77,9 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
         return lista;
     }
 
+    /**
+     * Obtiene los participantes registrados para una prueba en específico.
+     */
     public List<Participante> getPorPrueba(int idPrueba) {
         List<Participante> lista = new ArrayList<>();
         String sql = "SELECT * FROM Participante WHERE id_prueba = ? ORDER BY id_participante ASC";
@@ -82,6 +97,9 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
         return lista;
     }
 
+    /**
+     * Cuenta cuántos participantes tiene asignados una prueba.
+     */
     public int contarPorPrueba(int idPrueba) {
         String sql = "SELECT COUNT(*) FROM Participante WHERE id_prueba = ?";
         try (Connection con = SQLConnector.getConnection();
@@ -98,6 +116,9 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
         return 0;
     }
 
+    /**
+     * Busca un participante por su clave primaria.
+     */
     @Override
     public Participante getById(Integer id) {
         String sql = "SELECT * FROM Participante WHERE id_participante = ?";
@@ -115,6 +136,9 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
         return null;
     }
 
+    /**
+     * Actualiza los datos de un participante.
+     */
     @Override
     public boolean update(Participante entidad) {
         String sql = "UPDATE Participante SET nombre = ?, apellido_m = ?, apellido_p = ?, sexo = ?, id_prueba = ?, edad = ?, fecha_realizacion = ? WHERE id_participante = ?";
@@ -135,6 +159,9 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
         return false;
     }
 
+    /**
+     * Elimina un participante individual por ID.
+     */
     @Override
     public boolean delete(Integer id) {
         String sql = "DELETE FROM Participante WHERE id_participante = ?";
@@ -148,6 +175,9 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
         return false;
     }
 
+    /**
+     * Elimina en cascada todos los participantes de una prueba dada.
+     */
     public void eliminarPorPrueba(int idPrueba) {
         String sql = "DELETE FROM Participante WHERE id_prueba = ?";
         try (Connection con = SQLConnector.getConnection();
@@ -159,7 +189,10 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
         }
     }
 
-    // Estadísticas
+    /**
+     * Calcula los porcentajes de distribución por sexo para una prueba específica.
+     * @return Mapa con llaves "Masculino" y "Femenino" y su respectivo porcentaje redondeado a 1 decimal.
+     */
     public Map<String, Double> distribucionPorSexo(int idPrueba) {
         Map<String, Double> resultado = new LinkedHashMap<>();
         int total = contarPorPrueba(idPrueba);
@@ -184,6 +217,9 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
         return resultado;
     }
 
+    /**
+     * Calcula los porcentajes de sexo de todos los participantes evaluados por un investigador.
+     */
     public Map<String, Double> distribucionPorSexoEvaluador(int idEvaluador) {
         Map<String, Double> resultado = new LinkedHashMap<>();
         resultado.put("Femenino", 0.0);
@@ -226,6 +262,9 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
         return resultado;
     }
     
+    /**
+     * Calcula el promedio de edad de los participantes de una prueba.
+     */
     public double edadPromedio(int idPrueba) {
         String sql = "SELECT AVG(edad) FROM Participante WHERE id_prueba = ? AND edad > 0";
         try (Connection con = SQLConnector.getConnection();
@@ -242,6 +281,9 @@ public class ParticipanteDao implements Dao<Participante, Integer> {
         return 0.0;
     }
 
+    /**
+     * Helper para mapear una fila de ResultSet a un objeto Participante.
+     */
     private Participante aParticipante(ResultSet rs) throws SQLException {
         Participante p = new Participante(
                 rs.getInt("id_participante"),

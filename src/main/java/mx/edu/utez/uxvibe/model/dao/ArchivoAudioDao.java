@@ -12,8 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.InputStream;
 
+/**
+ * DAO para la tabla Archivo_Audio.
+ * Guarda y recupera los archivos de audio binarios (BLOB en Oracle)
+ * grabados durante las sesiones de evaluación de los participantes.
+ */
 public class ArchivoAudioDao implements Dao<ArchivoAudio, Integer> {
 
+    /**
+     * Inserta un nuevo archivo de audio en formato BLOB asociado al participante y su prueba.
+     */
     @Override
     public boolean create(ArchivoAudio entidad) {
         String sql = "INSERT INTO Archivo_Audio (id_participante, id_prueba, audio) VALUES (?, ?, ?)";
@@ -42,11 +50,17 @@ public class ArchivoAudioDao implements Dao<ArchivoAudio, Integer> {
         return false;
     }
 
+    /**
+     * No se implementa listar todos los audios directos a memoria para no saturar el servidor con datos binarios pesados.
+     */
     @Override
     public List<ArchivoAudio> getAll() {
-        return new ArrayList<>(); // Usualmente no listaríamos todos los audios de la BD sin paginar
+        return new ArrayList<>();
     }
 
+    /**
+     * Busca los metadatos de un audio por su ID.
+     */
     @Override
     public ArchivoAudio getById(Integer id) {
         String sql = "SELECT * FROM Archivo_Audio WHERE id_audio = ?";
@@ -64,6 +78,9 @@ public class ArchivoAudioDao implements Dao<ArchivoAudio, Integer> {
         return null;
     }
 
+    /**
+     * Obtiene el flujo binario (InputStream) del audio para transmitirlo (streaming) al navegador mediante AudioServlet.
+     */
     public InputStream getAudioStream(int idParticipante, int idPrueba) {
         String sql = "SELECT audio FROM Archivo_Audio WHERE id_participante = ? AND id_prueba = ?";
         try (Connection con = SQLConnector.getConnection();
@@ -81,6 +98,9 @@ public class ArchivoAudioDao implements Dao<ArchivoAudio, Integer> {
         return null;
     }
 
+    /**
+     * Descarga el audio completo como arreglo de bytes (byte[]).
+     */
     public byte[] getAudioBytes(int idParticipante, int idPrueba) {
         String sql = "SELECT audio FROM Archivo_Audio WHERE id_participante = ? AND id_prueba = ?";
         try (Connection con = SQLConnector.getConnection();
@@ -101,6 +121,9 @@ public class ArchivoAudioDao implements Dao<ArchivoAudio, Integer> {
         return null;
     }
 
+    /**
+     * Verifica de forma rápida si un participante ya tiene una grabación de audio subida.
+     */
     public boolean hasAudio(int idParticipante, int idPrueba) {
         String sql = "SELECT COUNT(*) FROM Archivo_Audio WHERE id_participante = ? AND id_prueba = ?";
         try (Connection con = SQLConnector.getConnection();
@@ -118,11 +141,17 @@ public class ArchivoAudioDao implements Dao<ArchivoAudio, Integer> {
         return false;
     }
 
+    /**
+     * Los archivos de audio no se actualizan en sitio.
+     */
     @Override
     public boolean update(ArchivoAudio entidad) {
-        return false; // No se actualiza un audio
+        return false;
     }
 
+    /**
+     * Elimina un archivo de audio por ID.
+     */
     @Override
     public boolean delete(Integer id) {
         String sql = "DELETE FROM Archivo_Audio WHERE id_audio = ?";
@@ -136,12 +165,14 @@ public class ArchivoAudioDao implements Dao<ArchivoAudio, Integer> {
         return false;
     }
 
+    /**
+     * Helper para mapear metadatos del ResultSet al POJO ArchivoAudio.
+     */
     private ArchivoAudio aArchivoAudio(ResultSet rs) throws SQLException {
         ArchivoAudio aa = new ArchivoAudio();
         aa.setIdAudio(rs.getInt("id_audio"));
         aa.setIdParticipante(rs.getInt("id_participante"));
         aa.setIdPrueba(rs.getInt("id_prueba"));
-        // El InputStream del audio solo se extrae cuando se necesite con getAudioStream
         return aa;
     }
 }

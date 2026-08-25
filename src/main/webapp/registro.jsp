@@ -1,3 +1,12 @@
+<%-- 
+    ===================================================================
+    Pantalla de Registro de Evaluadores — UXVibe
+    Controlador: RegisterServlet (/registro)
+    Descripción: Formulario para crear una cuenta nueva de evaluador.
+    Incluye validación interactiva de contraseña segura (mayúscula, minúscula,
+    número, longitud mínima) y coincidencia de confirmación de correo/password.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!doctype html>

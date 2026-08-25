@@ -1,3 +1,13 @@
+<%-- 
+    ===================================================================
+    Cuestionario de Evaluación UX (Paso 2) — UXVibe
+    Controlador: CuestionarioServlet (/cuestionario?action=responder)
+    Descripción: Pantalla pública donde el participante responde:
+    1. Sección 1: 15 reactivos de Usabilidad en escala Likert (1-5).
+    2. Sección 2: Modelo SAM (Self-Assessment Manikin, 1-9: Valencia, Activación, Dominancia).
+    3. Sección 3: Frecuencia de estados de ánimo.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!doctype html>

@@ -19,13 +19,21 @@ import mx.edu.utez.uxvibe.model.dao.ArchivoAudioDao;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Controlador para la administración de participantes de una prueba.
+ * Permite listar participantes, eliminarlos, o registrarlos de forma directa
+ * junto con sus evaluaciones y archivo de audio de la sesión (soporta multipart hasta 50MB).
+ */
 @WebServlet(name = "ParticipanteServlet", value = "/participantes")
-@MultipartConfig(maxFileSize = 1024 * 1024 * 50) // 50MB max file size
+@MultipartConfig(maxFileSize = 1024 * 1024 * 50) // Máximo 50MB por archivo de audio
 public class ParticipanteServlet extends HttpServlet {
 
     private final ParticipanteDao participanteDao = new ParticipanteDao();
     private final PruebaDao pruebaDao = new PruebaDao();
 
+    /**
+     * Muestra la tabla de participantes de la prueba en gestion-participantes.jsp.
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -47,6 +55,7 @@ public class ParticipanteServlet extends HttpServlet {
             return;
         }
 
+        // Verificamos permisos del evaluador sobre la prueba
         Prueba prueba = pruebaDao.getById(idPrueba);
         if (prueba == null || prueba.getIdEvaluador() != evaluador.getIdEvaluador()) {
             response.sendRedirect(request.getContextPath() + "/error-acceso.jsp");
@@ -62,6 +71,9 @@ public class ParticipanteServlet extends HttpServlet {
         request.getRequestDispatcher("gestion-participantes.jsp").forward(request, response);
     }
 
+    /**
+     * Procesa la eliminación de un participante o la creación integral (participante + respuestas + audio).
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -71,10 +83,12 @@ public class ParticipanteServlet extends HttpServlet {
         int idPrueba = Integer.parseInt(request.getParameter("idPrueba"));
 
         if ("delete".equals(action)) {
+            // Eliminar participante
             int id = Integer.parseInt(request.getParameter("id"));
             participanteDao.delete(id);
 
         } else if ("create".equals(action)) {
+            // 1. Guardar datos del participante
             Participante p = new Participante();
             p.setIdPrueba(idPrueba);
             String nombre = request.getParameter("nombre");
@@ -91,18 +105,19 @@ public class ParticipanteServlet extends HttpServlet {
             
             String edadStr = request.getParameter("edad");
             p.setEdad(edadStr != null && !edadStr.trim().isEmpty() ? Integer.parseInt(edadStr.trim()) : 0);
+            
             if (participanteDao.create(p)) {
-                // Guardar la respuesta asociada
+                // 2. Guardar las respuestas del cuestionario asociadas al participante
                 mx.edu.utez.uxvibe.model.Respuesta r = new mx.edu.utez.uxvibe.model.Respuesta();
                 r.setIdParticipante(p.getIdParticipante());
                 r.setIdPrueba(idPrueba);
                 
-                // SAM
+                // Escala SAM
                 r.setSam1(parseParam(request.getParameter("sam_valencia")));
                 r.setSam2(parseParam(request.getParameter("sam_activacion")));
                 r.setSam3(parseParam(request.getParameter("sam_dominio")));
                 
-                // Likert
+                // Reactivos Likert
                 r.setR1(parseParam(request.getParameter("ux_q1")));
                 r.setR2(parseParam(request.getParameter("ux_q2")));
                 r.setR3(parseParam(request.getParameter("ux_q3")));
@@ -119,13 +134,13 @@ public class ParticipanteServlet extends HttpServlet {
                 r.setR14(parseParam(request.getParameter("ux_q14")));
                 r.setR15(parseParam(request.getParameter("ux_q15")));
                 
-                // Frecuencia
+                // Frecuencias
                 r.setFrecuenciaEstadoAnimo1(parseFrecuencia(request.getParameter("estado_estresado")));
                 r.setFrecuenciaEstadoAnimo2(parseFrecuencia(request.getParameter("estado_relajado")));
                 
                 new mx.edu.utez.uxvibe.model.dao.RespuestaDao().create(r);
 
-                // Save audio
+                // 3. Guardar archivo de audio grabado si fue adjuntado en la petición
                 try {
                     Part audioPart = request.getPart("audio_file");
                     if (audioPart != null && audioPart.getSize() > 0) {
@@ -141,8 +156,7 @@ public class ParticipanteServlet extends HttpServlet {
             }
         }
 
-        // Si es una petición fetch (AJAX), podemos devolver un simple OK. 
-        // Si no, redireccionamos. EvaluacionInvestigador usa fetch.
+        // Si fue una petición fetch (AJAX) o multipart, devolvemos status 200 OK
         if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With")) || request.getContentType() != null && request.getContentType().startsWith("multipart/form-data")) {
             response.setStatus(HttpServletResponse.SC_OK);
             return;
@@ -151,11 +165,17 @@ public class ParticipanteServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/participantes?idPrueba=" + idPrueba);
     }
     
+    /**
+     * Parsea un parámetro numérico con valor neutro 3 por defecto.
+     */
     private int parseParam(String val) {
-        if (val == null || val.trim().isEmpty()) return 3; // valor neutro por defecto
+        if (val == null || val.trim().isEmpty()) return 3;
         try { return Integer.parseInt(val); } catch (Exception e) { return 3; }
     }
     
+    /**
+     * Traduce los textos de frecuencia a valores numéricos del 1 al 5.
+     */
     private int parseFrecuencia(String val) {
         if (val == null) return 3;
         switch (val) {
@@ -168,14 +188,14 @@ public class ParticipanteServlet extends HttpServlet {
         }
     }
     
-    /** Convierte el valor de sexo a 0 (Femenino) o 1 (Masculino). 
-     *  Acepta "0","1","Femenino","Masculino" o cualquier cosa → 0 por defecto. */
+    /**
+     * Convierte el valor de sexo a 0 (Femenino) o 1 (Masculino).
+     */
     private int parseSexo(String val) {
         if (val == null || val.trim().isEmpty()) return 0;
         val = val.trim();
         if ("1".equals(val) || "Masculino".equalsIgnoreCase(val)) return 1;
         if ("0".equals(val) || "Femenino".equalsIgnoreCase(val)) return 0;
-        // Si es cualquier otra cosa, intentar como número
         try { return Integer.parseInt(val) == 1 ? 1 : 0; } catch (Exception e) { return 0; }
     }
 }

@@ -1,3 +1,10 @@
+<%-- 
+    ===================================================================
+    Contraseña Actualizada con Éxito — UXVibe
+    Descripción: Vista que confirma que la contraseña se restableció
+    correctamente en la base de datos y ofrece el botón para iniciar sesión.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!doctype html>

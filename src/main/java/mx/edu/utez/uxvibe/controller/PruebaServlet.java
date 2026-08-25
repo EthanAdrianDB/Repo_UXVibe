@@ -12,11 +12,21 @@ import mx.edu.utez.uxvibe.model.dao.PruebaDao;
 
 import java.io.IOException;
 
+/**
+ * Controlador para la gestión de Pruebas de usabilidad (CRUD).
+ * Permite crear una nueva prueba, cargar los datos existentes para editarlos,
+ * actualizar la información y eliminar pruebas.
+ */
 @WebServlet(name = "PruebaServlet", value = "/prueba")
 public class PruebaServlet extends HttpServlet {
 
     private final PruebaDao pruebaDao = new PruebaDao();
 
+    /**
+     * Petición GET:
+     * - action="nueva": Abre el formulario vacío en nueva-prueba.jsp.
+     * - id=X: Carga los datos de la prueba X en nueva-prueba.jsp para editarla.
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -46,13 +56,14 @@ public class PruebaServlet extends HttpServlet {
                 return;
             }
 
-            // Editar: mandamos la prueba existente al formulario de nueva-prueba.jsp
+            // Validamos que la prueba exista y pertenezca al usuario en sesión
             Prueba prueba = pruebaDao.getById(idPrueba);
             if (prueba == null || prueba.getIdEvaluador() != evaluador.getIdEvaluador()) {
                 response.sendRedirect(request.getContextPath() + "/error-acceso.jsp");
                 return;
             }
 
+            // Pasamos el objeto prueba para prellenar el formulario de edición
             request.setAttribute("pruebaEditar", prueba);
             request.getRequestDispatcher("nueva-prueba.jsp").forward(request, response);
             return;
@@ -61,6 +72,10 @@ public class PruebaServlet extends HttpServlet {
         request.getRequestDispatcher("/inicio").forward(request, response);
     }
 
+    /**
+     * Petición POST: Procesa las acciones "create", "update" y "delete".
+     * Aplica el patrón PRG (Post/Redirect/Get) para evitar reenvíos al refrescar la página.
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -72,6 +87,7 @@ public class PruebaServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         if ("delete".equals(action)) {
+            // Eliminar prueba
             int id = Integer.parseInt(request.getParameter("id"));
             pruebaDao.delete(id);
 
@@ -87,6 +103,7 @@ public class PruebaServlet extends HttpServlet {
                 } catch(Exception ignored) {}
             }
 
+            // Validamos que no se duplique el nombre de la prueba para el mismo evaluador
             if (pruebaDao.existePrueba(evaluador.getIdEvaluador(), nombre, idPruebaExcluida)) {
                 request.setAttribute("error", "Ya tienes una prueba con ese nombre. Por favor, elige otro.");
                 Prueba p = new Prueba();
@@ -114,12 +131,13 @@ public class PruebaServlet extends HttpServlet {
             }
         }
 
+        // Si fue una petición asíncrona (AJAX/Fetch), respondemos 200 OK
         if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
             response.setStatus(HttpServletResponse.SC_OK);
             return;
         }
 
-        // Patrón PRG (Post/Redirect/Get): evita reenvíos duplicados al recargar
+        // Patrón PRG (Post/Redirect/Get) para redirigir a inicio
         response.sendRedirect(request.getContextPath() + "/inicio");
     }
 }

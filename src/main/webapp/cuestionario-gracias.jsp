@@ -1,3 +1,10 @@
+<%-- 
+    ===================================================================
+    Pantalla de Agradecimiento / Fin de la Evaluación — UXVibe
+    Descripción: Vista que se le muestra al participante después de que
+    sus respuestas y datos han sido registrados satisfactoriamente en la BD.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!doctype html>
 <html lang="es">

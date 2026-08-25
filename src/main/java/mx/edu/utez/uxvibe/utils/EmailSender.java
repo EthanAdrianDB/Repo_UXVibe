@@ -7,8 +7,17 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
+/**
+ * Utilidad encargada del envío de correos electrónicos vía SMTP (usando Gmail).
+ * La usamos principalmente cuando un evaluador olvida su contraseña y solicita un enlace de restablecimiento.
+ */
 public class EmailSender {
 
+    /**
+     * Construye la plantilla HTML del correo para la recuperación de contraseña.
+     * @param enlaceRestablecer URL con el token único que le permitirá crear su nueva clave.
+     * @return Código HTML listo para ser enviado en el cuerpo del correo.
+     */
     public static String generarPlantillaRecuperacion(String enlaceRestablecer) {
         return """
                 <!DOCTYPE html>
@@ -49,6 +58,10 @@ public class EmailSender {
                 """.formatted(enlaceRestablecer);
     }
 
+    /**
+     * Carga las credenciales del servidor SMTP (usuario y contraseña de aplicación de Gmail).
+     * Primero revisa variables de entorno; si no, busca en credentials.properties en el classpath o en disco.
+     */
     private static Properties cargarCredenciales() {
         Properties props = new Properties();
 
@@ -61,7 +74,7 @@ public class EmailSender {
             return props;
         }
 
-        // 2. Intentar desde ClassLoader
+        // 2. Intentar desde el ClassLoader (para cuando corre dentro de Tomcat)
         ClassLoader[] loaders = new ClassLoader[]{
                 Thread.currentThread().getContextClassLoader(),
                 EmailSender.class.getClassLoader(),
@@ -83,7 +96,7 @@ public class EmailSender {
             }
         }
 
-        // 3. Fallback a rutas de disco
+        // 3. Fallback a rutas relativas/absolutas en disco
         File[] candidateFiles = new File[]{
                 new File("src/main/resources/credentials.properties"),
                 new File("C:/Users/artur/Desktop/Repo_UXVibe/src/main/resources/credentials.properties"),
@@ -106,6 +119,12 @@ public class EmailSender {
         return props;
     }
 
+    /**
+     * Envía un correo electrónico configurando la sesión con STARTTLS y autenticación en Gmail.
+     * @param destinatario Dirección de correo a la que se enviará el mensaje.
+     * @param asunto Asunto del correo.
+     * @param contenidoHtml Cuerpo del mensaje en formato HTML.
+     */
     public static void sendMail(String destinatario, String asunto, String contenidoHtml) {
         Properties creds = cargarCredenciales();
         String usuario = creds.getProperty("smtp.user");
@@ -118,7 +137,7 @@ public class EmailSender {
         usuario = usuario.trim();
         contrasena = contrasena.trim().replace(" ", ""); // Las contraseñas de app de Google a veces llevan espacios
 
-        // 1. Configuración SMTP para Gmail
+        // Configuración de propiedades para el protocolo SMTP con TLS en el puerto 587
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
@@ -133,6 +152,7 @@ public class EmailSender {
         final String finalUser = usuario;
         final String finalPass = contrasena;
 
+        // Autenticación con las credenciales de la cuenta emisora
         jakarta.mail.Session session = jakarta.mail.Session.getInstance(props, new jakarta.mail.Authenticator() {
             @Override
             protected jakarta.mail.PasswordAuthentication getPasswordAuthentication() {
@@ -141,12 +161,14 @@ public class EmailSender {
         });
 
         try {
+            // Construcción del mensaje MIME
             jakarta.mail.Message message = new jakarta.mail.internet.MimeMessage(session);
             message.setFrom(new jakarta.mail.internet.InternetAddress(finalUser, "UXVibe"));
             message.setRecipients(jakarta.mail.Message.RecipientType.TO, jakarta.mail.internet.InternetAddress.parse(destinatario));
             message.setSubject(asunto);
             message.setContent(contenidoHtml, "text/html; charset=utf-8");
 
+            // Enviar correo a través de la red
             jakarta.mail.Transport.send(message);
             System.out.println("[EmailSender] Correo enviado exitosamente a: " + destinatario);
 

@@ -1,3 +1,10 @@
+<%-- 
+    ===================================================================
+    Términos y Condiciones — UXVibe
+    Descripción: Vista informativa que contiene las políticas de uso y
+    privacidad de datos para evaluadores y participantes de la plataforma.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!doctype html>
 <html lang="es">

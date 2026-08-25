@@ -14,20 +14,35 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+/**
+ * Conector principal a la Base de Datos Oracle Autonomous Database en la nube.
+ * Implementa el pool de conexiones de alto rendimiento HikariCP,
+ * localiza de forma automática la carpeta de la Wallet de Oracle y crea las tablas si aún no existen.
+ */
 public class SQLConnector {
 
+    // Instancia única (Singleton) del DataSource de Hikari
     private static volatile HikariDataSource dataSource;
 
+    /**
+     * Obtiene una conexión activa del pool de conexiones HikariCP.
+     */
     public static Connection getConnection() throws SQLException {
         return getDataSource().getConnection();
     }
 
+    /**
+     * Cierra el pool completo cuando se detiene el servidor.
+     */
     public static void closeConnection() {
         if (dataSource != null && !dataSource.isClosed()) {
             dataSource.close();
         }
     }
 
+    /**
+     * Inicializa y configura el DataSource si aún no está creado (Lazy Initialization seguro para hilos).
+     */
     private static synchronized HikariDataSource getDataSource() throws SQLException {
         if (dataSource != null && !dataSource.isClosed()) {
             return dataSource;
@@ -61,7 +76,7 @@ public class SQLConnector {
             config.setUsername(dbUser);
             config.setPassword(dbPass);
 
-            // Parámetros de conexión y pool
+            // Parámetros de conexión y tamaño del pool
             config.setMaximumPoolSize(10);
             config.setMinimumIdle(2);
             config.setIdleTimeout(30000);
@@ -73,7 +88,7 @@ public class SQLConnector {
             dataSource = new HikariDataSource(config);
             System.out.println("[SQLConnector] ¡Conexión a Oracle Cloud establecida con éxito!");
 
-            // 4. Inicialización automática de tablas
+            // 4. Inicialización automática de tablas en la base de datos
             inicializarTablas(dataSource.getConnection());
 
             return dataSource;
@@ -241,6 +256,11 @@ public class SQLConnector {
         return valor != null && !valor.trim().isEmpty() && !valor.contains("NOMBRE_DE_TU_CONEXION") && !valor.equals("TU_PASSWORD_AQUI");
     }
 
+    /**
+     * Revisa si las tablas de la base de datos ya existen en Oracle Cloud.
+     * Si no existen, ejecuta los scripts DDL para crearlas automáticamente en orden
+     * (Evaluador -> Prueba -> Participante -> Respuesta -> Archivo_Audio).
+     */
     public static void inicializarTablas() {
         try (Connection con = getConnection()) {
             inicializarTablas(con);
@@ -253,7 +273,7 @@ public class SQLConnector {
     private static void inicializarTablas(Connection con) {
         try (Statement stmt = con.createStatement()) {
 
-            // Verificar si la tabla EVALUADOR existe
+            // Verificamos si la tabla EVALUADOR ya existe en el diccionario de datos de Oracle
             boolean tablasExisten = false;
             try (ResultSet rs = stmt.executeQuery("SELECT count(*) FROM user_tables WHERE UPPER(table_name) = 'EVALUADOR'")) {
                 if (rs.next() && rs.getInt(1) > 0) {

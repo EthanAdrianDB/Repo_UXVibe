@@ -1,3 +1,11 @@
+<%-- 
+    ===================================================================
+    Fragmento de Pestañas de Navegación de Prueba (JSPF) — UXVibe
+    Descripción: Componente reutilizable incluido en resultados.jsp,
+    gestion-participantes.jsp y audio.jsp. Muestra las tarjetas superiores
+    con los datos de la prueba activa y la barra de navegación entre pestañas.
+    ===================================================================
+--%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <jsp:useBean id="nowTab" class="java.util.Date"/>

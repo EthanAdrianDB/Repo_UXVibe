@@ -1,3 +1,11 @@
+<%-- 
+    ===================================================================
+    Layout Principal: Encabezado y Barra Lateral — UXVibe
+    Descripción: Componente común incluido en todas las vistas privadas.
+    Contiene la cabecera HTML, enlaces a Bootstrap/Icons/CSS, la barra
+    lateral fija de navegación y el modal de confirmación de cierre de sesión.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!doctype html>

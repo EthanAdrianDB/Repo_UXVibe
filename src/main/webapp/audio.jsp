@@ -1,3 +1,12 @@
+<%-- 
+    ===================================================================
+    Grabaciones de Audio de la Prueba — UXVibe
+    Controlador: AudioServlet (/audio)
+    Descripción: Vista que lista a los participantes y sus archivos de audio grabados.
+    Permite reproducir interactivamente el audio de la sesión del participante
+    consumiendo el stream binario de la base de datos Oracle.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ include file="layout/header.jsp" %>

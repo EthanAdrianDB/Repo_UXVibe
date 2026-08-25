@@ -1,3 +1,12 @@
+<%-- 
+    ===================================================================
+    Inicio del Cuestionario de Usabilidad (Paso 1) — UXVibe
+    Controlador: CuestionarioServlet (/cuestionario?id=...)
+    Descripción: Pantalla pública inicial donde el participante ingresa sus
+    datos generales (nombre, apellidos, edad y género) antes de contestar
+    el cuestionario o realizar la prueba.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!doctype html>

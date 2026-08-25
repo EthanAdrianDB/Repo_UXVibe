@@ -11,6 +11,11 @@ import mx.edu.utez.uxvibe.model.dao.PruebaDao;
 
 import java.io.IOException;
 
+/**
+ * Controlador para la reproducción y visualización de archivos de audio grabados.
+ * Implementa soporte para cabeceras HTTP "Range" (HTTP 206 Partial Content),
+ * lo que permite a los reproductores HTML5 adelantar o retroceder el audio de manera fluida.
+ */
 @WebServlet(name = "AudioServlet", value = "/audio")
 public class AudioServlet extends HttpServlet {
 
@@ -31,6 +36,7 @@ public class AudioServlet extends HttpServlet {
             return;
         }
 
+        // Modo reproducción: Transmisión directa del archivo binario
         if ("play".equals(action)) {
             int idParticipante = 0;
             try {
@@ -39,6 +45,7 @@ public class AudioServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
+            // Obtenemos los bytes del audio desde la base de datos Oracle (BLOB)
             byte[] audioBytes = new mx.edu.utez.uxvibe.model.dao.ArchivoAudioDao().getAudioBytes(idParticipante, idPrueba);
             
             if (audioBytes != null && audioBytes.length > 0) {
@@ -48,6 +55,7 @@ public class AudioServlet extends HttpServlet {
                 response.setContentType("audio/webm");
                 response.setHeader("Accept-Ranges", "bytes");
 
+                // Si el navegador pide un fragmento específico del audio (Range: bytes=start-end)
                 if (rangeHeader != null && rangeHeader.startsWith("bytes=")) {
                     String rangeValue = rangeHeader.substring(6).trim();
                     int dashPos = rangeValue.indexOf('-');
@@ -78,6 +86,7 @@ public class AudioServlet extends HttpServlet {
 
                     int contentLength = (end - start) + 1;
 
+                    // Respuesta parcial 206 para el reproductor
                     response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
                     response.setHeader("Content-Range", "bytes " + start + "-" + end + "/" + fileLength);
                     response.setContentLength(contentLength);
@@ -86,6 +95,7 @@ public class AudioServlet extends HttpServlet {
                     os.write(audioBytes, start, contentLength);
                     os.flush();
                 } else {
+                    // Si el navegador pide el archivo completo
                     response.setStatus(HttpServletResponse.SC_OK);
                     response.setContentLength(fileLength);
 
@@ -99,6 +109,7 @@ public class AudioServlet extends HttpServlet {
             return;
         }
 
+        // Modo vista: Carga la lista de participantes con audio en audio.jsp
         Prueba prueba = pruebaDao.getById(idPrueba);
 
         request.setAttribute("prueba", prueba);

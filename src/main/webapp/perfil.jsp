@@ -1,3 +1,11 @@
+<%-- 
+    ===================================================================
+    Perfil del Evaluador — UXVibe
+    Controlador: PerfilServlet (/perfil)
+    Descripción: Vista para visualizar y editar la información de cuenta del evaluador
+    (nombre, apellidos, correo) así como realizar el cambio seguro de contraseña.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ include file="layout/header.jsp" %>

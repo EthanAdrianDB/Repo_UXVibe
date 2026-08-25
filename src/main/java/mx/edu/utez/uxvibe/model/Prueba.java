@@ -2,6 +2,11 @@ package mx.edu.utez.uxvibe.model;
 
 import java.io.Serializable;
 
+/**
+ * Modelo (POJO) que representa una Prueba de Usabilidad creada por un Evaluador.
+ * Contiene el nombre del estudio, la descripción o tarea asignada, la URL del sistema bajo prueba
+ * y el conteo de participantes registrados.
+ */
 public class Prueba implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -12,7 +17,7 @@ public class Prueba implements Serializable {
     private String descripcion;
     private String urlSistema;
 
-    // Campo calculado, se llena en el DAO
+    // Campo calculado, se llena dinámicamente en las consultas del DAO
     private int totalParticipantes;
 
     public Prueba() {

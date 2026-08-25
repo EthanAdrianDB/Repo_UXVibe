@@ -15,6 +15,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controlador para la pantalla principal (Dashboard / Inicio).
+ * Consulta todas las pruebas activas del evaluador logueado, calcula los totales
+ * y la distribución global de género de sus participantes para mostrarlos en inicio.jsp.
+ */
 @WebServlet(name = "InicioServlet", value = "/inicio")
 public class InicioServlet extends HttpServlet {
 
@@ -28,15 +33,19 @@ public class InicioServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         Evaluador evaluador = (Evaluador) session.getAttribute("evaluador");
 
+        // 1. Obtenemos las pruebas creadas por este evaluador
         List<Prueba> pruebas = pruebaDao.getPorEvaluador(evaluador.getIdEvaluador());
 
+        // 2. Sumamos el conteo global de participantes evaluados
         int totalParticipantes = 0;
         for (Prueba p : pruebas) {
             totalParticipantes += p.getTotalParticipantes();
         }
 
+        // 3. Obtenemos estadísticas demográficas consolidadas
         Map<String, Double> distribucionSexo = participanteDao.distribucionPorSexoEvaluador(evaluador.getIdEvaluador());
 
+        // 4. Pasamos las variables a la vista inicio.jsp
         request.setAttribute("pruebas", pruebas);
         request.setAttribute("totalPruebas", pruebas.size());
         request.setAttribute("totalParticipantes", totalParticipantes);

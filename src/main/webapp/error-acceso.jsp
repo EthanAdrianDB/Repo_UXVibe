@@ -1,3 +1,10 @@
+<%-- 
+    ===================================================================
+    Pantalla de Error de Acceso / Permisos — UXVibe
+    Descripción: Vista que se muestra cuando un usuario intenta acceder a
+    un recurso con un ID inválido, no existente o que pertenece a otro evaluador.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ include file="layout/header.jsp" %>

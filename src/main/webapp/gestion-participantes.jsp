@@ -1,3 +1,12 @@
+<%-- 
+    ===================================================================
+    Gestión de Participantes — UXVibe
+    Controlador: ParticipanteServlet (/participantes)
+    Descripción: Tabla de administración de todos los participantes que
+    han respondido a una prueba específica. Permite buscar participantes,
+    ver su fecha de realización, acceder a su detalle y eliminarlos.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ include file="layout/header.jsp" %>

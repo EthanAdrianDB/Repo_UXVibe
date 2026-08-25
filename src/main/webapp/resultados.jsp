@@ -1,3 +1,14 @@
+<%-- 
+    ===================================================================
+    Resultados y Analítica de la Prueba — UXVibe
+    Controlador: ResultadosServlet (/resultados)
+    Descripción: Muestra los resultados agregados de una prueba:
+    - Métricas demográficas (edad promedio, % de distribución de género).
+    - Métricas generales (satisfacción y recomendación promedio).
+    - Desglose promedio por cada una de las 15 preguntas Likert.
+    - Promedios del modelo SAM (Valencia, Activación y Dominancia).
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ include file="layout/header.jsp" %>

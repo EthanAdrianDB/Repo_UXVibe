@@ -2,6 +2,10 @@ package mx.edu.utez.uxvibe.model;
 
 import java.io.Serializable;
 
+/**
+ * Modelo (POJO) que representa a un Evaluador o Investigador UX.
+ * Implementa Serializable para permitir su almacenamiento en la sesión HTTP.
+ */
 public class Evaluador implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -11,7 +15,7 @@ public class Evaluador implements Serializable {
     private String apellidoM;
     private String apellidoP;
     private String correo;
-    private String contrasena;
+    private String contrasena; // Contraseña almacenada en hash SHA-256
 
     public Evaluador() {
     }
@@ -43,6 +47,9 @@ public class Evaluador implements Serializable {
     public String getContrasena() { return contrasena; }
     public void setContrasena(String contrasena) { this.contrasena = contrasena; }
 
+    /**
+     * Helper para obtener el nombre formateado completo para la interfaz.
+     */
     public String getNombreCompleto() { 
         return nombre + " " + apellidoP + (apellidoM != null && !apellidoM.isEmpty() ? " " + apellidoM : ""); 
     }

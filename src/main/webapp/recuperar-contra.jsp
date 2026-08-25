@@ -1,3 +1,11 @@
+<%-- 
+    ===================================================================
+    Solicitud de Recuperación de Contraseña — UXVibe
+    Controlador: RecuperarServlet (/recuperar?action=solicitar)
+    Descripción: Vista donde el usuario ingresa su correo electrónico para
+    recibir un enlace seguro con token temporal para restablecer su contraseña.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!doctype html>
