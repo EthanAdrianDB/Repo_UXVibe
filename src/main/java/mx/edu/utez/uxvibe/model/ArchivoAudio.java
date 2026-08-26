@@ -3,6 +3,10 @@ package mx.edu.utez.uxvibe.model;
 import java.io.InputStream;
 import java.io.Serializable;
 
+/**
+ * Modelo (POJO) que representa una grabación de audio asociada a la sesión de un participante.
+ * Contiene el flujo binario (InputStream) para interactuar con la columna BLOB de Oracle.
+ */
 public class ArchivoAudio implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -10,7 +14,7 @@ public class ArchivoAudio implements Serializable {
     private int idAudio;
     private int idParticipante;
     private int idPrueba;
-    private InputStream audio; // Para manejo de BLOB
+    private InputStream audio; // Stream para manejo eficiente del BLOB sin cargar todo a RAM
 
     public ArchivoAudio() {
     }

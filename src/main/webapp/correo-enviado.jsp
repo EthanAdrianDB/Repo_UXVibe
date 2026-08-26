@@ -1,3 +1,10 @@
+<%-- 
+    ===================================================================
+    Confirmación de Correo Enviado — UXVibe
+    Descripción: Vista informativa que notifica al usuario que se le ha
+    enviado el enlace de recuperación de contraseña a su cuenta de correo.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!doctype html>

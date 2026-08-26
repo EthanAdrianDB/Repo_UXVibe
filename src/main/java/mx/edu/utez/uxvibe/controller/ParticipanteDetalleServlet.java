@@ -16,6 +16,10 @@ import mx.edu.utez.uxvibe.model.dao.RespuestaDao;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Controlador para ver la información a detalle de un participante en particular:
+ * sus respuestas a cada pregunta del cuestionario, estados emocionales y el reproductor de audio de su sesión.
+ */
 @WebServlet(name = "ParticipanteDetalleServlet", value = "/participante-detalle")
 public class ParticipanteDetalleServlet extends HttpServlet {
 
@@ -26,12 +30,14 @@ public class ParticipanteDetalleServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // 1. Validamos autenticación del evaluador
         Evaluador evaluador = (Evaluador) request.getSession().getAttribute("evaluador");
         if (evaluador == null) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
 
+        // 2. Parseamos el ID del participante
         String idParam = request.getParameter("id");
         int id = -1;
         try {
@@ -43,6 +49,7 @@ public class ParticipanteDetalleServlet extends HttpServlet {
             return;
         }
 
+        // 3. Obtenemos el participante y validamos que pertenezca a una prueba de este evaluador
         Participante participante = participanteDao.getById(id);
         if (participante == null) {
             response.sendRedirect(request.getContextPath() + "/error-acceso.jsp");
@@ -55,6 +62,7 @@ public class ParticipanteDetalleServlet extends HttpServlet {
             return;
         }
 
+        // 4. Obtenemos sus respuestas individuales y checamos si tiene archivo de audio adjunto
         if (participante != null) {
             List<Respuesta> respuestas = respuestaDao.getPorParticipante(id);
             Respuesta respuesta = respuestas.isEmpty() ? null : respuestas.get(0);
@@ -66,6 +74,7 @@ public class ParticipanteDetalleServlet extends HttpServlet {
             request.setAttribute("tieneAudio", tieneAudio);
         }
 
+        // 5. Enviamos a la vista participante-detalle.jsp
         request.getRequestDispatcher("participante-detalle.jsp").forward(request, response);
     }
 }

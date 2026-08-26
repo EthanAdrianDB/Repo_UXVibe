@@ -1,3 +1,11 @@
+<%-- 
+    ===================================================================
+    Creación y Edición de Pruebas — UXVibe
+    Controlador: PruebaServlet (/prueba)
+    Descripción: Formulario para registrar una nueva prueba de usabilidad
+    o modificar los datos de una prueba existente (nombre, URL y descripción).
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ include file="layout/header.jsp" %>

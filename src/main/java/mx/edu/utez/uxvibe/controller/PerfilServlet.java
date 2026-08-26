@@ -12,11 +12,19 @@ import mx.edu.utez.uxvibe.utils.PasswordUtil;
 
 import java.io.IOException;
 
+/**
+ * Controlador para la gestión del perfil del evaluador.
+ * Permite modificar información personal (nombre y apellidos)
+ * y cambiar la contraseña de acceso dentro de la sesión activa.
+ */
 @WebServlet(name = "PerfilServlet", value = "/perfil")
 public class PerfilServlet extends HttpServlet {
 
     private final EvaluadorDao evaluadorDao = new EvaluadorDao();
 
+    /**
+     * Muestra la vista perfil.jsp con los datos actuales del usuario en sesión.
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -24,6 +32,9 @@ public class PerfilServlet extends HttpServlet {
         request.getRequestDispatcher("perfil.jsp").forward(request, response);
     }
 
+    /**
+     * Procesa las actualizaciones del perfil (editarInfo o cambiarContrasena).
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -34,6 +45,7 @@ public class PerfilServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         if ("editarInfo".equals(action)) {
+            // Actualizar nombre y apellidos en BD y en sesión
             evaluador.setNombre(request.getParameter("nombre"));
             evaluador.setApellidoP(request.getParameter("apellidoPaterno"));
             evaluador.setApellidoM(request.getParameter("apellidoMaterno"));
@@ -44,6 +56,7 @@ public class PerfilServlet extends HttpServlet {
             return;
 
         } else if ("cambiarContrasena".equals(action)) {
+            // Actualizar contraseña con nuevo hash SHA-256
             String password = request.getParameter("password");
             String confirmarPassword = request.getParameter("confirmarPassword");
 

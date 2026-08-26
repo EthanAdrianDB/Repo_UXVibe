@@ -9,10 +9,15 @@ import mx.edu.utez.uxvibe.model.Prueba;
 import mx.edu.utez.uxvibe.model.dao.ParticipanteDao;
 import mx.edu.utez.uxvibe.model.dao.PruebaDao;
 import mx.edu.utez.uxvibe.model.dao.RespuestaDao;
-
 import mx.edu.utez.uxvibe.model.Evaluador;
+
 import java.io.IOException;
 
+/**
+ * Controlador para la visualización del panel de resultados y estadísticas de una prueba.
+ * Calcula métricas demográficas (edad promedio, distribución de género) y
+ * promedios de respuestas (escalas SAM, satisfacción general y porcentaje de recomendación).
+ */
 @WebServlet(name = "ResultadosServlet", value = "/resultados")
 public class ResultadosServlet extends HttpServlet {
 
@@ -24,12 +29,14 @@ public class ResultadosServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // 1. Verificamos que el evaluador esté autenticado
         Evaluador evaluador = (Evaluador) request.getSession().getAttribute("evaluador");
         if (evaluador == null) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
 
+        // 2. Leemos y parseamos el ID de la prueba
         String idParam = request.getParameter("idPrueba");
         int idPrueba = -1;
         try {
@@ -41,6 +48,7 @@ public class ResultadosServlet extends HttpServlet {
             return;
         }
 
+        // 3. Control de acceso: verificamos que la prueba exista y le pertenezca a este evaluador
         Prueba prueba = pruebaDao.getById(idPrueba);
         if (prueba == null || prueba.getIdEvaluador() != evaluador.getIdEvaluador()) {
             response.sendRedirect(request.getContextPath() + "/error-acceso.jsp");
@@ -50,13 +58,16 @@ public class ResultadosServlet extends HttpServlet {
         request.setAttribute("prueba", prueba);
         request.setAttribute("pestanaActiva", "resultados");
         
+        // 4. Calculamos estadísticas demográficas
         double edadPromedio = participanteDao.edadPromedio(idPrueba);
         request.setAttribute("edadPromedio", edadPromedio > 0 ? edadPromedio : null);
         request.setAttribute("distribucionSexo", participanteDao.distribucionPorSexo(idPrueba));
         
+        // 5. Calculamos promedios de las preguntas del cuestionario
         java.util.Map<String, Double> promedios = respuestaDao.promedioPorPregunta(idPrueba);
         request.setAttribute("promedioPorPregunta", promedios);
 
+        // Indicadores clave para el dashboard (satisfacción y recomendación)
         if (!promedios.isEmpty()) {
             Double sat = promedios.get("Pregunta 13");
             request.setAttribute("satisfaccionPromedio", sat != null ? sat + " / 5" : null);
@@ -65,6 +76,7 @@ public class ResultadosServlet extends HttpServlet {
             request.setAttribute("recomendarian", rec != null ? Math.round((rec / 5.0) * 100) + "%" : null);
         }
 
+        // 6. Despachamos los datos a resultados.jsp
         request.getRequestDispatcher("resultados.jsp").forward(request, response);
     }
 }

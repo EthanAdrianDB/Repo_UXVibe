@@ -10,7 +10,11 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-// El filtro se aplica a todas las URLs de la app
+/**
+ * Filtro de seguridad que intercepta todas las peticiones HTTP (/*).
+ * Verifica si el usuario tiene una sesión activa de evaluador antes de dejarlo entrar a pantallas privadas.
+ * Si no está logueado y quiere acceder a algo privado, lo manda al login.
+ */
 @WebFilter("/*")
 public class FiltroAutenticacion extends HttpFilter {
 
@@ -21,10 +25,11 @@ public class FiltroAutenticacion extends HttpFilter {
         String requestURI = request.getRequestURI();
         HttpSession session = request.getSession(false);
 
+        // Revisamos si existe la sesión y si tiene guardado el objeto 'evaluador'
         boolean loggedIn = (session != null && session.getAttribute("evaluador") != null);
 
-        // Rutas públicas: login, registro, recuperación de contraseña,
-        // y el cuestionario (lo llena el PARTICIPANTE, no el evaluador logueado)
+        // Lista de rutas que NO requieren login (públicas):
+        // Incluye login, registro, recuperación de contraseña y el cuestionario público que responde el participante
         boolean rutaPublica =
                 requestURI.endsWith("login.jsp") ||
                 requestURI.endsWith("/login") ||
@@ -41,6 +46,7 @@ public class FiltroAutenticacion extends HttpFilter {
                 requestURI.endsWith("index.jsp") ||
                 requestURI.endsWith("/");
 
+        // Recursos estáticos (CSS, JS, imágenes) que siempre deben cargar libremente
         boolean esRecurso = requestURI.contains("/assets/") || requestURI.contains("/layout/");
 
         boolean esLoginORegistro =
@@ -50,15 +56,18 @@ public class FiltroAutenticacion extends HttpFilter {
                 requestURI.endsWith("/registro");
 
         if (loggedIn) {
+            // Si ya está logueado e intenta ir a login o registro, lo redirigimos directo a su inicio
             if (esLoginORegistro) {
                 response.sendRedirect(request.getContextPath() + "/inicio");
             } else {
                 chain.doFilter(request, response);
             }
         } else {
+            // Si NO está logueado pero es una ruta pública o recurso estático, lo dejamos pasar
             if (rutaPublica || esRecurso) {
                 chain.doFilter(request, response);
             } else {
+                // Si intentó entrar a una ruta protegida sin sesión, lo mandamos al login
                 response.sendRedirect(request.getContextPath() + "/login.jsp");
             }
         }

@@ -1,3 +1,11 @@
+<%-- 
+    ===================================================================
+    Pantalla de Inicio de Sesión (Login) — UXVibe
+    Controlador: LoginServlet (/login)
+    Descripción: Permite a los evaluadores ingresar con su correo y contraseña.
+    Muestra mensajes de error (credenciales inválidas) o éxito tras registrarse.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!doctype html>
@@ -56,7 +64,7 @@
 </head>
 <body>
 <div class="split">
-    <!-- Left Dark Teal Brand Panel (Matching Image 3) -->
+    <!-- Panel Izquierdo: Branding, Logo e Ilustración -->
     <div class="panel-marca">
         <div class="brand-content">
             <div class="brand-header">
@@ -66,22 +74,26 @@
             <p class="brand-subtitle">Plataforma para la evaluación de experiencia de usuario</p>
             <img src="${pageContext.request.contextPath}/assets/images/ux-illustration.svg" alt="Ilustración UXVibe" class="brand-illustration">
         </div>
-
     </div>
 
-    <!-- Right Login Form Panel -->
+    <!-- Panel Derecho: Formulario de Login -->
     <div class="panel-form">
         <div class="form-box">
             <h2>Iniciar sesión</h2>
             <p class="sub-heading">Ingresa tu información para acceder</p>
 
+            <%-- Mensaje de error enviado por LoginServlet al fallar la autenticación --%>
             <c:if test="${not empty error}">
                 <div class="alert alert-danger py-2 small mb-3">${error}</div>
             </c:if>
+
+            <%-- Mensaje informativo guardado en sesión --%>
             <c:if test="${not empty sessionScope.mensaje}">
                 <div class="alert alert-info py-2 small mb-3">${sessionScope.mensaje}</div>
                 <% session.removeAttribute("mensaje"); %>
             </c:if>
+
+            <%-- Notificación si viene redirigido desde el registro exitoso --%>
             <c:if test="${param.registroExitoso == 'true'}">
                 <div class="alert alert-success py-2 small mb-3">Cuenta creada con éxito. Ya puedes iniciar sesión.</div>
             </c:if>

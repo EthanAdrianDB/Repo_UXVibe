@@ -1,3 +1,11 @@
+<%-- 
+    ===================================================================
+    Establecer Nueva Contraseña — UXVibe
+    Controlador: RecuperarServlet (/recuperar?action=actualizar)
+    Descripción: Vista que valida el token de recuperación y solicita la nueva
+    contraseña con verificación interactiva de requisitos de seguridad.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!doctype html>

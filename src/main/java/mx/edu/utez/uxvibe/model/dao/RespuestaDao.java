@@ -13,8 +13,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * DAO para la tabla Respuesta.
+ * Almacena las evaluaciones del cuestionario completado por un participante:
+ * - 3 dimensiones del modelo SAM (Valencia, Activación, Dominancia).
+ * - 15 reactivos de usabilidad (escala Likert).
+ * - 2 reactivos de frecuencia de estado de ánimo / emociones.
+ * También calcula los promedios numéricos para las gráficas del reporte.
+ */
 public class RespuestaDao implements Dao<Respuesta, Integer> {
 
+    /**
+     * Guarda en la base de datos el set completo de respuestas de un participante para una prueba.
+     */
     @Override
     public boolean create(Respuesta entidad) {
         String sql = "INSERT INTO Respuesta (id_participante, id_prueba, " +
@@ -24,6 +35,7 @@ public class RespuestaDao implements Dao<Respuesta, Integer> {
         
         try (Connection con = SQLConnector.getConnection()) {
             PreparedStatement ps;
+            // Compatibilidad por si el nombre de la columna PK varía según la versión del schema
             try {
                 ps = con.prepareStatement(sql, new String[]{"ID_RESPUESTAS"});
             } catch (SQLException e) {
@@ -72,6 +84,9 @@ public class RespuestaDao implements Dao<Respuesta, Integer> {
         return false;
     }
 
+    /**
+     * Trae todos los registros de respuestas existentes.
+     */
     @Override
     public List<Respuesta> getAll() {
         List<Respuesta> lista = new ArrayList<>();
@@ -88,6 +103,9 @@ public class RespuestaDao implements Dao<Respuesta, Integer> {
         return lista;
     }
 
+    /**
+     * Obtiene las respuestas asociadas a un participante en específico.
+     */
     public List<Respuesta> getPorParticipante(int idParticipante) {
         List<Respuesta> lista = new ArrayList<>();
         String sql = "SELECT * FROM Respuesta WHERE id_participante = ?";
@@ -105,6 +123,9 @@ public class RespuestaDao implements Dao<Respuesta, Integer> {
         return lista;
     }
 
+    /**
+     * Busca un set de respuestas por su ID único.
+     */
     @Override
     public Respuesta getById(Integer id) {
         String sql = "SELECT * FROM Respuesta WHERE id_respuestas = ?";
@@ -122,11 +143,17 @@ public class RespuestaDao implements Dao<Respuesta, Integer> {
         return null;
     }
 
+    /**
+     * Las respuestas son inmutables una vez enviadas por el participante, por lo que no se actualizan.
+     */
     @Override
     public boolean update(Respuesta entidad) {
-        return false; // Generalmente las respuestas no se actualizan
+        return false;
     }
 
+    /**
+     * Elimina un registro de respuestas por ID.
+     */
     @Override
     public boolean delete(Integer id) {
         String sql = "DELETE FROM Respuesta WHERE id_respuestas = ?";
@@ -140,6 +167,11 @@ public class RespuestaDao implements Dao<Respuesta, Integer> {
         return false;
     }
     
+    /**
+     * Calcula los promedios (AVG) de cada una de las preguntas para una prueba.
+     * Retorna un mapa con etiquetas ("SAM_1", "SAM_2", "SAM_3", "Pregunta 1", etc.)
+     * y su valor promedio redondeado a un decimal para graficarlo fácilmente.
+     */
     public Map<String, Double> promedioPorPregunta(int idPrueba) {
         Map<String, Double> promedios = new LinkedHashMap<>();
         String sql = "SELECT AVG(sam_1) as s1, AVG(sam_2) as s2, AVG(sam_3) as s3, " +
@@ -153,7 +185,7 @@ public class RespuestaDao implements Dao<Respuesta, Integer> {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     double s1 = rs.getDouble("s1");
-                    if (!rs.wasNull()) { // Solo agregar si hay datos
+                    if (!rs.wasNull()) { // Solo agregamos al mapa si existen datos
                         promedios.put("SAM_1", Math.round(s1 * 10.0) / 10.0);
                         promedios.put("SAM_2", Math.round(rs.getDouble("s2") * 10.0) / 10.0);
                         promedios.put("SAM_3", Math.round(rs.getDouble("s3") * 10.0) / 10.0);
@@ -170,6 +202,9 @@ public class RespuestaDao implements Dao<Respuesta, Integer> {
         return promedios;
     }
 
+    /**
+     * Helper para convertir los campos de un ResultSet en una instancia de Respuesta.
+     */
     private Respuesta aRespuesta(ResultSet rs) throws SQLException {
         Respuesta res = new Respuesta();
         try {

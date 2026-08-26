@@ -2,6 +2,13 @@ package mx.edu.utez.uxvibe.model;
 
 import java.io.Serializable;
 
+/**
+ * Modelo (POJO) que representa el conjunto de respuestas de un cuestionario UX.
+ * Mapea:
+ * - 3 reactivos del modelo SAM (Self-Assessment Manikin, escala 1-9: Valencia, Activación, Dominancia).
+ * - 15 preguntas de usabilidad general (escala Likert 1-5).
+ * - 2 reactivos de frecuencia emocional (estrés / relajación).
+ */
 public class Respuesta implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -10,12 +17,15 @@ public class Respuesta implements Serializable {
     private int idParticipante;
     private int idPrueba;
 
-    private int sam1;
-    private int sam2;
-    private int sam3;
+    // Reactivos del modelo SAM (1 al 9)
+    private int sam1; // Valencia
+    private int sam2; // Activación
+    private int sam3; // Dominancia
 
+    // Reactivos de Usabilidad (1 al 5)
     private int r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15;
 
+    // Frecuencias emocionales (1 al 5)
     private int frecuenciaEstadoAnimo1;
     private int frecuenciaEstadoAnimo2;
 

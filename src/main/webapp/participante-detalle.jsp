@@ -1,3 +1,14 @@
+<%-- 
+    ===================================================================
+    Detalle Individual del Participante — UXVibe
+    Controlador: ParticipanteDetalleServlet (/participante-detalle?id=...)
+    Descripción: Vista que despliega la información exhaustiva de un participante:
+    - Datos demográficos (nombre, edad, sexo, fecha).
+    - Reproductor de audio de la sesión (si existe grabación).
+    - Desglose de cada una de las 15 respuestas tipo Likert.
+    - Resultados de la escala SAM (Valencia, Activación, Dominancia).
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ include file="layout/header.jsp" %>

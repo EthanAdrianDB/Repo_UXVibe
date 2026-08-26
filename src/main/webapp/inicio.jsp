@@ -1,8 +1,18 @@
+<%-- 
+    ===================================================================
+    Dashboard Principal del Evaluador — UXVibe
+    Controlador: InicioServlet (/inicio)
+    Descripción: Vista principal que muestra tarjetas de métricas globales
+    (total de pruebas, total de participantes, distribución de género),
+    el listado de pruebas creadas con paginación, filtros de búsqueda
+    y modales para crear/editar/eliminar pruebas.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-    <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-        <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-            <jsp:useBean id="now" class="java.util.Date" />
-            <%@ include file="layout/header.jsp" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<jsp:useBean id="now" class="java.util.Date" />
+<%@ include file="layout/header.jsp" %>
 
                 <div class="container-fluid py-2">
                     <!-- Encabezado de Bienvenida -->

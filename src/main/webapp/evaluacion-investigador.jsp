@@ -1,3 +1,12 @@
+<%-- 
+    ===================================================================
+    Evaluación Asistida / En Vivo con Grabación de Audio — UXVibe
+    Descripción: Vista interactiva con soporte para grabación de micrófono
+    (Web Audio API / MediaRecorder) donde el evaluador guía la prueba en vivo,
+    registra la voz del participante y sube el archivo de audio (.webm)
+    junto con sus respuestas hacia el servidor.
+    ===================================================================
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!doctype html>

@@ -11,8 +11,17 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DAO para la tabla Prueba.
+ * Administra las pruebas de usabilidad creadas por los evaluadores, incluyendo
+ * la creación, listado con conteo de participantes, edición, borrado y validación de nombres duplicados.
+ */
 public class PruebaDao implements Dao<Prueba, Integer> {
 
+    /**
+     * Inserta una nueva prueba asignada al evaluador logueado.
+     * Recupera la clave primaria autogenerada en Oracle.
+     */
     @Override
     public boolean create(Prueba entidad) {
         String sql = "INSERT INTO Prueba (nombre, descripcion, url_sistema, id_evaluador) VALUES (?, ?, ?, ?)";
@@ -42,6 +51,9 @@ public class PruebaDao implements Dao<Prueba, Integer> {
         return false;
     }
 
+    /**
+     * Obtiene todas las pruebas registradas en el sistema junto con el conteo de participantes.
+     */
     @Override
     public List<Prueba> getAll() {
         List<Prueba> lista = new ArrayList<>();
@@ -60,6 +72,10 @@ public class PruebaDao implements Dao<Prueba, Integer> {
         return lista;
     }
 
+    /**
+     * Obtiene las pruebas creadas exclusivamente por un evaluador específico.
+     * Incluye una subconsulta para saber cuántos participantes tiene asignada cada prueba.
+     */
     public List<Prueba> getPorEvaluador(int idEvaluador) {
         List<Prueba> lista = new ArrayList<>();
         String sql = "SELECT p.*, (SELECT COUNT(*) FROM Participante pt WHERE pt.id_prueba = p.id_prueba) as total_participantes FROM Prueba p WHERE p.id_evaluador = ?";
@@ -79,6 +95,9 @@ public class PruebaDao implements Dao<Prueba, Integer> {
         return lista;
     }
 
+    /**
+     * Busca una prueba por su ID e incluye la cantidad de participantes registrados en ella.
+     */
     @Override
     public Prueba getById(Integer id) {
         String sql = "SELECT p.*, (SELECT COUNT(*) FROM Participante pt WHERE pt.id_prueba = p.id_prueba) as total_participantes FROM Prueba p WHERE p.id_prueba = ?";
@@ -98,6 +117,9 @@ public class PruebaDao implements Dao<Prueba, Integer> {
         return null;
     }
 
+    /**
+     * Actualiza el nombre, descripción y URL del sistema bajo prueba.
+     */
     @Override
     public boolean update(Prueba entidad) {
         String sql = "UPDATE Prueba SET nombre = ?, descripcion = ?, url_sistema = ? WHERE id_prueba = ?";
@@ -114,6 +136,9 @@ public class PruebaDao implements Dao<Prueba, Integer> {
         return false;
     }
 
+    /**
+     * Elimina una prueba por su ID.
+     */
     @Override
     public boolean delete(Integer id) {
         String sql = "DELETE FROM Prueba WHERE id_prueba = ?";
@@ -127,7 +152,9 @@ public class PruebaDao implements Dao<Prueba, Integer> {
         return false;
     }
 
-    // Helper temporal para no romper funcionalidad enlazada
+    /**
+     * Helper para buscar la prueba a partir de su enlace o ID numérico.
+     */
     public Prueba getByEnlace(String enlaceUnico) {
         try {
             int id = Integer.parseInt(enlaceUnico);
@@ -137,6 +164,10 @@ public class PruebaDao implements Dao<Prueba, Integer> {
         }
     }
 
+    /**
+     * Revisa si el evaluador ya tiene otra prueba con el mismo nombre (ignorando mayúsculas/minúsculas)
+     * para evitar nombres duplicados al crear o editar.
+     */
     public boolean existePrueba(int idEvaluador, String nombre, int idPruebaExcluida) {
         String sql = "SELECT COUNT(*) FROM Prueba WHERE id_evaluador = ? AND LOWER(nombre) = LOWER(?) AND id_prueba != ?";
         try (Connection con = SQLConnector.getConnection();
@@ -155,6 +186,9 @@ public class PruebaDao implements Dao<Prueba, Integer> {
         return false;
     }
 
+    /**
+     * Helper para mapear una fila de ResultSet a un objeto Prueba.
+     */
     private Prueba aPrueba(ResultSet rs) throws SQLException {
         return new Prueba(
                 rs.getInt("id_prueba"),
