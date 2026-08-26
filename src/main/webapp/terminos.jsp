@@ -12,7 +12,6 @@
 <div class="container py-5" style="max-width:700px;">
     <h2>Términos y condiciones</h2>
     <p class="text-muted">
-        <!-- TODO: reemplazar con el texto real que definan como equipo -->
         Al registrarte en UXVibe aceptas el uso de tus datos únicamente para fines de la
         plataforma de evaluación de experiencia de usuario dentro del Proyecto Integrador.
     </p>
