@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 
 /**
- * Modelo (POJO) que representa una grabación de audio asociada a la sesión de un participante.
  * Contiene el flujo binario (InputStream) para interactuar con la columna BLOB de Oracle.
  */
 public class ArchivoAudio implements Serializable {

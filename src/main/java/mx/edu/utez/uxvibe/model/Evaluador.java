@@ -3,7 +3,6 @@ package mx.edu.utez.uxvibe.model;
 import java.io.Serializable;
 
 /**
- * Modelo (POJO) que representa a un Evaluador o Investigador UX.
  * Implementa Serializable para permitir su almacenamiento en la sesión HTTP.
  */
 public class Evaluador implements Serializable {

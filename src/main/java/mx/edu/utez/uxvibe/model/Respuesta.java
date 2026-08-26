@@ -3,7 +3,6 @@ package mx.edu.utez.uxvibe.model;
 import java.io.Serializable;
 
 /**
- * Modelo (POJO) que representa el conjunto de respuestas de un cuestionario UX.
  * Mapea:
  * - 3 reactivos del modelo SAM (Self-Assessment Manikin, escala 1-9: Valencia, Activación, Dominancia).
  * - 15 preguntas de usabilidad general (escala Likert 1-5).

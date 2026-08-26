@@ -3,7 +3,6 @@ package mx.edu.utez.uxvibe.model;
 import java.io.Serializable;
 
 /**
- * Modelo (POJO) que representa a un Participante en una prueba de usabilidad.
  * Almacena datos demográficos (edad, sexo) y metadatos de su sesión (fecha de realización).
  */
 public class Participante implements Serializable {
